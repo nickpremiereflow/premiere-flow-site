@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <nav>
         <img src="logo.png" alt="Premiere Flow Logo" class="logo">
     </nav>
@@ -14,28 +15,64 @@
     <main>
         <section class="hero">
             <h1>Visual Liquidity for High-Ticket Inventory</h1>
-            <p>Transform stale listings into scroll-stopping assets with AI-powered cinematic staging.</p>
+            <p>Transform stale listings into scroll-stopping assets.</p>
         </section>
 
-        <div class="slider-container" onclick="triggerHaptic()">
-            <div class="slider-img-container">
-                <img src="auto-before.png" alt="Before" class="img-before">
+        <div class="comparison-wrapper">
+            <h3>Automotive Cinematic Flip</h3>
+            <div class="slider-container" id="auto-container">
                 <img src="auto-after.png" alt="After" class="img-after">
+                <img src="auto-before.png" alt="Before" class="img-before">
+                <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
+                <div class="slider-line"></div>
             </div>
-            <input type="range" min="0" max="100" value="50" class="slider" id="autoSlider">
+        </div>
+
+        <div class="comparison-wrapper">
+            <h3>Real Estate Virtual Staging</h3>
+            <div class="slider-container" id="re-container">
+                <img src="re-after.png" alt="After" class="img-after">
+                <img src="re-before.png" alt="Before" class="img-before">
+                <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 're-container')">
+                <div class="slider-line"></div>
+            </div>
         </div>
 
         <section class="pricing">
-            <div class="card" onclick="triggerHaptic()">
+            <div class="card" onclick="toggleDropdown('drop1')">
                 <h3>Single Flip</h3>
                 <h2>$49</h2>
+                <div id="drop1" class="dropdown-content">
+                    <p>• 24-Hour Delivery</p>
+                    <p>• 1 Cinematic Asset</p>
+                    <p>• Full Commercial Rights</p>
+                </div>
                 <button>Order Now</button>
             </div>
-            <div class="card highlighted" onclick="triggerHaptic()">
+
+            <div class="card highlighted" onclick="toggleDropdown('drop2')">
+                <div class="badge">BEST VALUE</div>
                 <h3>Partner Pack</h3>
                 <h2>$399/mo</h2>
-                <p>10 Monthly Credits</p>
+                <div id="drop2" class="dropdown-content show">
+                    <p>• 10 Monthly Credits</p>
+                    <p>• Priority Queue</p>
+                    <p>• Dedicated Account Manager</p>
+                    <p>• White-Label Delivery</p>
+                </div>
                 <button>Sign Up</button>
+            </div>
+
+            <div class="card" onclick="toggleDropdown('drop3')">
+                <h3>Enterprise</h3>
+                <h2>$999/mo</h2>
+                <div id="drop3" class="dropdown-content">
+                    <p>• Unlimited Credits</p>
+                    <p>• Custom AI Training</p>
+                    <p>• API Access</p>
+                    <p>• 24/7 Tech Support</p>
+                </div>
+                <button>Contact Sales</button>
             </div>
         </section>
     </main>
