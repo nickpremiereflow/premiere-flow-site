@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premiere Flow | Secure Sign-Up</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
+    <style>
+        :root {
+            --bg-black: #000;
+            --card-bg: #080808;
+            --border-color: #1a1a1a;
+            --accent-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0 20px;
+            background-color: var(--bg-black);
+            color: var(--accent-white);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header-container { margin-top: 40px; text-align: center; width: 100%; max-width: 850px; }
+        .logo-img { height: 40px; margin-bottom: 25px; }
+        
+        .btn-back {
+            display: inline-block;
+            background: transparent;
+            color: #555;
+            text-decoration: none;
+            padding: 8px 0;
+            font-size: 10px; 
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+        .btn-back:hover { color: #fff; }
+
+        .signup-form {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        label { 
+            display: block; 
+            font-size: 11px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            color: #555; 
+            margin: 25px 0 12px 5px; 
+            text-align: left;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        select:focus, input[type="text"]:focus { border-color: #fff; }
+
+        .pkg-card {
+            background: #000;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.3s;
+        }
+        .pkg-card:hover { border-color: #444; }
+        .pkg-card.selected { border-color: #fff; }
+        
+        .pkg-title { display: block; font-weight: 900; font-size: 1.2rem; margin-bottom: 8px; }
+        
+        .pkg-list { list-style: none; padding: 0; margin: 0; }
+        .pkg-list li { font-size: 0.9rem; color: #888; margin-bottom: 5px; display: flex; align-items: center; }
+        .pkg-list li::before { content: "◆"; color: #fff; font-size: 8px; margin-right: 10px; }
+
+        .addon-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); }
+        .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; cursor: pointer; text-transform: uppercase; }
+
+        /* Shimmer for the selected/featured item */
+        .shimmer {
+            background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .hidden { display: none; }
+        .footer-spacer { height: 100px; }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <img src="../logo.png" alt="Logo" class="logo-img"> <br>
+        <a href="../index.html" class="btn-back">← Back to Listings</a>
+    </div>
+
+    <div class="signup-form">
+        <label>1. Select Industry</label>
+        <select id="industry" onchange="updateLabel()">
+            <option value="" disabled selected>Choose Industry...</option>
+            <option value="auto">Automotive</option>
+            <option value="real-estate">Real Estate</option>
+        </select>
+
+        <div id="listing-input-group" class="hidden">
+            <label id="listing-label">Listing Details</label>
+            <input type="text" id="listing-data" placeholder="Paste link or address here...">
+        </div>
+
+        <label>2. Select Plan</label>
+        <div class="pkg-grid">
+            <div class="pkg-card" onclick="handleSelection('upgrade', this)">
+                <span class="pkg-title shimmer">$49 — The Upgrade</span>
+                <ul class="pkg-list">
+                    <li>10 High-Res Photos for 1 Listing</li>
+                    <li>Cinematic Lighting & Enhancements</li>
+                </ul>
+                <div class="addon-section" onclick="event.stopPropagation()">
+                    <label class="addon-label">
+                        <input type="checkbox" id="branding-check"> 
+                        <span>Add Branding (+$20)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="pkg-card" onclick="handleSelection('partner', this)">
+                <span class="pkg-title">$399 — The Partner Pack</span>
+                <ul class="pkg-list">
+                    <li>10 Listing Upgrades</li>
+                    <li>Personal Branding Included</li>
+                </ul>
+            </div>
+
+            <div class="pkg-card" onclick="handleSelection('unlimited', this)">
+                <span class="pkg-title">$999 — Unlimited Flow</span>
+                <ul class="pkg-list">
+                    <li>Unlimited Listings Per Month</li>
+                    <li>Priority Processing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-spacer"></div>
+
+    <script>
+        function updateLabel() {
+            const industry = document.getElementById('industry').value;
+            const group = document.getElementById('listing-input-group');
+            const label = document.getElementById('listing-label');
+            group.classList.remove('hidden');
+            label.innerText = (industry === 'auto') ? "Vehicle Link / VIN" : "Property Address / Zillow Link";
+        }
+
+        function handleSelection(plan, element) {
+            const industry = document.getElementById('industry').value;
+            const details = document.getElementById('listing-data').value;
+            const brandingChecked = document.getElementById('branding-check').checked;
+
+            // Visual feedback for selection
+            document.querySelectorAll('.pkg-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+
+            if(!industry || !details) {
+                alert("Please select an industry and provide listing details first.");
+                return;
+            }
+
+            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$399" : "$999");
+            
+            // This is where you will eventually paste your Square/Stripe checkout URL
+            alert("Redirecting to Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
+        }
+    </script>
+</body>
+</html>
