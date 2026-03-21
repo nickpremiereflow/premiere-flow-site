@@ -81,26 +81,26 @@
         .pkg-card {
             background: #000;
             border: 1px solid var(--border-color);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 15px;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
             cursor: pointer;
             text-align: left;
             transition: 0.3s;
+            position: relative;
         }
         .pkg-card:hover { border-color: #444; }
         .pkg-card.selected { border-color: #fff; }
         
-        .pkg-title { display: block; font-weight: 900; font-size: 1.2rem; margin-bottom: 8px; }
+        .pkg-title { display: block; font-weight: 900; font-size: 1.4rem; margin-bottom: 12px; }
         
         .pkg-list { list-style: none; padding: 0; margin: 0; }
-        .pkg-list li { font-size: 0.9rem; color: #888; margin-bottom: 5px; display: flex; align-items: center; }
-        .pkg-list li::before { content: "◆"; color: #fff; font-size: 8px; margin-right: 10px; }
+        .pkg-list li { font-size: 0.95rem; color: #888; margin-bottom: 8px; display: flex; align-items: center; }
+        .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; opacity: 0.8; }
 
-        .addon-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); }
-        .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; cursor: pointer; text-transform: uppercase; }
+        .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Shimmer for the selected/featured item */
         .shimmer {
             background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%);
             background-size: 200% auto;
@@ -138,18 +138,20 @@
             <input type="text" id="listing-data" placeholder="Paste link or address here...">
         </div>
 
-        <label>2. Select Plan</label>
+        <label>2. Select Plan to Secure Upgrade</label>
         <div class="pkg-grid">
+            
             <div class="pkg-card" onclick="handleSelection('upgrade', this)">
                 <span class="pkg-title shimmer">$49 — The Upgrade</span>
                 <ul class="pkg-list">
                     <li>10 High-Res Photos for 1 Listing</li>
                     <li>Cinematic Lighting & Enhancements</li>
+                    <li>$5 Per Additional Image Option</li>
                 </ul>
                 <div class="addon-section" onclick="event.stopPropagation()">
                     <label class="addon-label">
                         <input type="checkbox" id="branding-check"> 
-                        <span>Add Branding (+$20)</span>
+                        <span>Add Personal Branding & Logos (+$20)</span>
                     </label>
                 </div>
             </div>
@@ -158,7 +160,9 @@
                 <span class="pkg-title">$399 — The Partner Pack</span>
                 <ul class="pkg-list">
                     <li>10 Listing Upgrades</li>
-                    <li>Personal Branding Included</li>
+                    <li>10 High-Res Photos Per Listing</li>
+                    <li>Personal Branding & Logos Included</li>
+                    <li>$5 Per Additional Image Option</li>
                 </ul>
             </div>
 
@@ -166,9 +170,12 @@
                 <span class="pkg-title">$999 — Unlimited Flow</span>
                 <ul class="pkg-list">
                     <li>Unlimited Listings Per Month</li>
-                    <li>Priority Processing</li>
+                    <li>12 Enhanced Images Per Listing</li>
+                    <li>Personal Branding & Logos Included</li>
+                    <li>Priority Processing & Queue-Jump</li>
                 </ul>
             </div>
+
         </div>
     </div>
 
@@ -188,7 +195,6 @@
             const details = document.getElementById('listing-data').value;
             const brandingChecked = document.getElementById('branding-check').checked;
 
-            // Visual feedback for selection
             document.querySelectorAll('.pkg-card').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
@@ -198,8 +204,6 @@
             }
 
             let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$399" : "$999");
-            
-            // This is where you will eventually paste your Square/Stripe checkout URL
             alert("Redirecting to Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
         }
     </script>
