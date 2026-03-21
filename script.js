@@ -4,12 +4,14 @@ function moveSlider(slider, containerId) {
     const line = container.querySelector('.slider-line');
     
     let val = slider.value;
-    // Pushes the 'Before' image edge to reveal the 'After' image underneath
     beforeImg.style.clipPath = `inset(0 0 0 ${val}%)`;
     line.style.left = `${val}%`;
 }
 
-function toggleDropdown(id) {
+function toggleDropdown(id, cardElement) {
     const content = document.getElementById(id);
     content.classList.toggle('show');
+    cardElement.classList.toggle('active');
+    
+    if (navigator.vibrate) navigator.vibrate(20);
 }
