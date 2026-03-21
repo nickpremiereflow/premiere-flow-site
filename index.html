@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premiere Flow | Cinematic AI Staging</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <img src="/logo.png" alt="Premiere Flow Logo" class="logo">
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>Visual Liquidity for High-Ticket Inventory</h1>
+            <p>Transform stale listings into scroll-stopping assets with AI-powered cinematic staging.</p>
+        </section>
+
+        <div class="slider-container" onclick="triggerHaptic()">
+            <div class="slider-img-container">
+                <img src="/auto-before.png" alt="Before" class="img-before">
+                <img src="/auto-after.png" alt="After" class="img-after">
+            </div>
+            <input type="range" min="0" max="100" value="50" class="slider" id="autoSlider">
+        </div>
+
+        <section class="pricing">
+            <div class="card" onclick="triggerHaptic()">
+                <h3>Single Flip</h3>
+                <h2>$49</h2>
+                <button>Order Now</button>
+            </div>
+            <div class="card highlighted" onclick="triggerHaptic()">
+                <h3>Partner Pack</h3>
+                <h2>$399/mo</h2>
+                <p>10 Monthly Credits</p>
+                <button>Sign Up</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
