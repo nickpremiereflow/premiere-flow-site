@@ -1,54 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: #000; color: #fff; overflow-x: hidden; }
+body { background: #000; color: #fff; overflow-x: hidden; text-align: center; }
 
-nav { padding: 4rem 1rem; text-align: center; }
-.logo { height: 45px; opacity: 0.9; }
+nav { padding: 3rem 1rem; }
+.logo { height: 45px; }
 
-.hero { padding: 2rem 1rem 4rem; text-align: center; max-width: 1000px; margin: 0 auto; }
+.hero { padding: 4rem 1rem 1rem; max-width: 1000px; margin: 0 auto; }
 
-/* CHROME TEXT ANIMATION */
 h1 { 
-    font-size: clamp(2.5rem, 7vw, 4.2rem); 
+    font-size: clamp(2.5rem, 8vw, 4.5rem); 
     font-weight: 900; 
     letter-spacing: -3px;
-    line-height: 1.1;
-    background: linear-gradient(to right, #444 0%, #fff 50%, #444 100%);
+    background: linear-gradient(to right, #4d4d4d 0%, #ffffff 10%, #4d4d4d 20%, #4d4d4d 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 6s linear infinite;
+    animation: shine 5s linear infinite;
+    line-height: 1.1;
 }
 
 @keyframes shine { to { background-position: 200% center; } }
 
-.subtitle { color: #888; margin-top: 1.5rem; font-size: 1.2rem; font-weight: 400; }
+.subtitle { color: #888; margin-top: 1rem; font-size: 1.2rem; font-weight: 400; }
 
-/* SLIDERS - BIG & CENTERED */
-.comparison-wrapper { padding: 3rem 1.5rem; max-width: 1200px; margin: 0 auto; text-align: center; }
-.comparison-wrapper h3 { margin-bottom: 2rem; font-weight: 300; letter-spacing: 5px; text-transform: uppercase; color: #555; font-size: 12px; }
+.split-section {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+    flex-wrap: wrap;
+}
+
+.comparison-wrapper { flex: 1; min-width: 340px; }
+.comparison-wrapper h3 { margin-bottom: 1.5rem; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; color: #555; font-size: 11px; }
 
 .slider-container {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    background: #111;
+    border: 1px solid #1a1a1a;
 }
 
-.img-before, .img-after {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-}
-
-/* Logic Swapped: reveal 'After' image */
+.img-before, .img-after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .img-before { z-index: 2; clip-path: inset(0 0 0 50%); }
-.img-after { z-index: 1; }
 
 .slider {
     position: absolute;
@@ -60,48 +59,35 @@ h1 {
     z-index: 10;
 }
 
-.slider-line {
+.slider-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; z-index: 5; pointer-events: none; }
+
+.slider-handle {
     position: absolute;
-    top: 0; bottom: 0;
-    left: 50%;
-    width: 2px;
-    background: #fff;
-    z-index: 5;
-    pointer-events: none;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center; gap: 4px;
 }
 
-/* PRICING SECTION */
-.pricing { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; padding: 6rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+.slider-handle span { width: 2px; height: 14px; background: #fff; border-radius: 2px; }
 
-.card { 
-    background: #0a0a0a; 
-    border: 1px solid #1a1a1a; 
-    padding: 3rem 2rem; 
-    border-radius: 24px; 
-    width: 360px; 
-    cursor: pointer; 
-    position: relative; 
-    transition: 0.3s;
-    text-align: center;
-}
-
-.card:hover { border-color: #333; }
+.pricing { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; padding: 5rem 1.5rem; }
+.card { background: #080808; border: 1px solid #1a1a1a; padding: 2.5rem; border-radius: 20px; width: 350px; cursor: pointer; position: relative; transition: 0.3s; }
 .card.highlighted { border-color: #fff; }
 
-.price { font-size: 3.5rem; font-weight: 900; margin: 1.5rem 0; letter-spacing: -2px; }
-.currency { font-size: 1.5rem; vertical-align: top; margin-right: 2px; color: #555; }
-.period { font-size: 1rem; color: #555; letter-spacing: 0; }
+.price-row { font-size: 3.5rem; font-weight: 900; margin: 1rem 0 1.5rem; }
+.currency { font-size: 1.5rem; vertical-align: top; color: #555; margin-right: 4px; }
+.period { font-size: 1rem; color: #555; font-weight: 400; }
 
-.badge { 
-    position: absolute; top: -14px; left: 50%; transform: translateX(-50%); 
-    background: #fff; color: #000; padding: 5px 15px; border-radius: 30px; 
-    font-size: 10px; font-weight: 900;
-}
+.badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 4px 14px; border-radius: 20px; font-size: 10px; font-weight: 900; }
 
-.dropdown-content { max-height: 0; overflow: hidden; transition: 0.5s ease; text-align: left; color: #777; font-size: 15px; }
-.dropdown-content.show { max-height: 200px; padding: 1.5rem 0 0; border-top: 1px solid #1a1a1a; margin-top: 1.5rem; }
-.dropdown-content p { margin-bottom: 0.5rem; }
+.dropdown-header { display: flex; justify-content: space-between; align-items: center; color: #444; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; padding-top: 1.5rem; }
+.arrow { width: 8px; height: 8px; border-right: 2px solid #444; border-bottom: 2px solid #444; transform: rotate(45deg); transition: 0.3s; }
+.card.active .arrow { transform: rotate(-135deg); border-color: #fff; }
 
-button { margin-top: 2rem; padding: 1.2rem; width: 100%; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; }
-.highlighted button { background: #fff; color: #000; }
-.card:not(.highlighted) button { background: #1a1a1a; color: #fff; }
+.dropdown-content { max-height: 0; overflow: hidden; transition: 0.4s ease; text-align: left; color: #666; font-size: 14px; }
+.dropdown-content.show { max-height: 200px; padding-top: 1.5rem; }
