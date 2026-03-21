@@ -44,20 +44,17 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: 50%;
-    z-index: 6;
-    pointer-events: none;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Arrows created using border triangles */
 .slider-handle::before, .slider-handle::after {
     content: '';
     position: absolute;
@@ -69,18 +66,17 @@ h1 {
 
 /* Left Arrow */
 .slider-handle::before {
-    left: 10px; /* Adjusted position since lines are gone */
-    border-right: 8px solid rgba(255,255,255,0.8);
+    left: 8px;
+    border-right: 8px solid #fff;
 }
 
 /* Right Arrow */
 .slider-handle::after {
-    right: 10px; /* Adjusted position since lines are gone */
-    border-left: 8px solid rgba(255,255,255,0.8);
+    right: 8px;
+    border-left: 8px solid #fff;
 }
 
-/* (Removed the .slider-handle span styling as it is no longer used) */
-
+/* PRICING SECTION */
 .pricing { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem; padding: 4rem 1.5rem 2rem; }
 .card { background: #080808; border: 1px solid #1a1a1a; padding: 2.5rem; border-radius: 20px; width: 350px; cursor: pointer; position: relative; transition: border 0.3s; }
 .card.highlighted { border-color: #fff; }
@@ -90,19 +86,7 @@ h1 {
 .period { font-size: 1rem; color: #555; font-weight: 400; }
 .card-sub { color: #666; font-size: 0.95rem; line-height: 1.4; min-height: 3rem; margin-bottom: 1.5rem; }
 
-.badge { 
-    position: absolute; 
-    top: -14px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    background: #fff; 
-    color: #000; 
-    padding: 6px 16px; 
-    border-radius: 50px; 
-    font-size: 10px; 
-    font-weight: 900;
-    letter-spacing: 1px;
-}
+.badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 6px 16px; border-radius: 50px; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 
 .dropdown-content ul { list-style: none; padding: 0; }
 .dropdown-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.8rem; color: #888; font-size: 14px; text-align: left; line-height: 1.4; }
@@ -115,6 +99,7 @@ h1 {
 .dropdown-content { max-height: 0; overflow: hidden; transition: 0.4s ease; }
 .dropdown-content.show { max-height: 300px; padding-top: 1.5rem; }
 
+/* GET STARTED BUTTON */
 .cta-area { padding: 2rem 1rem 6rem; position: relative; }
 .get-started-btn {
     background: #fff;
@@ -147,19 +132,7 @@ h1 {
 }
 
 @keyframes externalPulse {
-    0% {
-        border-color: rgba(255, 255, 255, 0.4);
-        transform: scale(1);
-        opacity: 1;
-    }
-    70% {
-        border-color: rgba(255, 255, 255, 0.1);
-        transform: scale(1.15);
-        opacity: 0;
-    }
-    100% {
-        border-color: rgba(255, 255, 255, 0);
-        transform: scale(1);
-        opacity: 0;
-    }
+    0% { border-color: rgba(255, 255, 255, 0.4); transform: scale(1); opacity: 1; }
+    70% { border-color: rgba(255, 255, 255, 0.1); transform: scale(1.15); opacity: 0; }
+    100% { border-color: rgba(255, 255, 255, 0); transform: scale(1); opacity: 0; }
 }
