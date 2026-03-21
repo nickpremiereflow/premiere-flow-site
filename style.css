@@ -8,11 +8,13 @@ nav { padding: 2rem 1rem 1rem; }
 .logo { height: 40px; }
 .hero { padding: 1rem 1rem 1rem; max-width: 1000px; margin: 0 auto; }
 
+/* CHROME TEXT ANIMATION (CORRECTED DIRECTION) */
 h1 { 
     font-size: clamp(2.2rem, 8vw, 4.5rem); 
     font-weight: 900; 
     letter-spacing: -3px;
-    background: linear-gradient(to right, #4d4d4d 0%, #ffffff 10%, #4d4d4d 20%, #4d4d4d 100%);
+    /* Start White, Grey passes through */
+    background: linear-gradient(to left, #fff 0%, #4d4d4d 50%, #fff 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -20,7 +22,11 @@ h1 {
     line-height: 1.1;
 }
 
-@keyframes shine { to { background-position: 200% center; } }
+@keyframes shine {
+    /* Swap direction by starting at 0% and ending at 200% on the horizontal axis */
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
 
 .subtitle { color: #888; margin-top: 0.5rem; font-size: 1.1rem; font-weight: 400; letter-spacing: 1px; }
 
