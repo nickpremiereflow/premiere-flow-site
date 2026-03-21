@@ -4,6 +4,8 @@ function moveSlider(slider, containerId) {
     const line = container.querySelector('.slider-line');
     
     let val = slider.value;
+    
+    // Masking reveals the 'After' image from the LEFT
     afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
     line.style.left = `${val}%`;
 }
