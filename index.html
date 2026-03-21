@@ -15,72 +15,69 @@
     <main>
         <section class="hero">
             <h1>Visual Liquidity for High-Ticket Inventory</h1>
-            <p class="subtitle">Transform stale listings into scroll-stopping assets.</p>
+            <p class="subtitle">Transform stale listings into scroll-stopping assets with cinematic AI staging.</p>
         </section>
 
-        <div class="comparison-wrapper">
-            <h3>Automotive Cinematic Flip</h3>
-            <div class="slider-container" id="auto-container">
-                <img src="auto-after.png" alt="After" class="img-after">
-                <img src="auto-before.png" alt="Before" class="img-before">
-                <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
-                <div class="slider-line"></div>
-                <div class="slider-button"></div>
+        <div class="split-section">
+            <div class="comparison-wrapper">
+                <h3>Automotive Cinematic Flip</h3>
+                <div class="slider-container" id="auto-container">
+                    <img src="auto-after.png" alt="After" class="img-after">
+                    <img src="auto-before.png" alt="Before" class="img-before">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
+                    <div class="slider-line">
+                        <div class="slider-handle"><span></span><span></span></div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="comparison-wrapper">
-            <h3>Real Estate Virtual Staging</h3>
-            <div class="slider-container" id="re-container">
-                <img src="re-after.png" alt="After" class="img-after">
-                <img src="re-before.png" alt="Before" class="img-before">
-                <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 're-container')">
-                <div class="slider-line"></div>
-                <div class="slider-button"></div>
+            <div class="comparison-wrapper">
+                <h3>Real Estate Virtual Staging</h3>
+                <div class="slider-container" id="re-container">
+                    <img src="re-after.png" alt="After" class="img-after">
+                    <img src="re-before.png" alt="Before" class="img-before">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 're-container')">
+                    <div class="slider-line">
+                        <div class="slider-handle"><span></span><span></span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <section class="pricing">
-            <div class="card" onclick="toggleDropdown('drop1')">
+            <div class="card" onclick="toggleDropdown('drop1', this)">
                 <h3>Single Flip</h3>
-                <div class="price">
-                    <span class="currency">$</span>49
-                </div>
+                <div class="price-row"><span class="currency">$</span>49</div>
+                <div class="dropdown-header"><span>View Details</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <p>• 24-Hour Delivery</p>
                     <p>• 1 Cinematic Asset</p>
                     <p>• Full Commercial Rights</p>
                 </div>
-                <button>Order Now</button>
             </div>
 
-            <div class="card highlighted" onclick="toggleDropdown('drop2')">
+            <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">BEST VALUE</div>
                 <h3>Partner Pack</h3>
-                <div class="price">
-                    <span class="currency">$</span>399<span class="period">/mo</span>
-                </div>
+                <div class="price-row"><span class="currency">$</span>399<span class="period">/mo</span></div>
+                <div class="dropdown-header"><span>View Details</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content show">
                     <p>• 10 Monthly Credits</p>
                     <p>• Priority Queue</p>
                     <p>• Dedicated Dashboard</p>
                     <p>• White-Label Delivery</p>
                 </div>
-                <button>Sign Up</button>
             </div>
 
-            <div class="card" onclick="toggleDropdown('drop3')">
+            <div class="card" onclick="toggleDropdown('drop3', this)">
                 <h3>Enterprise</h3>
-                <div class="price">
-                    <span class="currency">$</span>999<span class="period">/mo</span>
-                </div>
+                <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
+                <div class="dropdown-header"><span>View Details</span><div class="arrow"></div></div>
                 <div id="drop3" class="dropdown-content">
                     <p>• Unlimited Credits</p>
                     <p>• Custom AI Training</p>
-                    <p>• API Access</p>
-                    <p>• 24/7 Tech Support</p>
+                    <p>• 24/7 Support</p>
                 </div>
-                <button>Contact Sales</button>
             </div>
         </section>
     </main>
