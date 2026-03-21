@@ -32,15 +32,13 @@ h1 {
 
 .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 1px solid #1a1a1a; }
 .img-before, .img-after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
-/* Before on Left, After on Right. Slider reveals After */
 .img-after { z-index: 2; clip-path: inset(0 0 0 50%); }
 .img-before { z-index: 1; }
 
 .slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; appearance: none; background: transparent; cursor: ew-resize; z-index: 10; }
 .slider-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; z-index: 5; pointer-events: none; }
 
-/* SLIDER HANDLE WITH MOTION ARROWS */
+/* SLIDER HANDLE - ARROWS ONLY */
 .slider-handle {
     position: absolute;
     top: 50%;
@@ -52,15 +50,14 @@ h1 {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.5);
     border-radius: 50%;
+    z-index: 6;
+    pointer-events: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 4px;
 }
 
-.slider-handle span { width: 2px; height: 14px; background: #fff; border-radius: 2px; }
-
-/* Arrow elements */
+/* Arrows created using border triangles */
 .slider-handle::before, .slider-handle::after {
     content: '';
     position: absolute;
@@ -72,15 +69,17 @@ h1 {
 
 /* Left Arrow */
 .slider-handle::before {
-    left: 8px;
-    border-right: 8px solid rgba(255,255,255,0.7);
+    left: 10px; /* Adjusted position since lines are gone */
+    border-right: 8px solid rgba(255,255,255,0.8);
 }
 
 /* Right Arrow */
 .slider-handle::after {
-    right: 8px;
-    border-left: 8px solid rgba(255,255,255,0.7);
+    right: 10px; /* Adjusted position since lines are gone */
+    border-left: 8px solid rgba(255,255,255,0.8);
 }
+
+/* (Removed the .slider-handle span styling as it is no longer used) */
 
 .pricing { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem; padding: 4rem 1.5rem 2rem; }
 .card { background: #080808; border: 1px solid #1a1a1a; padding: 2.5rem; border-radius: 20px; width: 350px; cursor: pointer; position: relative; transition: border 0.3s; }
@@ -117,8 +116,6 @@ h1 {
 .dropdown-content.show { max-height: 300px; padding-top: 1.5rem; }
 
 .cta-area { padding: 2rem 1rem 6rem; position: relative; }
-
-/* MODIFIED GET STARTED BUTTON & PULSE */
 .get-started-btn {
     background: #fff;
     color: #000;
@@ -130,13 +127,12 @@ h1 {
     border-radius: 50px;
     cursor: pointer;
     position: relative;
-    z-index: 2; /* Sits above the external pulse */
+    z-index: 2;
     transition: transform 0.2s ease;
 }
 
 .get-started-btn:hover { transform: scale(1.03); }
 
-/* The color animation sitting outside the button */
 .get-started-btn::after {
     content: '';
     position: absolute;
@@ -145,9 +141,7 @@ h1 {
     width: 100%;
     height: 100%;
     border-radius: 50px;
-    z-index: 1; /* Sits behind the button */
-    
-    /* Transparent border that pulses */
+    z-index: 1;
     border: 2px solid transparent; 
     animation: externalPulse 2s infinite;
 }
@@ -160,7 +154,7 @@ h1 {
     }
     70% {
         border-color: rgba(255, 255, 255, 0.1);
-        transform: scale(1.15); /* Pulse expands outward */
+        transform: scale(1.15);
         opacity: 0;
     }
     100% {
