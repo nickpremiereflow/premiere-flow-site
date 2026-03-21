@@ -4,8 +4,6 @@ function moveSlider(slider, containerId) {
     const line = container.querySelector('.slider-line');
     
     let val = slider.value;
-    
-    // Masking reveals the 'After' image from the LEFT
     afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
     line.style.left = `${val}%`;
 }
@@ -21,6 +19,4 @@ function toggleDropdown(id, cardElement) {
         content.classList.add('show');
         cardElement.classList.add('active');
     }
-    
-    if (navigator.vibrate) navigator.vibrate(20);
 }
