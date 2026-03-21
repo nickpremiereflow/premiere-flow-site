@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiere Flow | Cinematic AI Staging</title>
+    <title>Premiere Flow | Visual Liquidity</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
     <main>
         <section class="hero">
             <h1>Visual Liquidity for High-Ticket Inventory</h1>
-            <p style="color: #888;">Transform stale listings into scroll-stopping assets.</p>
+            <p class="subtitle">Transform stale listings into scroll-stopping assets.</p>
         </section>
 
         <div class="comparison-wrapper">
@@ -25,6 +25,7 @@
                 <img src="auto-before.png" alt="Before" class="img-before">
                 <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
                 <div class="slider-line"></div>
+                <div class="slider-button"></div>
             </div>
         </div>
 
@@ -35,43 +36,47 @@
                 <img src="re-before.png" alt="Before" class="img-before">
                 <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 're-container')">
                 <div class="slider-line"></div>
+                <div class="slider-button"></div>
             </div>
         </div>
 
         <section class="pricing">
             <div class="card" onclick="toggleDropdown('drop1')">
                 <h3>Single Flip</h3>
-                <h2 style="margin: 10px 0;">$49</h2>
+                <div class="price">
+                    <span class="currency">$</span>49
+                </div>
                 <div id="drop1" class="dropdown-content">
                     <p>• 24-Hour Delivery</p>
                     <p>• 1 Cinematic Asset</p>
                     <p>• Full Commercial Rights</p>
-                    <p>• Web-Ready Optimization</p>
                 </div>
                 <button>Order Now</button>
             </div>
 
             <div class="card highlighted" onclick="toggleDropdown('drop2')">
-                <div class="badge">MOST POPULAR</div>
+                <div class="badge">BEST VALUE</div>
                 <h3>Partner Pack</h3>
-                <h2 style="margin: 10px 0;">$399/mo</h2>
+                <div class="price">
+                    <span class="currency">$</span>399<span class="period">/mo</span>
+                </div>
                 <div id="drop2" class="dropdown-content show">
                     <p>• 10 Monthly Credits</p>
                     <p>• Priority Queue</p>
                     <p>• Dedicated Dashboard</p>
                     <p>• White-Label Delivery</p>
-                    <p>• Monthly Strategy Call</p>
                 </div>
                 <button>Sign Up</button>
             </div>
 
             <div class="card" onclick="toggleDropdown('drop3')">
                 <h3>Enterprise</h3>
-                <h2 style="margin: 10px 0;">$999/mo</h2>
+                <div class="price">
+                    <span class="currency">$</span>999<span class="period">/mo</span>
+                </div>
                 <div id="drop3" class="dropdown-content">
                     <p>• Unlimited Credits</p>
-                    <p>• Custom AI Style Training</p>
-                    <p>• Dedicated Retoucher</p>
+                    <p>• Custom AI Training</p>
                     <p>• API Access</p>
                     <p>• 24/7 Tech Support</p>
                 </div>
