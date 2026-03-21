@@ -32,13 +32,55 @@ h1 {
 
 .slider-container { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; border: 1px solid #1a1a1a; }
 .img-before, .img-after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+/* Before on Left, After on Right. Slider reveals After */
 .img-after { z-index: 2; clip-path: inset(0 0 0 50%); }
 .img-before { z-index: 1; }
 
 .slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; appearance: none; background: transparent; cursor: ew-resize; z-index: 10; }
 .slider-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; z-index: 5; pointer-events: none; }
-.slider-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; gap: 4px; }
+
+/* SLIDER HANDLE WITH MOTION ARROWS */
+.slider-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
 .slider-handle span { width: 2px; height: 14px; background: #fff; border-radius: 2px; }
+
+/* Arrow elements */
+.slider-handle::before, .slider-handle::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+}
+
+/* Left Arrow */
+.slider-handle::before {
+    left: 8px;
+    border-right: 8px solid rgba(255,255,255,0.7);
+}
+
+/* Right Arrow */
+.slider-handle::after {
+    right: 8px;
+    border-left: 8px solid rgba(255,255,255,0.7);
+}
 
 .pricing { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 2rem; padding: 4rem 1.5rem 2rem; }
 .card { background: #080808; border: 1px solid #1a1a1a; padding: 2.5rem; border-radius: 20px; width: 350px; cursor: pointer; position: relative; transition: border 0.3s; }
@@ -49,7 +91,6 @@ h1 {
 .period { font-size: 1rem; color: #555; font-weight: 400; }
 .card-sub { color: #666; font-size: 0.95rem; line-height: 1.4; min-height: 3rem; margin-bottom: 1.5rem; }
 
-/* UPDATED MOST POPULAR BADGE */
 .badge { 
     position: absolute; 
     top: -14px; 
@@ -75,7 +116,9 @@ h1 {
 .dropdown-content { max-height: 0; overflow: hidden; transition: 0.4s ease; }
 .dropdown-content.show { max-height: 300px; padding-top: 1.5rem; }
 
-.cta-area { padding: 2rem 1rem 6rem; }
+.cta-area { padding: 2rem 1rem 6rem; position: relative; }
+
+/* MODIFIED GET STARTED BUTTON & PULSE */
 .get-started-btn {
     background: #fff;
     color: #000;
@@ -86,13 +129,43 @@ h1 {
     letter-spacing: 2px;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 0 20px rgba(255,255,255,0.2);
-    animation: pulse 2s infinite;
+    position: relative;
+    z-index: 2; /* Sits above the external pulse */
     transition: transform 0.2s ease;
 }
 
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(255,255,255,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+.get-started-btn:hover { transform: scale(1.03); }
+
+/* The color animation sitting outside the button */
+.get-started-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    z-index: 1; /* Sits behind the button */
+    
+    /* Transparent border that pulses */
+    border: 2px solid transparent; 
+    animation: externalPulse 2s infinite;
+}
+
+@keyframes externalPulse {
+    0% {
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: scale(1);
+        opacity: 1;
+    }
+    70% {
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: scale(1.15); /* Pulse expands outward */
+        opacity: 0;
+    }
+    100% {
+        border-color: rgba(255, 255, 255, 0);
+        transform: scale(1);
+        opacity: 0;
+    }
 }
