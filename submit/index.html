@@ -3,45 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiere Flow | Submit Listing</title>
+    <title>Premiere Flow | Submit Production</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     <style>
         :root { --bg-black: #000; --card-bg: #080808; --border-color: #1a1a1a; --accent-white: #ffffff; }
-        body { margin: 0; padding: 0 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        .submit-form { width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; text-align: center; }
-        h1 { font-weight: 900; font-size: 1.5rem; margin-bottom: 30px; letter-spacing: -1px; }
-        label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #555; margin: 20px 0 10px 0; text-align: left; }
-        input[type="text"], select { width: 100%; padding: 15px; background: #000; border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }
-        input:focus { border-color: #fff; }
-        .submit-btn { width: 100%; margin-top: 30px; background: #fff; color: #000; border: none; padding: 15px; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .submit-btn:hover { transform: scale(1.02); opacity: 0.9; }
+        body { margin: 0; padding: 40px 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .submit-form { width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
+        h1 { font-weight: 900; font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
+        .status-pill { background: #111; padding: 8px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; color: #555; display: inline-block; margin-bottom: 30px; border: 1px solid var(--border-color); }
+        label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #555; margin: 25px 0 10px 0; }
+        input, select, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }
+        textarea { height: 100px; resize: none; }
+        .hidden { display: none; }
+        .submit-btn { width: 100%; margin-top: 30px; background: #fff; color: #000; border: none; padding: 18px; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
     <div class="submit-form">
-        <h1>SUBMIT LISTING</h1>
-        <form id="listingForm">
+        <h1>PRODUCTION QUEUE</h1>
+        <center><div class="status-pill" id="status-display">ENTER ID TO START</div></center>
+
+        <form id="productionForm">
             <label>Partner ID / Access Code</label>
-            <input type="text" id="partnerId" placeholder="PF-XXXX" required>
+            <input type="text" id="partnerId" placeholder="PF-XXXX" required onblur="checkId()">
 
-            <label>Industry</label>
-            <select id="industry">
-                <option value="real-estate">Real Estate</option>
-                <option value="auto">Automotive</option>
-            </select>
+            <div id="core-fields" class="hidden">
+                <label>Listing Link (Zillow/VIN/Google Drive)</label>
+                <input type="text" id="listingData" placeholder="Paste link here..." required>
 
-            <label>Listing Link or Address</label>
-            <input type="text" id="listingData" placeholder="Paste link here..." required>
+                <label>Industry</label>
+                <select id="industry">
+                    <option value="real-estate">Real Estate</option>
+                    <option value="auto">Automotive</option>
+                </select>
 
-            <button type="submit" class="submit-btn">Send to Production</button>
+                <div id="branding-section" class="hidden">
+                    <label>Logo Upload Link (Dropbox/Drive)</label>
+                    <input type="text" id="logoLink" placeholder="Link to your logo file...">
+                    
+                    <label>Branding Notes</label>
+                    <textarea id="brandNotes" placeholder="Special instructions for watermarks or style..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Send to Production</button>
+            </div>
         </form>
     </div>
 
     <script>
-        document.getElementById('listingForm').addEventListener('submit', function(e) {
+        async function checkId() {
+            const id = document.getElementById('partnerId').value;
+            const status = document.getElementById('status-display');
+            const core = document.getElementById('core-fields');
+            const branding = document.getElementById('branding-section');
+
+            // This fetch would hit your Make.com 'Verification' Webhook
+            // For now, we simulate the logic:
+            if(id.startsWith('PF-')) {
+                status.innerText = "ID VERIFIED";
+                status.style.color = "#fff";
+                core.classList.remove('hidden');
+                
+                // Logic: If ID contains 'B' or 'P' or 'U' (Branding/Partner/Unlimited), show branding
+                if(id.includes('B') || id.includes('P') || id.includes('U')) {
+                    branding.classList.remove('hidden');
+                }
+            } else {
+                status.innerText = "INVALID ID";
+                status.style.color = "#ff4444";
+            }
+        }
+
+        document.getElementById('productionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            // This is where you would link to your Make.com Webhook
-            alert("Submission Received. Checking credits for " + document.getElementById('partnerId').value + "...");
+            alert("Sent! Our editors are now working on this listing.");
         });
     </script>
 </body>
