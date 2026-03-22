@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premiere Flow | Submit Listing</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
+    <style>
+        :root { --bg-black: #000; --card-bg: #080808; --border-color: #1a1a1a; --accent-white: #ffffff; }
+        body { margin: 0; padding: 0 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .submit-form { width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; text-align: center; }
+        h1 { font-weight: 900; font-size: 1.5rem; margin-bottom: 30px; letter-spacing: -1px; }
+        label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #555; margin: 20px 0 10px 0; text-align: left; }
+        input[type="text"], select { width: 100%; padding: 15px; background: #000; border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }
+        input:focus { border-color: #fff; }
+        .submit-btn { width: 100%; margin-top: 30px; background: #fff; color: #000; border: none; padding: 15px; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .submit-btn:hover { transform: scale(1.02); opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="submit-form">
+        <h1>SUBMIT LISTING</h1>
+        <form id="listingForm">
+            <label>Partner ID / Access Code</label>
+            <input type="text" id="partnerId" placeholder="PF-XXXX" required>
+
+            <label>Industry</label>
+            <select id="industry">
+                <option value="real-estate">Real Estate</option>
+                <option value="auto">Automotive</option>
+            </select>
+
+            <label>Listing Link or Address</label>
+            <input type="text" id="listingData" placeholder="Paste link here..." required>
+
+            <button type="submit" class="submit-btn">Send to Production</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('listingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // This is where you would link to your Make.com Webhook
+            alert("Submission Received. Checking credits for " + document.getElementById('partnerId').value + "...");
+        });
+    </script>
+</body>
+</html>
