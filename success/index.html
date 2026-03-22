@@ -13,7 +13,8 @@
         p { color: #888; line-height: 1.6; margin-bottom: 30px; }
         .access-notice { background: #111; padding: 25px; border-radius: 12px; font-size: 14px; border-left: 3px solid #fff; text-align: left; margin-bottom: 30px; }
         .access-notice strong { color: #fff; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
-        .btn-home { background: #fff; color: #000; text-decoration: none; padding: 15px 40px; border-radius: 50px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-submit { background: #fff; color: #000; text-decoration: none; padding: 18px 40px; border-radius: 50px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; display: inline-block; }
+        .btn-submit:hover { transform: scale(1.05); }
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
     </style>
@@ -21,34 +22,14 @@
 <body>
     <div class="success-card">
         <h1 class="shimmer">ORDER SECURED.</h1>
-        <p id="sub-msg">Your listing is now in the production queue.</p>
+        <p>Your access is now active. Your unique **Partner ID** has been sent to your email.</p>
         
         <div class="access-notice">
-            <strong id="step-title">NEXT STEPS:</strong>
-            <span id="step-text">Check your email. We’ve sent a confirmation and a temporary access code to your portal.</span>
+            <strong>WHAT'S NEXT?</strong>
+            Once you have your ID from your email, click the button below to submit your listing links, logo files, and branding instructions.
         </div>
 
-        <a href="../" class="btn-home">Return to Site</a>
+        <a href="../submit" class="btn-submit">GO TO PRODUCTION QUEUE →</a>
     </div>
-
-    <script>
-        // Get the plan from the URL (e.g., success?plan=partner)
-        const params = new URLSearchParams(window.location.search);
-        const plan = params.get('plan');
-
-        const subMsg = document.getElementById('sub-msg');
-        const stepTitle = document.getElementById('step-title');
-        const stepText = document.getElementById('step-text');
-
-        if (plan === 'partner') {
-            subMsg.innerText = "You've successfully secured 10 Listing Upgrades.";
-            stepTitle.innerText = "YOUR PARTNER CREDITS:";
-            stepText.innerText = "Check your email for your unique Partner ID. Use this ID for your next 10 submissions to bypass payment.";
-        } else if (plan === 'unlimited') {
-            subMsg.innerText = "Welcome to the inner circle. Unlimited Flow is now active.";
-            stepTitle.innerText = "VIP ONBOARDING:";
-            stepText.innerText = "Your dedicated account manager will contact you within 2 hours to set up your priority workflow.";
-        }
-    </script>
 </body>
 </html>
