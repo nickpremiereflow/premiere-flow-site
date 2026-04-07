@@ -58,10 +58,12 @@
             </div>
 
             <div class="pkg-card" onclick="handleSelection('partner', this)">
-                <span class="pkg-title">$399 — The Partner Pack</span>
+                <span class="pkg-title">$349 — The Partner Pack</span>
                 <ul class="pkg-list">
                     <li>10 Listing Upgrades / Month</li>
                     <li>10 High-Res Photos Per Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
                     <li>Branding & Logos Included</li>
                 </ul>
             </div>
@@ -70,8 +72,10 @@
                 <span class="pkg-title">$999 — Unlimited Flow</span>
                 <ul class="pkg-list">
                     <li>Unlimited Listings / Month</li>
+                    <li>12 High-Res Photos Per Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
                     <li>Branding & Logos Included</li>
-                    <li>Priority Queue-Jump Processing</li>
                 </ul>
             </div>
         </div>
@@ -81,7 +85,9 @@
     <script>
         function handleSelection(plan, element) {
             const details = document.getElementById('listing-data').value;
-            const brandingChecked = document.getElementById('branding-check').checked;
+            const brandingCheck = document.getElementById('branding-check');
+            const brandingChecked = brandingCheck ? brandingCheck.checked : false;
+            
             document.querySelectorAll('.pkg-card').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
@@ -90,7 +96,7 @@
                 return;
             }
 
-            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$399" : "$999");
+            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
             alert("Redirecting to Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
         }
     </script>
