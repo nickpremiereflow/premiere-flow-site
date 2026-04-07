@@ -25,6 +25,8 @@
         .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; opacity: 0.8; }
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+        .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .footer-spacer { height: 100px; }
     </style>
 </head>
@@ -35,35 +37,41 @@
     </div>
 
     <div class="signup-form">
-        <label>1. Vehicle VIN or Listing URL</label>
+        <label>1. Vehicle Link or VIN</label>
         <input type="text" id="listing-data" placeholder="Paste Cars.com link or VIN here...">
 
-        <label style="margin-top: 40px;">2. Select Plan to Secure Showroom Upgrade</label>
+        <label style="margin-top: 40px;">2. Select Plan to Secure Staging</label>
         <div class="pkg-grid">
-            <div class="pkg-card" onclick="handleSelection('solo', this)">
-                <span class="pkg-title shimmer">$49 — The Solo Detail</span>
+            <div class="pkg-card" onclick="handleSelection('upgrade', this)">
+                <span class="pkg-title shimmer">$49 — The Upgrade</span>
                 <ul class="pkg-list">
-                    <li>12 High-Res Multi-Angle Renders</li>
-                    <li>Paint Correction & Gloss Enhancement</li>
-                    <li>Studio Showroom Background Replacement</li>
+                    <li>10 High-Res Photos for 1 Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
                 </ul>
+                <div class="addon-section" onclick="event.stopPropagation()">
+                    <label class="addon-label">
+                        <input type="checkbox" id="branding-check"> 
+                        <span>Add Personal Branding & Logos (+$20)</span>
+                    </label>
+                </div>
             </div>
 
-            <div class="pkg-card" onclick="handleSelection('inventory', this)">
-                <span class="pkg-title">$399 — The Inventory Pack</span>
+            <div class="pkg-card" onclick="handleSelection('partner', this)">
+                <span class="pkg-title">$399 — The Partner Pack</span>
                 <ul class="pkg-list">
-                    <li>10 Vehicle Refinements</li>
-                    <li>12 High-Res Photos Per Unit</li>
-                    <li>Dealership Logo Watermarking Included</li>
+                    <li>10 Listing Upgrades / Month</li>
+                    <li>10 High-Res Photos Per Listing</li>
+                    <li>Branding & Logos Included</li>
                 </ul>
             </div>
 
             <div class="pkg-card" onclick="handleSelection('unlimited', this)">
-                <span class="pkg-title">$999 — Unlimited Showroom</span>
+                <span class="pkg-title">$999 — Unlimited Flow</span>
                 <ul class="pkg-list">
-                    <li>Unlimited Monthly Inventory</li>
-                    <li>OEM-Style Studio Environment</li>
-                    <li>Priority Processing & Dedicated Support</li>
+                    <li>Unlimited Listings / Month</li>
+                    <li>Branding & Logos Included</li>
+                    <li>Priority Queue-Jump Processing</li>
                 </ul>
             </div>
         </div>
@@ -73,6 +81,7 @@
     <script>
         function handleSelection(plan, element) {
             const details = document.getElementById('listing-data').value;
+            const brandingChecked = document.getElementById('branding-check').checked;
             document.querySelectorAll('.pkg-card').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
@@ -81,7 +90,7 @@
                 return;
             }
 
-            let price = plan === 'solo' ? "$49" : (plan === 'inventory' ? "$399" : "$999");
+            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$399" : "$999");
             alert("Redirecting to Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
         }
     </script>
