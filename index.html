@@ -37,7 +37,7 @@
             width: 100%;
             overflow: hidden;
             line-height: 0;
-            border-radius: 4px; /* Optional: matches elite aesthetic */
+            border-radius: 4px;
         }
 
         .img-after {
@@ -55,7 +55,6 @@
             height: 100%;
             z-index: 2;
             object-fit: contain;
-            /* Anchors the image so it doesn't magnify when sliding */
             clip-path: inset(0 50% 0 0); 
         }
 
@@ -72,6 +71,16 @@
             margin: 0;
             z-index: 10;
             cursor: ew-resize;
+        }
+
+        /* Brightened Footer Line */
+        .footer-questions {
+            color: #888888; /* Significantly brighter gray */
+            font-size: 11px;
+            margin-top: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
         }
     </style>
 </head>
@@ -174,7 +183,7 @@
             <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
                 <button class="get-started-btn" type="button">GET STARTED</button>
             </a>
-            <p style="color: #333; font-size: 11px; margin-top: 30px; letter-spacing: 1px; text-transform: uppercase;">Questions? info@premiereflow.com</p>
+            <p class="footer-questions">Questions? info@premiereflow.com</p>
         </section>
     </main>
 
@@ -184,7 +193,6 @@
             const img = document.getElementById(imgId);
             const line = document.getElementById(lineId);
             
-            // Core fix: Clip-path reveals instead of resizing the container
             img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             line.style.left = val + "%";
         }
@@ -192,7 +200,6 @@
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
             const allDropdowns = document.querySelectorAll('.dropdown-content');
-            const allArrows = document.querySelectorAll('.arrow');
 
             allDropdowns.forEach(drop => {
                 if (drop.id !== id) drop.style.display = 'none';
