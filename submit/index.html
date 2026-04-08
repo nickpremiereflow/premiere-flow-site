@@ -149,7 +149,9 @@
         .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
-        .hidden-tier-field { display: none; }
+        
+        /* The Branding Fields start hidden */
+        #branding-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
     </style>
 </head>
 <body>
@@ -190,7 +192,7 @@
                 <input type="text" name="photoFolder" placeholder="Link to raw assets">
             </div>
 
-            <div id="branding-fields" class="hidden-tier-field">
+            <div id="branding-fields">
                 <div class="form-group">
                     <label>Logo Files (for Watermarks)</label>
                     <input type="text" name="logoFiles" placeholder="Link to PNG/SVG logos">
@@ -201,7 +203,7 @@
                 </div>
             </div>
 
-            <button type="submit" id="submit-btn">Submit for Production</button>
+            <button type="submit" id="submit-btn" style="margin-top: 20px;">Submit for Production</button>
         </form>
     </div>
 
@@ -277,11 +279,10 @@
             if (data.status === 'success') {
                 const roundedCredits = Math.round(data.credits);
 
-                // CHECK FOR ZERO CREDITS
                 if (roundedCredits <= 0) {
                     errorMsg.innerHTML = "0 credits remaining. Please purchase a refill to submit new inventory.<br><br>Visit <a href='https://premiereflow.com/sign-up' style='color: white;'>premiereflow.com/sign-up</a>";
                     errorMsg.style.display = 'block';
-                    return; // Stop here
+                    return;
                 }
 
                 document.getElementById('validation-stage').style.display = 'none';
@@ -293,9 +294,16 @@
                 document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
                 document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
                 
-                if (data.tier !== 'Upgrade') {
-                    document.getElementById('branding-fields').style.display = 'block';
+                // TIER-BASED FIELD UNLOCKING LOGIC
+                const brandingFields = document.getElementById('branding-fields');
+                const premiumTiers = ['Unlimited', 'Partner', 'Upgrade Plus'];
+                
+                if (premiumTiers.includes(data.tier)) {
+                    brandingFields.style.display = 'block';
+                } else {
+                    brandingFields.style.display = 'none';
                 }
+
             } else {
                 errorMsg.innerHTML = "Account ID not found. Please check your welcome email for account number.<br><br>If problem persists please email info@premiereflow.com";
                 errorMsg.style.display = 'block';
