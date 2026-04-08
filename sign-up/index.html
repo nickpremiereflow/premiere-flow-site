@@ -8,14 +8,54 @@
     <style>
         :root { --bg-black: #000; --card-bg: #080808; --border-color: #1a1a1a; --accent-white: #ffffff; }
         body { margin: 0; padding: 0 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
         .header-container { margin-top: 40px; text-align: center; width: 100%; max-width: 850px; }
-        .logo-img { height: 40px; margin-bottom: 25px; }
+        .logo-img { height: 40px; margin-bottom: 15px; }
         .btn-back { display: inline-block; background: transparent; color: #555; text-decoration: none; padding: 8px 0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; }
         .btn-back:hover { color: #fff; }
-        .signup-form { width: 100%; max-width: 800px; margin-top: 20px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
-        label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: #555; margin: 25px 0 12px 5px; text-align: left; }
-        input[type="text"] { width: 100%; padding: 18px; background: #000; border: 1px solid var(--border-color); border-radius: 12px; font-size: 16px; color: #fff; outline: none; box-sizing: border-box; transition: border-color 0.3s; }
-        input[type="text"]:focus { border-color: #fff; }
+
+        /* Step Instruction Header Styling */
+        .instructions-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            text-align: left;
+        }
+        .step {
+            border-left: 1px solid #222;
+            padding-left: 15px;
+        }
+        .step-num {
+            display: block;
+            font-size: 10px;
+            font-weight: 900;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .step-text {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #888;
+        }
+
+        .signup-form { width: 100%; max-width: 800px; margin-top: 40px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
+        
+        .section-label { 
+            display: block; 
+            font-size: 11px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            color: #555; 
+            margin-bottom: 25px; 
+            text-align: center; 
+        }
+
         .pkg-card { background: #000; border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; margin-bottom: 20px; cursor: pointer; text-align: left; transition: 0.3s; position: relative; }
         .pkg-card:hover { border-color: #444; }
         .pkg-card.selected { border-color: #fff; }
@@ -23,10 +63,13 @@
         .pkg-list { list-style: none; padding: 0; margin: 0; }
         .pkg-list li { font-size: 0.95rem; color: #888; margin-bottom: 8px; display: flex; align-items: center; }
         .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; opacity: 0.8; }
+        
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+        
         .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        
         .footer-spacer { height: 100px; }
     </style>
 </head>
@@ -36,11 +79,28 @@
         <a href="../" class="btn-back">← Back to Home</a>
     </div>
 
-    <div class="signup-form">
-        <label>1. Vehicle Link or VIN</label>
-        <input type="text" id="listing-data" placeholder="Paste Cars.com link or VIN here...">
+    <div class="instructions-container">
+        <div class="step">
+            <span class="step-num">Step 01</span>
+            <span class="step-text">Select your package and complete secure checkout.</span>
+        </div>
+        <div class="step">
+            <span class="step-num">Step 02</span>
+            <span class="step-text">Receive your Unique Account ID and Portal Access Link.</span>
+        </div>
+        <div class="step">
+            <span class="step-num">Step 03</span>
+            <span class="step-text">Submit your inventory assets via your dedicated portal.</span>
+        </div>
+        <div class="step">
+            <span class="step-num">Step 04</span>
+            <span class="step-text">Receive showroom-ready photos directly to your email.</span>
+        </div>
+    </div>
 
-        <label style="margin-top: 40px;">2. Select Plan to Secure Staging</label>
+    <div class="signup-form">
+        <span class="section-label">Select Plan to Secure Staging</span>
+        
         <div class="pkg-grid">
             <div class="pkg-card" onclick="handleSelection('upgrade', this)">
                 <span class="pkg-title shimmer">$49 — The Upgrade</span>
@@ -80,24 +140,25 @@
             </div>
         </div>
     </div>
+    
     <div class="footer-spacer"></div>
 
     <script>
         function handleSelection(plan, element) {
-            const details = document.getElementById('listing-data').value;
             const brandingCheck = document.getElementById('branding-check');
             const brandingChecked = brandingCheck ? brandingCheck.checked : false;
             
             document.querySelectorAll('.pkg-card').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
-            if(!details) {
-                alert("Please provide vehicle details first.");
-                return;
-            }
-
             let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
-            alert("Redirecting to Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
+            
+            // This is where your Stripe redirect logic will go
+            console.log("Redirecting to Checkout...");
+            console.log("Total: " + price);
+            console.log("Plan: " + plan.toUpperCase());
+            
+            alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
         }
     </script>
 </body>
