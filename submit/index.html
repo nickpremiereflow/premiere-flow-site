@@ -116,7 +116,6 @@
             line-height: 1.5;
         }
 
-        /* Submission Portal - Hidden initially */
         #submission-portal {
             display: none;
             animation: fadeInUp 0.6s ease-out;
@@ -188,6 +187,7 @@
 
         <form id="inventory-form" action="https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso" method="POST">
             <input type="hidden" id="hidden-id" name="accountID">
+            <input type="hidden" id="hidden-tier" name="tier">
             
             <div class="form-group">
                 <label>Inventory / Listing Link</label>
@@ -250,11 +250,13 @@
                 document.getElementById('validation-stage').style.display = 'none';
                 document.getElementById('submission-portal').style.display = 'block';
                 document.getElementById('error-message').style.display = 'none';
+                
+                // POPULATE HIDDEN FIELDS
                 document.getElementById('hidden-id').value = id;
+                document.getElementById('hidden-tier').value = data.tier;
                 
+                // DISPLAY PERSONALIZED DATA
                 document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
-                
-                // Strip decimals for display
                 const roundedCredits = Math.round(data.credits);
                 document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
                 
