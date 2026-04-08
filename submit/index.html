@@ -25,7 +25,6 @@
             min-height: 100vh;
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -55,7 +54,6 @@
             font-size: 1.1rem;
             margin-bottom: 30px;
             text-align: center;
-            color: #fff;
         }
 
         .form-group {
@@ -88,7 +86,6 @@
             border-color: #444;
             outline: none;
             background: #111;
-            box-shadow: 0 0 20px rgba(255,255,255,0.02);
         }
 
         button {
@@ -116,15 +113,15 @@
             margin-top: 20px;
             text-align: center;
             display: none;
+            line-height: 1.5;
         }
 
-        /* Submission Portal - Hidden by default */
+        /* Submission Portal - Hidden initially */
         #submission-portal {
             display: none;
             animation: fadeInUp 0.6s ease-out;
         }
 
-        /* Account Header Styles */
         #account-header {
             text-align: center;
             margin-bottom: 40px;
@@ -176,7 +173,7 @@
         <h2>Unlock Portal</h2>
         <div class="form-group">
             <label for="account-id">Account ID</label>
-            <input type="text" id="account-id" placeholder="PF-XXXX-XXXX" required>
+            <input type="text" id="account-id" placeholder="PF-XXXX-XXXX">
         </div>
         <button onclick="validateID()">Unlock Submission Portal</button>
         <p id="error-message"></p>
@@ -194,22 +191,22 @@
             
             <div class="form-group">
                 <label>Inventory / Listing Link</label>
-                <input type="url" name="listingUrl" placeholder="https://www.dealership.com/car-link" required>
+                <input type="text" name="listingUrl" placeholder="dealership.com/car-link">
             </div>
 
             <div class="form-group">
                 <label>Photo Folder (Dropbox/Drive)</label>
-                <input type="url" name="photoFolder" placeholder="Link to raw assets" required>
+                <input type="text" name="photoFolder" placeholder="Link to raw assets">
             </div>
 
             <div id="branding-fields" class="hidden-tier-field">
                 <div class="form-group">
                     <label>Logo Files (for Watermarks)</label>
-                    <input type="url" name="logoFiles" placeholder="Link to PNG/SVG logos">
+                    <input type="text" name="logoFiles" placeholder="Link to PNG/SVG logos">
                 </div>
                 <div class="form-group">
                     <label>Branding Notes</label>
-                    <textarea name="brandingNotes" rows="3" placeholder="Specify overlay placement or custom requests..."></textarea>
+                    <textarea name="brandingNotes" rows="3" placeholder="Specific instructions..."></textarea>
                 </div>
             </div>
 
@@ -219,6 +216,22 @@
 </div>
 
 <script>
+    // 1. VALIDATION FOR FORM SUBMISSION
+    document.getElementById('inventory-form').addEventListener('submit', function(e) {
+        const listing = document.querySelector('input[name="listingUrl"]').value.trim();
+        const folder = document.querySelector('input[name="photoFolder"]').value.trim();
+        const errorMsg = document.getElementById('error-message');
+
+        if (!listing && !folder) {
+            e.preventDefault(); 
+            errorMsg.innerText = "Please provide either a Listing Link or a Photo Folder to proceed.";
+            errorMsg.style.display = 'block';
+        } else {
+            errorMsg.style.display = 'none';
+        }
+    });
+
+    // 2. BOUNCER VALIDATION (UNLOCK)
     async function validateID() {
         const id = document.getElementById('account-id').value;
         const errorMsg = document.getElementById('error-message');
@@ -234,24 +247,22 @@
             const data = await response.json();
 
             if (data.status === 'success') {
-                // Transition UI
                 document.getElementById('validation-stage').style.display = 'none';
                 document.getElementById('submission-portal').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
                 document.getElementById('hidden-id').value = id;
                 
-                // Set Personalized Data
                 document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
                 
-                // Decimal-free Credits
+                // Strip decimals for display
                 const roundedCredits = Math.round(data.credits);
                 document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
                 
-                // Show branding fields based on tier
                 if (data.tier !== 'Upgrade') {
                     document.getElementById('branding-fields').style.display = 'block';
                 }
             } else {
-                errorMsg.innerText = data.message;
+                errorMsg.innerText = data.message || "Invalid Account ID.";
                 errorMsg.style.display = 'block';
             }
         } catch (error) {
