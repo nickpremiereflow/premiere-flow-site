@@ -44,7 +44,6 @@
 
         .logo-header img {
             width: 180px;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.05));
         }
 
         h2 {
@@ -82,12 +81,6 @@
             transition: var(--transition);
         }
 
-        input:focus {
-            border-color: #444;
-            outline: none;
-            background: #111;
-        }
-
         button {
             width: 100%;
             padding: 18px;
@@ -113,12 +106,34 @@
             margin-top: 20px;
             text-align: center;
             display: none;
-            line-height: 1.5;
         }
 
-        #submission-portal {
+        #submission-portal, #success-view {
             display: none;
             animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Success View Styling */
+        .success-icon {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #888;
+            text-align: center;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
 
         #account-header {
@@ -130,35 +145,10 @@
             border-radius: 12px;
         }
 
-        .owner-label {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #555;
-            margin-bottom: 8px;
-        }
-
-        #owner-display {
-            font-size: 1.5rem;
-            font-weight: 400;
-            letter-spacing: 1px;
-            color: #fff;
-            margin-bottom: 15px;
-        }
-
-        #credits-display {
-            font-size: 11px;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-top: 1px solid #1a1a1a;
-            display: inline-block;
-            padding-top: 15px;
-        }
-
-        .hidden-tier-field {
-            display: none;
-        }
+        .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
+        #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
+        #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
+        .hidden-tier-field { display: none; }
     </style>
 </head>
 <body>
@@ -185,7 +175,7 @@
             <div id="credits-display">0 Credits Remaining</div>
         </div>
 
-        <form id="inventory-form" action="https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso" method="POST">
+        <form id="inventory-form">
             <input type="hidden" id="hidden-id" name="accountID">
             <input type="hidden" id="hidden-tier" name="tier">
             
@@ -210,24 +200,61 @@
                 </div>
             </div>
 
-            <button type="submit">Submit for Production</button>
+            <button type="submit" id="submit-btn">Submit for Production</button>
         </form>
+    </div>
+
+    <div id="success-view">
+        <div class="success-icon">✦</div>
+        <div class="success-title">Submission Received</div>
+        <p class="success-message">
+            Your inventory has been queued for production. Our AI engine is currently processing your assets. You will receive an email once the branded media is ready for review.
+        </p>
+        <button onclick="location.reload()">Submit Another Vehicle</button>
     </div>
 </div>
 
 <script>
-    // 1. VALIDATION FOR FORM SUBMISSION
-    document.getElementById('inventory-form').addEventListener('submit', function(e) {
+    // 1. HANDLE FORM SUBMISSION TO MAKE.COM
+    document.getElementById('inventory-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
         const listing = document.querySelector('input[name="listingUrl"]').value.trim();
         const folder = document.querySelector('input[name="photoFolder"]').value.trim();
         const errorMsg = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
 
         if (!listing && !folder) {
-            e.preventDefault(); 
-            errorMsg.innerText = "Please provide either a Listing Link or a Photo Folder to proceed.";
+            errorMsg.innerText = "Please provide either a Listing Link or a Photo Folder.";
             errorMsg.style.display = 'block';
-        } else {
-            errorMsg.style.display = 'none';
+            return;
+        }
+
+        // Change button state
+        submitBtn.innerText = "Processing...";
+        submitBtn.disabled = true;
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                document.getElementById('submission-portal').style.display = 'none';
+                document.getElementById('success-view').style.display = 'block';
+            } else {
+                throw new Error('Submission failed');
+            }
+        } catch (error) {
+            submitBtn.innerText = "Submit for Production";
+            submitBtn.disabled = false;
+            errorMsg.innerText = "Submission failed. Please try again.";
+            errorMsg.style.display = 'block';
         }
     });
 
@@ -251,12 +278,10 @@
                 document.getElementById('submission-portal').style.display = 'block';
                 document.getElementById('error-message').style.display = 'none';
                 
-                // POPULATE HIDDEN FIELDS
                 document.getElementById('hidden-id').value = id;
                 document.getElementById('hidden-tier').value = data.tier;
-                
-                // DISPLAY PERSONALIZED DATA
                 document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
+                
                 const roundedCredits = Math.round(data.credits);
                 document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
                 
