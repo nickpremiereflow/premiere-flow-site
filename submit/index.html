@@ -106,6 +106,7 @@
             margin-top: 20px;
             text-align: center;
             display: none;
+            line-height: 1.5;
         }
 
         #submission-portal, #success-view {
@@ -208,7 +209,7 @@
         <div class="success-icon">✦</div>
         <div class="success-title">Submission Received</div>
         <p class="success-message">
-            Your inventory has been queued for production. Our AI engine is currently processing your assets. You will receive an email once the branded media is ready for review.
+            Your inventory has been queued for production. Our team is now reviewing your assets to ensure brand alignment. You will receive an email once your high-fidelity media is ready for review.
         </p>
         <button onclick="location.reload()">Submit Another Vehicle</button>
     </div>
@@ -230,8 +231,7 @@
             return;
         }
 
-        // Change button state
-        submitBtn.innerText = "Processing...";
+        submitBtn.innerText = "Securing Assets...";
         submitBtn.disabled = true;
 
         const formData = new FormData(this);
@@ -247,6 +247,7 @@
             if (response.ok) {
                 document.getElementById('submission-portal').style.display = 'none';
                 document.getElementById('success-view').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
             } else {
                 throw new Error('Submission failed');
             }
