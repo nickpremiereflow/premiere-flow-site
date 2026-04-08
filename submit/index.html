@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Inventory | Premiere Flow</title>
+    <link rel="stylesheet" href="../style.css">
     <style>
         :root {
-            --primary-black: #0a0a0a;
-            --accent-gold: #c5a059; /* Optional accent or stick to white/grey for minimalist */
+            --primary-black: #000000;
+            --accent-gold: #c5a059;
             --bg-dark: #000000;
             --text-white: #ffffff;
-            --input-bg: #1a1a1a;
+            --input-bg: #0a0a0a;
+            --transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-white);
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -24,75 +25,139 @@
             min-height: 100vh;
         }
 
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .submit-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             padding: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo-header {
             text-align: center;
+            margin-bottom: 50px;
         }
 
         .logo-header img {
             width: 180px;
-            margin-bottom: 40px;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.05));
         }
 
         h2 {
             font-weight: 300;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             text-transform: uppercase;
+            font-size: 1.1rem;
             margin-bottom: 30px;
+            text-align: center;
+            color: #fff;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: left;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 10px;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            color: #888;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: #666;
         }
 
         input, textarea {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: var(--input-bg);
-            border: 1px solid #333;
+            border: 1px solid #1a1a1a;
             border-radius: 4px;
             color: white;
             box-sizing: border-box;
-            font-size: 16px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            border-color: #444;
+            outline: none;
+            background: #111;
+            box-shadow: 0 0 20px rgba(255,255,255,0.02);
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 18px;
             background: white;
             color: black;
             border: none;
             border-radius: 4px;
-            font-weight: bold;
+            font-weight: 900;
             text-transform: uppercase;
+            letter-spacing: 2px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: var(--transition);
         }
 
         button:hover {
-            background: #ccc;
+            background: #e0e0e0;
+            transform: translateY(-2px);
         }
 
         #error-message {
             color: #ff4d4d;
-            font-size: 14px;
-            margin-top: 15px;
+            font-size: 13px;
+            margin-top: 20px;
+            text-align: center;
             display: none;
         }
 
+        /* Submission Portal - Hidden by default */
         #submission-portal {
-            display: none; /* Hidden until ID is validated */
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Account Header Styles */
+        #account-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #050505;
+            border: 1px solid #111;
+            border-radius: 12px;
+        }
+
+        .owner-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        #owner-display {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        #credits-display {
+            font-size: 11px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-top: 1px solid #1a1a1a;
+            display: inline-block;
+            padding-top: 15px;
         }
 
         .hidden-tier-field {
@@ -118,15 +183,18 @@
     </div>
 
     <div id="submission-portal">
-        <h2 id="status-heading">Access Granted</h2>
-        <p id="credits-remaining" style="color: #888; margin-bottom: 30px;"></p>
+        <div id="account-header">
+            <div class="owner-label">Account Owner</div>
+            <div id="owner-display">---</div>
+            <div id="credits-display">0 Credits Remaining</div>
+        </div>
 
         <form id="inventory-form" action="https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso" method="POST">
             <input type="hidden" id="hidden-id" name="accountID">
             
             <div class="form-group">
                 <label>Inventory / Listing Link</label>
-                <input type="url" name="listingUrl" placeholder="https://www.dealership.com/car" required>
+                <input type="url" name="listingUrl" placeholder="https://www.dealership.com/car-link" required>
             </div>
 
             <div class="form-group">
@@ -141,7 +209,7 @@
                 </div>
                 <div class="form-group">
                     <label>Branding Notes</label>
-                    <textarea name="brandingNotes" rows="3" placeholder="Specific overlay instructions..."></textarea>
+                    <textarea name="brandingNotes" rows="3" placeholder="Specify overlay placement or custom requests..."></textarea>
                 </div>
             </div>
 
@@ -154,7 +222,7 @@
     async function validateID() {
         const id = document.getElementById('account-id').value;
         const errorMsg = document.getElementById('error-message');
-        const webhookUrl = 'https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1'; // Separate Webhook to check Google Sheet
+        const webhookUrl = 'https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1';
 
         try {
             const response = await fetch(webhookUrl, {
@@ -166,12 +234,19 @@
             const data = await response.json();
 
             if (data.status === 'success') {
+                // Transition UI
                 document.getElementById('validation-stage').style.display = 'none';
                 document.getElementById('submission-portal').style.display = 'block';
                 document.getElementById('hidden-id').value = id;
-                document.getElementById('credits-remaining').innerText = `Credits Remaining: ${data.credits}`;
                 
-                // Tier Check
+                // Set Personalized Data
+                document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
+                
+                // Decimal-free Credits
+                const roundedCredits = Math.round(data.credits);
+                document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
+                
+                // Show branding fields based on tier
                 if (data.tier !== 'Upgrade') {
                     document.getElementById('branding-fields').style.display = 'block';
                 }
