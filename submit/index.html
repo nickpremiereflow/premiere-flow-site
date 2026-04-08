@@ -121,7 +121,7 @@
         <h2 id="status-heading">Access Granted</h2>
         <p id="credits-remaining" style="color: #888; margin-bottom: 30px;"></p>
 
-        <form id="inventory-form" action="YOUR_MAKE_WEBHOOK_URL" method="POST">
+        <form id="inventory-form" action="https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso" method="POST">
             <input type="hidden" id="hidden-id" name="accountID">
             
             <div class="form-group">
@@ -154,7 +154,7 @@
     async function validateID() {
         const id = document.getElementById('account-id').value;
         const errorMsg = document.getElementById('error-message');
-        const webhookUrl = 'YOUR_VALIDATION_WEBHOOK_URL'; // Separate Webhook to check Google Sheet
+        const webhookUrl = 'https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1'; // Separate Webhook to check Google Sheet
 
         try {
             const response = await fetch(webhookUrl, {
