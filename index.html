@@ -30,14 +30,15 @@
             text-align: center;
         }
 
-        /* FIX: Ensuring images stay same size and slider reveals correctly */
+        /* FIX: Ensuring images stack perfectly and use the full container */
         .slider-container {
             position: relative;
             width: 100%;
             overflow: hidden;
             line-height: 0;
             border-radius: 4px;
-            aspect-ratio: 4 / 3; /* Matches your car photos */
+            aspect-ratio: 4 / 3; /* Snaps container to match car photo dimensions */
+            background: #000;
         }
 
         .img-after {
@@ -45,6 +46,10 @@
             height: 100%;
             display: block;
             object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Base Layer */
         }
 
         .img-before {
@@ -53,9 +58,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 2;
+            z-index: 2; /* Top Layer */
             object-fit: cover;
-            /* This reveals the BEFORE image starting from the left */
+            /* This revealed the left side of the "Before" photo by default */
             clip-path: inset(0 50% 0 0); 
         }
 
@@ -72,6 +77,17 @@
             margin: 0;
             z-index: 10;
             cursor: ew-resize;
+        }
+
+        /* Dropdown visibility fix */
+        .dropdown-content {
+            display: none;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .active .dropdown-content {
+            display: block !important;
         }
     </style>
 </head>
@@ -128,7 +144,8 @@
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
-                <div class="price-row"><span class="currency">$</span>349</div> <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="price-row"><span class="currency">$</span>349</div>
+                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
@@ -172,19 +189,21 @@
             const val = input.value;
             const img = document.getElementById(imgId);
             const line = document.getElementById(lineId);
-            // Fixes reveal logic so the whole image shows properly
+            // This reveals the TOP (Before) image from the left
             img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             line.style.left = val + "%";
         }
 
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
+            const allCards = document.querySelectorAll('.card');
             const allDropdowns = document.querySelectorAll('.dropdown-content');
             
-            allDropdowns.forEach(drop => {
-                if (drop.id !== id) drop.style.display = 'none';
-            });
+            // Close others
+            allCards.forEach(c => { if(c !== card) c.classList.remove('active'); });
+            allDropdowns.forEach(d => { if(d !== content) d.style.display = 'none'; });
 
+            // Toggle current
             if (content.style.display === 'block') {
                 content.style.display = 'none';
                 card.classList.remove('active');
