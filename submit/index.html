@@ -106,7 +106,8 @@
             margin-top: 20px;
             text-align: center;
             display: none;
-            line-height: 1.5;
+            line-height: 1.6;
+            padding: 0 10px;
         }
 
         #submission-portal, #success-view {
@@ -114,7 +115,6 @@
             animation: fadeInUp 0.6s ease-out;
         }
 
-        /* Success View Styling */
         .success-icon {
             font-size: 3rem;
             color: var(--accent-gold);
@@ -216,7 +216,7 @@
 </div>
 
 <script>
-    // 1. HANDLE FORM SUBMISSION TO MAKE.COM
+    // 1. HANDLE FORM SUBMISSION
     document.getElementById('inventory-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -275,6 +275,15 @@
             const data = await response.json();
 
             if (data.status === 'success') {
+                const roundedCredits = Math.round(data.credits);
+
+                // CHECK FOR ZERO CREDITS
+                if (roundedCredits <= 0) {
+                    errorMsg.innerHTML = "0 credits remaining. Please purchase a refill to submit new inventory.<br><br>Visit <a href='https://premiereflow.com/sign-up' style='color: white;'>premiereflow.com/sign-up</a>";
+                    errorMsg.style.display = 'block';
+                    return; // Stop here
+                }
+
                 document.getElementById('validation-stage').style.display = 'none';
                 document.getElementById('submission-portal').style.display = 'block';
                 document.getElementById('error-message').style.display = 'none';
@@ -282,15 +291,13 @@
                 document.getElementById('hidden-id').value = id;
                 document.getElementById('hidden-tier').value = data.tier;
                 document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
-                
-                const roundedCredits = Math.round(data.credits);
                 document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
                 
                 if (data.tier !== 'Upgrade') {
                     document.getElementById('branding-fields').style.display = 'block';
                 }
             } else {
-                errorMsg.innerText = data.message || "Invalid Account ID.";
+                errorMsg.innerHTML = "Account ID not found. Please check your welcome email for account number.<br><br>If problem persists please email info@premiereflow.com";
                 errorMsg.style.display = 'block';
             }
         } catch (error) {
