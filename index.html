@@ -4,7 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premiere Flow | Virtual Showroom Staging</title>
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta property="og:title" content="Premiere Flow | Virtual Showroom Staging">
+    <meta property="og:description" content="Cinematic lighting and background replacement for your lot inventory.">
+    <meta property="og:image" content="logo.png">
+
     <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Ensuring dual sliders sit side-by-side or stack cleanly */
+        .dual-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comparison-wrapper {
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
+        }
+
+        /* Brightened Footer Text */
+        .footer-questions {
+            color: #888888; 
+            font-size: 11px;
+            margin-top: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,18 +53,32 @@
             <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
         </section>
 
-        <div class="solo-section">
+        <div class="dual-section">
+            
             <div class="comparison-wrapper">
-                <h3>STUDIO ENVIRONMENT CONVERSION</h3>
-                <div class="slider-container" id="auto-container">
-                    <img src="auto-before.png" alt="Original Lot Photo" class="img-before">
-                    <img src="auto-after.png" alt="Premiere Showroom Edit" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
+                <h3>EXTERIOR SHOWROOM SWAP</h3>
+                <div class="slider-container" id="exterior-container">
+                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before">
+                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
                     <div class="slider-line">
                         <div class="slider-handle"></div>
                     </div>
                 </div>
             </div>
+
+            <div class="comparison-wrapper">
+                <h3>INTERIOR SHOWROOM SWAP</h3>
+                <div class="slider-container" id="interior-container">
+                    <img src="interior-before.png" alt="Original Interior Photo" class="img-before">
+                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
+                    <div class="slider-line">
+                        <div class="slider-handle"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <section class="pricing">
@@ -51,8 +100,7 @@
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
-                <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
-                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="price-row"><span class="currency">$</span>349</div> <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
@@ -87,6 +135,7 @@
             <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
                 <button class="get-started-btn" type="button">GET STARTED</button>
             </a>
+            <p class="footer-questions">Questions? info@premiereflow.com</p>
         </section>
     </main>
 
