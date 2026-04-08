@@ -3,93 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiere Flow | Virtual Showroom Staging</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Premiere Flow | Elite Auto Showroom AI</title>
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta property="og:title" content="Premiere Flow | Elite Auto Showroom AI">
+    <meta property="og:description" content="Transform aging inventory into high-end showroom listings in seconds.">
+    <meta property="og:image" content="logo-share.png"> <meta property="og:type" content="website">
+
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #141414;
+            --accent: #ffffff;
+            --text-dim: #888;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 { font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 10px; }
+        p.subtitle { color: var(--text-dim); font-size: 1.1rem; }
+
+        /* The Sliders Section */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        @media (max-width: 768px) {
+            .showcase-grid { grid-template-columns: 1fr; }
+        }
+
+        .slider-label {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        .before-after-slider {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+
+        .before-after-slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .img-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            border-right: 2px solid white;
+            z-index: 2;
+        }
+
+        .slider-input {
+            position: absolute;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0);
+            outline: none;
+            margin: 0;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            cursor: ew-resize;
+            top: 0;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #222;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .card:hover { border-color: #444; transform: translateY(-5px); }
+        .price { font-size: 2rem; font-weight: bold; margin: 15px 0; }
+        .tier-name { color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; font-weight: 700; }
+
+        .btn {
+            display: block;
+            background: white;
+            color: black;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 100px;
+            padding-bottom: 40px;
+        }
+
+        .questions { color: #888; font-size: 0.9rem; } /* Brightened Footer Text */
+    </style>
 </head>
 <body>
 
-    <nav>
-        <img src="logo.png" alt="Premiere Flow Logo" class="logo">
-    </nav>
+<div class="container">
+    <header>
+        <h1>PREMIERE FLOW</h1>
+        <p class="subtitle">AI-Powered Showroom Processing for Elite Dealerships</p>
+    </header>
 
-    <main>
-        <section class="hero-section">
-            <h1>VIRTUAL SHOWROOM <span class="accent">STAGING.</span></h1>
-            <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
-        </section>
-
-        <div class="solo-section">
-            <div class="comparison-wrapper">
-                <h3>STUDIO ENVIRONMENT CONVERSION</h3>
-                <div class="slider-container" id="auto-container">
-                    <img src="auto-before.png" alt="Original Lot Photo" class="img-before">
-                    <img src="auto-after.png" alt="Premiere Showroom Edit" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
-                    <div class="slider-line">
-                        <div class="slider-handle"></div>
-                    </div>
+    <div class="showcase-grid">
+        <div>
+            <div class="slider-label">Exterior Showroom Swap</div>
+            <div class="before-after-slider">
+                <img src="exterior-after.png" alt="Showroom After">
+                <div class="img-before" id="ext-before">
+                    <img src="exterior-before.png" alt="Before Exterior" style="width: 100vw; max-width: none;">
                 </div>
+                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'ext-before')">
             </div>
         </div>
 
-        <section class="pricing">
-            <div class="card" onclick="toggleDropdown('drop1', this)">
-                <h3>The Upgrade</h3>
-                <div class="price-row"><span class="currency">$</span>49</div>
-                <p class="card-sub">Perfect for testing the vibe on a single listing.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
-                <div id="drop1" class="dropdown-content">
-                    <ul>
-                        <li>10 High-Res Photos for 1 Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
-                        <li>Optional Logo Branding (+$20)</li>
-                    </ul>
+        <div>
+            <div class="slider-label">Interior Cockpit Detail</div>
+            <div class="before-after-slider">
+                <img src="interior-after.png" alt="Interior After">
+                <div class="img-before" id="int-before">
+                    <img src="interior-before.png" alt="Before Interior" style="width: 100vw; max-width: none;">
                 </div>
+                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'int-before')">
             </div>
+        </div>
+    </div>
 
-            <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
-                <div class="badge">MOST POPULAR</div>
-                <h3>The Partner Pack</h3>
-                <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
-                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
-                <div id="drop2" class="dropdown-content">
-                    <ul>
-                        <li>10 Listing Upgrades Per Month</li>
-                        <li>10 High-Res Photos Per Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
-                        <li>Branding & Logos Included</li>
-                    </ul>
-                </div>
-            </div>
+    <div class="pricing-grid">
+        <div class="card">
+            <div class="tier-name">Upgrade</div>
+            <div class="price">$19</div>
+            <p>Single Vehicle Enhancement</p>
+            <a href="/sign-up" class="btn">Get Started</a>
+        </div>
 
-            <div class="card" onclick="toggleDropdown('drop3', this)">
-                <h3>Unlimited Flow</h3>
-                <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
-                <p class="card-sub">For high-volume dealerships dominating the market.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
-                <div id="drop3" class="dropdown-content">
-                    <ul>
-                        <li>Unlimited Listings Per Month</li>
-                        <li>12 High-Res Photos Per Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
-                        <li>Branding & Logos Included</li>
-                        <li>Priority Queue-Jump Processing</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+        <div class="card" style="border-color: #444;">
+            <div class="tier-name">Partner Pack</div>
+            <div class="price">$349</div>
+            <p>One-Time Charge | 20 Vehicles</p> <a href="/sign-up" class="btn">Get Started</a>
+        </div>
 
-        <section class="cta-area">
-            <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
-                <button class="get-started-btn" type="button">GET STARTED</button>
-            </a>
-        </section>
-    </main>
+        <div class="card">
+            <div class="tier-name">Unlimited Flow</div>
+            <div class="price">$1,499</div>
+            <p>Full Inventory Pipeline</p>
+            <a href="/sign-up" class="btn">Contact Sales</a>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <footer>
+        <p class="questions">Questions? info@premiereflow.com</p>
+    </footer>
+</div>
+
+<script>
+    function moveSlider(e, id) {
+        let val = e.value;
+        document.getElementById(id).style.width = val + "%";
+    }
+</script>
+
 </body>
 </html>
