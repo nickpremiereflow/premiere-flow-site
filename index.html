@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* Ensuring the dual sliders look clean and centered */
         .dual-section {
             display: flex;
             flex-wrap: wrap;
@@ -31,20 +30,23 @@
             text-align: center;
         }
 
-        /* Essential fix for non-magnifying sliders */
+        /* THE FIX: Use aspect-ratio to match your images exactly */
         .slider-container {
             position: relative;
             width: 100%;
             overflow: hidden;
             line-height: 0;
-            border-radius: 4px; /* Optional: matches elite aesthetic */
+            border-radius: 4px;
+            /* Adjust this if your images are a different ratio, 
+               but this will snap the container to the image size */
+            aspect-ratio: 4 / 3; 
         }
 
         .img-after {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
-            object-fit: cover; /* CHANGED TO COVER FOR SMOOTH FILL */
+            object-fit: cover; /* Ensures smooth fill without gaps */
         }
 
         .img-before {
@@ -54,8 +56,7 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            object-fit: cover; /* CHANGED TO COVER FOR SMOOTH FILL */
-            /* Anchors the image so it doesn't magnify when sliding */
+            object-fit: cover;
             clip-path: inset(0 50% 0 0); 
         }
 
@@ -88,18 +89,13 @@
         </section>
 
         <div class="dual-section">
-            
             <div class="comparison-wrapper">
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="exterior-container">
                     <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
                     <img src="exterior-before.png" alt="Original Lot Photo" class="img-before" id="ext-img">
-                    
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'ext-img', 'ext-line')">
-                    
-                    <div class="slider-line" id="ext-line">
-                        <div class="slider-handle"></div>
-                    </div>
+                    <div class="slider-line" id="ext-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
 
@@ -108,15 +104,10 @@
                 <div class="slider-container" id="interior-container">
                     <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
                     <img src="interior-before.png" alt="Original Interior" class="img-before" id="int-img">
-                    
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'int-img', 'int-line')">
-                    
-                    <div class="slider-line" id="int-line">
-                        <div class="slider-handle"></div>
-                    </div>
+                    <div class="slider-line" id="int-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
-
         </div>
 
         <section class="pricing">
@@ -124,13 +115,11 @@
                 <h3>The Upgrade</h3>
                 <div class="price-row"><span class="currency">$</span>49</div>
                 <p class="card-sub">Perfect for testing the vibe on a single listing.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
                         <li>10 High-Res Photos for 1 Listing</li>
                         <li>Studio Background Replacement</li>
                         <li>Cinematic Lighting Enhancements</li>
-                        <li>Optional Logo Branding (+$20)</li>
                     </ul>
                 </div>
             </div>
@@ -140,13 +129,10 @@
                 <h3>The Partner Pack</h3>
                 <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
                 <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
                         <li>10 Listing Upgrades Per Month</li>
-                        <li>10 High-Res Photos Per Listing</li>
                         <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
                         <li>Branding & Logos Included</li>
                     </ul>
                 </div>
@@ -156,14 +142,9 @@
                 <h3>Unlimited Flow</h3>
                 <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
                 <p class="card-sub">For high-volume dealerships dominating the market.</p>
-                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop3" class="dropdown-content">
                     <ul>
                         <li>Unlimited Listings Per Month</li>
-                        <li>12 High-Res Photos Per Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
-                        <li>Branding & Logos Included</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
                 </div>
@@ -183,8 +164,6 @@
             const val = input.value;
             const img = document.getElementById(imgId);
             const line = document.getElementById(lineId);
-            
-            // Core fix: Clip-path reveals instead of resizing the container
             img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             line.style.left = val + "%";
         }
@@ -192,19 +171,8 @@
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
             const allDropdowns = document.querySelectorAll('.dropdown-content');
-            const allArrows = document.querySelectorAll('.arrow');
-
-            allDropdowns.forEach(drop => {
-                if (drop.id !== id) drop.style.display = 'none';
-            });
-
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                card.classList.remove('active');
-            } else {
-                content.style.display = 'block';
-                card.classList.add('active');
-            }
+            allDropdowns.forEach(drop => { if (drop.id !== id) drop.style.display = 'none'; });
+            content.style.display = (content.style.display === 'block') ? 'none' : 'block';
         }
     </script>
 </body>
