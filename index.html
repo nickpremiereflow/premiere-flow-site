@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
+        /* Tightening the space between logo and header */
+        nav {
+            padding: 10px 0; /* Reduced padding */
+        }
+
+        .hero-section {
+            margin-top: 10px; /* Reduced margin to bring text up */
+            padding-top: 0;
+        }
+
         /* Ensuring dual sliders sit side-by-side or stack cleanly */
         .dual-section {
             display: flex;
@@ -100,7 +110,8 @@
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
-                <div class="price-row"><span class="currency">$</span>349</div> <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="price-row"><span class="currency">$</span>349</div>
+                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
