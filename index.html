@@ -3,91 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiere Flow | Elite Auto Showroom AI</title>
+    <title>Premiere Flow | Virtual Showroom Staging</title>
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <meta property="og:title" content="Premiere Flow | Elite Auto Showroom AI">
-    <meta property="og:description" content="Transform aging inventory into high-end showroom listings in seconds.">
-    <meta property="og:image" content="logo-share.png">
-    <meta property="og:type" content="website">
+    <meta property="og:title" content="Premiere Flow | Virtual Showroom Staging">
+    <meta property="og:description" content="Cinematic lighting and background replacement for your lot inventory.">
+    <meta property="og:image" content="logo.png">
 
+    <link rel="stylesheet" href="style.css">
+    
     <style>
-        :root {
-            --bg: #000000;
-            --card-bg: #0a0a0a;
-            --accent: #ffffff;
-            --text-dim: #666666;
-            --border: #1a1a1a;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
+        /* Ensuring the dual sliders look clean and centered */
+        .dual-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            padding: 40px 20px;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 80px 20px;
         }
 
-        header {
+        .comparison-wrapper {
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
             text-align: center;
-            margin-bottom: 80px;
         }
 
-        h1 { 
-            font-size: 3.5rem; 
-            letter-spacing: -2px; 
-            margin-bottom: 10px; 
-            text-transform: uppercase;
-            font-weight: 800;
-        }
-
-        p.subtitle { 
-            color: var(--text-dim); 
-            font-size: 1.2rem; 
-            font-weight: 400;
-        }
-
-        /* Showcase Grid */
-        .showcase-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 100px;
-        }
-
-        @media (max-width: 900px) {
-            .showcase-grid { grid-template-columns: 1fr; }
-        }
-
-        .slider-label {
-            text-align: center;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            color: #444;
-        }
-
-        /* Fixed Non-Magnifying Slider */
-        .before-after-slider {
+        /* Essential fix for non-magnifying sliders */
+        .slider-container {
             position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 4px;
-            border: 1px solid var(--border);
             line-height: 0;
+            border-radius: 4px; /* Optional: matches elite aesthetic */
         }
 
-        .before-after-slider img {
+        .img-after {
             width: 100%;
             height: auto;
             display: block;
@@ -102,10 +55,11 @@
             height: 100%;
             z-index: 2;
             object-fit: contain;
+            /* Anchors the image so it doesn't magnify when sliding */
             clip-path: inset(0 50% 0 0); 
         }
 
-        .slider-input {
+        .slider {
             position: absolute;
             top: 0;
             left: 0;
@@ -119,107 +73,139 @@
             z-index: 10;
             cursor: ew-resize;
         }
+    </style>
+</head>
+<body>
 
-        .slider-handle {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 1px;
-            height: 100%;
-            background: rgba(255,255,255,0.5);
-            z-index: 5;
-            pointer-events: none;
-            transform: translateX(-50%);
+    <nav>
+        <img src="logo.png" alt="Premiere Flow Logo" class="logo">
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <h1>VIRTUAL SHOWROOM <span class="accent">STAGING.</span></h1>
+            <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
+        </section>
+
+        <div class="dual-section">
+            
+            <div class="comparison-wrapper">
+                <h3>EXTERIOR SHOWROOM SWAP</h3>
+                <div class="slider-container" id="exterior-container">
+                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
+                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before" id="ext-img">
+                    
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'ext-img', 'ext-line')">
+                    
+                    <div class="slider-line" id="ext-line">
+                        <div class="slider-handle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-wrapper">
+                <h3>INTERIOR SHOWROOM SWAP</h3>
+                <div class="slider-container" id="interior-container">
+                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
+                    <img src="interior-before.png" alt="Original Interior" class="img-before" id="int-img">
+                    
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'int-img', 'int-line')">
+                    
+                    <div class="slider-line" id="int-line">
+                        <div class="slider-handle"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <section class="pricing">
+            <div class="card" onclick="toggleDropdown('drop1', this)">
+                <h3>The Upgrade</h3>
+                <div class="price-row"><span class="currency">$</span>49</div>
+                <p class="card-sub">Perfect for testing the vibe on a single listing.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop1" class="dropdown-content">
+                    <ul>
+                        <li>10 High-Res Photos for 1 Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Optional Logo Branding (+$20)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
+                <div class="badge">MOST POPULAR</div>
+                <h3>The Partner Pack</h3>
+                <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
+                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop2" class="dropdown-content">
+                    <ul>
+                        <li>10 Listing Upgrades Per Month</li>
+                        <li>10 High-Res Photos Per Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Branding & Logos Included</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" onclick="toggleDropdown('drop3', this)">
+                <h3>Unlimited Flow</h3>
+                <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
+                <p class="card-sub">For high-volume dealerships dominating the market.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop3" class="dropdown-content">
+                    <ul>
+                        <li>Unlimited Listings Per Month</li>
+                        <li>12 High-Res Photos Per Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Branding & Logos Included</li>
+                        <li>Priority Queue-Jump Processing</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-area">
+            <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
+                <button class="get-started-btn" type="button">GET STARTED</button>
+            </a>
+            <p style="color: #333; font-size: 11px; margin-top: 30px; letter-spacing: 1px; text-transform: uppercase;">Questions? info@premiereflow.com</p>
+        </section>
+    </main>
+
+    <script>
+        function moveSlider(input, imgId, lineId) {
+            const val = input.value;
+            const img = document.getElementById(imgId);
+            const line = document.getElementById(lineId);
+            
+            // Core fix: Clip-path reveals instead of resizing the container
+            img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+            line.style.left = val + "%";
         }
 
-        .handle-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 30px;
-            height: 30px;
-            background: white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        function toggleDropdown(id, card) {
+            const content = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.dropdown-content');
+            const allArrows = document.querySelectorAll('.arrow');
 
-        .handle-dot::after {
-            content: "↔";
-            color: black;
-            font-weight: bold;
-            font-size: 14px;
-        }
+            allDropdowns.forEach(drop => {
+                if (drop.id !== id) drop.style.display = 'none';
+            });
 
-        /* Restored High-End Pricing Cards */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                card.classList.remove('active');
+            } else {
+                content.style.display = 'block';
+                card.classList.add('active');
+            }
         }
-
-        .card {
-            background: var(--card-bg);
-            padding: 50px 40px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            text-align: left;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .card:hover { 
-            border-color: #333;
-            background: #0d0d0d;
-        }
-
-        .price { 
-            font-size: 3rem; 
-            font-weight: 700; 
-            margin: 20px 0; 
-            letter-spacing: -2px;
-        }
-
-        .tier-name { 
-            color: #444; 
-            text-transform: uppercase; 
-            font-size: 0.8rem; 
-            font-weight: 800; 
-            letter-spacing: 2px;
-        }
-
-        .card p {
-            color: var(--text-dim);
-            font-size: 1rem;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            display: inline-block;
-            background: white;
-            color: black;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: opacity 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 150px;
-            padding-bottom: 60px;
-        }
-
-        .questions { color: #333; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    </script>
+</body>
+</html>
