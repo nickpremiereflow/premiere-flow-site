@@ -11,85 +11,6 @@
     <meta property="og:image" content="logo.png">
 
     <link rel="stylesheet" href="style.css">
-    
-    <style>
-        .dual-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 40px;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .comparison-wrapper {
-            flex: 1;
-            min-width: 320px;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        /* FIX: Ensuring images stack perfectly and use the full container */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-            border-radius: 4px;
-            aspect-ratio: 4 / 3; /* Snaps container to match car photo dimensions */
-            background: #000;
-        }
-
-        .img-after {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1; /* Base Layer */
-        }
-
-        .img-before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2; /* Top Layer */
-            object-fit: cover;
-            /* This revealed the left side of the "Before" photo by default */
-            clip-path: inset(0 50% 0 0); 
-        }
-
-        .slider {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            outline: none;
-            margin: 0;
-            z-index: 10;
-            cursor: ew-resize;
-        }
-
-        /* Dropdown visibility fix */
-        .dropdown-content {
-            display: none;
-            padding: 15px;
-            text-align: left;
-        }
-        
-        .active .dropdown-content {
-            display: block !important;
-        }
-    </style>
 </head>
 <body>
 
@@ -103,26 +24,32 @@
             <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
         </section>
 
-        <div class="dual-section">
-            <div class="comparison-wrapper">
+        <div class="solo-section" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; padding: 20px;">
+            
+            <div class="comparison-wrapper" style="flex: 1; min-width: 320px; max-width: 500px;">
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="exterior-container">
+                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before">
                     <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
-                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before" id="ext-img">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'ext-img', 'ext-line')">
-                    <div class="slider-line" id="ext-line"><div class="slider-handle"></div></div>
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
+                    <div class="slider-line">
+                        <div class="slider-handle"></div>
+                    </div>
                 </div>
             </div>
 
-            <div class="comparison-wrapper">
+            <div class="comparison-wrapper" style="flex: 1; min-width: 320px; max-width: 500px;">
                 <h3>INTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="interior-container">
+                    <img src="interior-before.png" alt="Original Interior" class="img-before">
                     <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
-                    <img src="interior-before.png" alt="Original Interior" class="img-before" id="int-img">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'int-img', 'int-line')">
-                    <div class="slider-line" id="int-line"><div class="slider-handle"></div></div>
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
+                    <div class="slider-line">
+                        <div class="slider-handle"></div>
+                    </div>
                 </div>
             </div>
+
         </div>
 
         <section class="pricing">
@@ -185,25 +112,26 @@
     </main>
 
     <script>
-        function moveSlider(input, imgId, lineId) {
+        // Restored original slider logic
+        function moveSlider(input, containerId) {
             const val = input.value;
-            const img = document.getElementById(imgId);
-            const line = document.getElementById(lineId);
-            // This reveals the TOP (Before) image from the left
-            img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
-            line.style.left = val + "%";
+            const container = document.getElementById(containerId);
+            const beforeImg = container.querySelector('.img-before');
+            const sliderLine = container.querySelector('.slider-line');
+            
+            beforeImg.style.width = val + "%";
+            sliderLine.style.left = val + "%";
         }
 
+        // Restored original dropdown logic
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
-            const allCards = document.querySelectorAll('.card');
             const allDropdowns = document.querySelectorAll('.dropdown-content');
             
-            // Close others
-            allCards.forEach(c => { if(c !== card) c.classList.remove('active'); });
-            allDropdowns.forEach(d => { if(d !== content) d.style.display = 'none'; });
+            allDropdowns.forEach(drop => {
+                if (drop.id !== id) drop.style.display = 'none';
+            });
 
-            // Toggle current
             if (content.style.display === 'block') {
                 content.style.display = 'none';
                 card.classList.remove('active');
