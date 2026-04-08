@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premiere Flow | Virtual Showroom Staging</title>
-    
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <meta property="og:title" content="Premiere Flow | Virtual Showroom Staging">
-    <meta property="og:description" content="Cinematic lighting and background replacement for your lot inventory.">
-    <meta property="og:image" content="logo.png">
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,32 +18,18 @@
             <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
         </section>
 
-        <div class="solo-section" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; padding: 20px;">
-            
-            <div class="comparison-wrapper" style="flex: 1; min-width: 320px; max-width: 500px;">
-                <h3>EXTERIOR SHOWROOM SWAP</h3>
-                <div class="slider-container" id="exterior-container">
-                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before">
-                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
+        <div class="solo-section">
+            <div class="comparison-wrapper">
+                <h3>STUDIO ENVIRONMENT CONVERSION</h3>
+                <div class="slider-container" id="auto-container">
+                    <img src="auto-before.png" alt="Original Lot Photo" class="img-before">
+                    <img src="auto-after.png" alt="Premiere Showroom Edit" class="img-after">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'auto-container')">
                     <div class="slider-line">
                         <div class="slider-handle"></div>
                     </div>
                 </div>
             </div>
-
-            <div class="comparison-wrapper" style="flex: 1; min-width: 320px; max-width: 500px;">
-                <h3>INTERIOR SHOWROOM SWAP</h3>
-                <div class="slider-container" id="interior-container">
-                    <img src="interior-before.png" alt="Original Interior" class="img-before">
-                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
-                    <div class="slider-line">
-                        <div class="slider-handle"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <section class="pricing">
@@ -71,7 +51,7 @@
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
-                <div class="price-row"><span class="currency">$</span>349</div>
+                <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
                 <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
@@ -107,39 +87,9 @@
             <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
                 <button class="get-started-btn" type="button">GET STARTED</button>
             </a>
-            <p style="color: #888; font-size: 11px; margin-top: 30px; letter-spacing: 1px; text-transform: uppercase;">Questions? info@premiereflow.com</p>
         </section>
     </main>
 
-    <script>
-        // Restored original slider logic
-        function moveSlider(input, containerId) {
-            const val = input.value;
-            const container = document.getElementById(containerId);
-            const beforeImg = container.querySelector('.img-before');
-            const sliderLine = container.querySelector('.slider-line');
-            
-            beforeImg.style.width = val + "%";
-            sliderLine.style.left = val + "%";
-        }
-
-        // Restored original dropdown logic
-        function toggleDropdown(id, card) {
-            const content = document.getElementById(id);
-            const allDropdowns = document.querySelectorAll('.dropdown-content');
-            
-            allDropdowns.forEach(drop => {
-                if (drop.id !== id) drop.style.display = 'none';
-            });
-
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                card.classList.remove('active');
-            } else {
-                content.style.display = 'block';
-                card.classList.add('active');
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
