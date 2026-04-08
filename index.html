@@ -8,7 +8,8 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta property="og:title" content="Premiere Flow | Elite Auto Showroom AI">
     <meta property="og:description" content="Transform aging inventory into high-end showroom listings in seconds.">
-    <meta property="og:image" content="logo-share.png"> <meta property="og:type" content="website">
+    <meta property="og:image" content="logo-share.png">
+    <meta property="og:type" content="website">
 
     <style>
         :root {
@@ -25,6 +26,7 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container {
@@ -38,10 +40,10 @@
             margin-bottom: 60px;
         }
 
-        h1 { font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 10px; }
+        h1 { font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 10px; text-transform: uppercase; }
         p.subtitle { color: var(--text-dim); font-size: 1.1rem; }
 
-        /* The Sliders Section */
+        /* Showcase Grid */
         .showcase-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -63,49 +65,74 @@
             color: var(--text-dim);
         }
 
+        /* Refactored Non-Magnifying Slider */
         .before-after-slider {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 9;
             overflow: hidden;
             border-radius: 12px;
             border: 1px solid #333;
+            line-height: 0;
         }
 
+        /* The After Image (Base Layer) */
         .before-after-slider img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
             display: block;
+            object-fit: contain;
         }
 
+        /* The Before Image (Overlay Layer) */
         .img-before {
             position: absolute;
             top: 0;
             left: 0;
-            width: 50%;
+            width: 100%;
             height: 100%;
-            overflow: hidden;
-            border-right: 2px solid white;
             z-index: 2;
+            object-fit: contain;
+            /* Starts at 50% visible */
+            clip-path: inset(0 50% 0 0); 
         }
 
         .slider-input {
             position: absolute;
-            -webkit-appearance: none;
-            appearance: none;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0);
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
             outline: none;
             margin: 0;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5;
+            z-index: 10;
             cursor: ew-resize;
+        }
+
+        /* Visual Handle Line */
+        .slider-handle {
+            position: absolute;
             top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: white;
+            z-index: 5;
+            pointer-events: none;
+            transform: translateX(-50%);
+        }
+
+        .handle-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
         /* Pricing Cards */
@@ -146,7 +173,7 @@
             padding-bottom: 40px;
         }
 
-        .questions { color: #888; font-size: 0.9rem; } /* Brightened Footer Text */
+        .questions { color: #888; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -162,21 +189,19 @@
             <div class="slider-label">Exterior Showroom Swap</div>
             <div class="before-after-slider">
                 <img src="exterior-after.png" alt="Showroom After">
-                <div class="img-before" id="ext-before">
-                    <img src="exterior-before.png" alt="Before Exterior" style="width: 100vw; max-width: none;">
-                </div>
-                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'ext-before')">
+                <img src="exterior-before.png" alt="Before Exterior" class="img-before" id="ext-before">
+                <div class="slider-handle" id="ext-handle"><div class="handle-dot"></div></div>
+                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="updateSlider(this, 'ext-before', 'ext-handle')">
             </div>
         </div>
 
         <div>
-            <div class="slider-label">Interior Cockpit Detail</div>
+            <div class="slider-label">Interior Cockpit Swap</div>
             <div class="before-after-slider">
                 <img src="interior-after.png" alt="Interior After">
-                <div class="img-before" id="int-before">
-                    <img src="interior-before.png" alt="Before Interior" style="width: 100vw; max-width: none;">
-                </div>
-                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this, 'int-before')">
+                <img src="interior-before.png" alt="Before Interior" class="img-before" id="int-before">
+                <div class="slider-handle" id="int-handle"><div class="handle-dot"></div></div>
+                <input type="range" min="0" max="100" value="50" class="slider-input" oninput="updateSlider(this, 'int-before', 'int-handle')">
             </div>
         </div>
     </div>
@@ -192,7 +217,8 @@
         <div class="card" style="border-color: #444;">
             <div class="tier-name">Partner Pack</div>
             <div class="price">$349</div>
-            <p>One-Time Charge | 20 Vehicles</p> <a href="/sign-up" class="btn">Get Started</a>
+            <p>One-Time Charge | 20 Vehicles</p>
+            <a href="/sign-up" class="btn">Get Started</a>
         </div>
 
         <div class="card">
@@ -209,9 +235,14 @@
 </div>
 
 <script>
-    function moveSlider(e, id) {
-        let val = e.value;
-        document.getElementById(id).style.width = val + "%";
+    function updateSlider(input, imgId, handleId) {
+        const val = input.value;
+        const img = document.getElementById(imgId);
+        const handle = document.getElementById(handleId);
+        
+        // This is the core fix: Clip-path reveals instead of resizing
+        img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+        handle.style.left = val + "%";
     }
 </script>
 
