@@ -11,14 +11,14 @@
     <meta property="og:url" content="https://premiereflow.com/">
     
     <meta property="og:title" content="Premiere Flow | Virtual Showroom Staging">
-    
     <meta property="og:description" content="Cinematic lighting and background replacement for your lot inventory.">
-    <meta property="og:image" content="premiereflowiconlogo.png">
+    
+    <meta property="og:image" content="premiereflowiconlogo.png?v=2">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Premiere Flow | Virtual Showroom Staging">
     <meta name="twitter:description" content="Cinematic lighting and background replacement for your lot inventory.">
-    <meta name="twitter:image" content="premiereflowiconlogo.png">
+    <meta name="twitter:image" content="premiereflowiconlogo.png?v=2">
 
     <meta name="theme-color" content="#000000">
 
@@ -26,16 +26,10 @@
     
     <style>
         /* Tightening the space between logo and header */
-        nav {
-            padding: 10px 0; 
-        }
+        nav { padding: 10px 0; }
+        .hero-section { margin-top: 10px; padding-top: 0; }
 
-        .hero-section {
-            margin-top: 10px; 
-            padding-top: 0;
-        }
-
-        /* Ensuring dual sliders sit side-by-side or stack cleanly */
+        /* Dual Slider Layout */
         .dual-section {
             display: flex;
             flex-wrap: wrap;
@@ -52,7 +46,7 @@
             max-width: 500px;
         }
 
-        /* Brightened Footer Text */
+        /* Visible Footer Text */
         .footer-questions {
             color: #888888; 
             font-size: 11px;
@@ -76,16 +70,13 @@
         </section>
 
         <div class="dual-section">
-            
             <div class="comparison-wrapper">
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="exterior-container">
                     <img src="exterior-before.png" alt="Original Lot Photo" class="img-before">
                     <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
-                    <div class="slider-line">
-                        <div class="slider-handle"></div>
-                    </div>
+                    <div class="slider-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
 
@@ -95,12 +86,9 @@
                     <img src="interior-before.png" alt="Original Interior Photo" class="img-before">
                     <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
-                    <div class="slider-line">
-                        <div class="slider-handle"></div>
-                    </div>
+                    <div class="slider-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
-
         </div>
 
         <section class="pricing">
