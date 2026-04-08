@@ -3,81 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premiere Flow | Submit Production</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
+    <title>Submit Inventory | Premiere Flow</title>
     <style>
-        :root { --bg-black: #000; --card-bg: #080808; --border-color: #1a1a1a; --accent-white: #ffffff; }
-        body { margin: 0; padding: 40px 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .submit-form { width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
-        h1 { font-weight: 900; font-size: 1.5rem; margin-bottom: 10px; text-align: center; }
-        .status-pill { background: #111; padding: 8px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; color: #555; display: inline-block; margin-bottom: 30px; border: 1px solid var(--border-color); }
-        label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #555; margin: 25px 0 10px 0; }
-        input, select, textarea { width: 100%; padding: 15px; background: #000; border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }
-        textarea { height: 100px; resize: none; }
-        .hidden { display: none; }
-        .submit-btn { width: 100%; margin-top: 30px; background: #fff; color: #000; border: none; padding: 18px; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        :root {
+            --primary-black: #0a0a0a;
+            --accent-gold: #c5a059; /* Optional accent or stick to white/grey for minimalist */
+            --bg-dark: #000000;
+            --text-white: #ffffff;
+            --input-bg: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .submit-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo-header img {
+            width: 180px;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #888;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            background: var(--input-bg);
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ccc;
+        }
+
+        #error-message {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        #submission-portal {
+            display: none; /* Hidden until ID is validated */
+        }
+
+        .hidden-tier-field {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="submit-form">
-        <h1>PRODUCTION QUEUE</h1>
-        <center><div class="status-pill" id="status-display">ENTER ID TO START</div></center>
 
-        <form id="productionForm">
-            <label>Partner ID / Access Code</label>
-            <input type="text" id="partnerId" placeholder="PF-XXXX" required onblur="checkId()">
-
-            <div id="core-fields" class="hidden">
-                <label>Listing Link (Zillow/VIN/Google Drive)</label>
-                <input type="text" id="listingData" placeholder="Paste link here..." required>
-
-                <label>Industry</label>
-                <select id="industry">
-                    <option value="real-estate">Real Estate</option>
-                    <option value="auto">Automotive</option>
-                </select>
-
-                <div id="branding-section" class="hidden">
-                    <label>Logo Upload Link (Dropbox/Drive)</label>
-                    <input type="text" id="logoLink" placeholder="Link to your logo file...">
-                    
-                    <label>Branding Notes</label>
-                    <textarea id="brandNotes" placeholder="Special instructions for watermarks or style..."></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Send to Production</button>
-            </div>
-        </form>
+<div class="submit-container">
+    <div class="logo-header">
+        <img src="https://premiereflow.com/img/logo.png" alt="Premiere Flow">
     </div>
 
-    <script>
-        async function checkId() {
-            const id = document.getElementById('partnerId').value;
-            const status = document.getElementById('status-display');
-            const core = document.getElementById('core-fields');
-            const branding = document.getElementById('branding-section');
+    <div id="validation-stage">
+        <h2>Unlock Portal</h2>
+        <div class="form-group">
+            <label for="account-id">Account ID</label>
+            <input type="text" id="account-id" placeholder="PF-XXXX-XXXX" required>
+        </div>
+        <button onclick="validateID()">Unlock Submission Portal</button>
+        <p id="error-message"></p>
+    </div>
 
-            // This fetch would hit your Make.com 'Verification' Webhook
-            // For now, we simulate the logic:
-            if(id.startsWith('PF-')) {
-                status.innerText = "ID VERIFIED";
-                status.style.color = "#fff";
-                core.classList.remove('hidden');
+    <div id="submission-portal">
+        <h2 id="status-heading">Access Granted</h2>
+        <p id="credits-remaining" style="color: #888; margin-bottom: 30px;"></p>
+
+        <form id="inventory-form" action="YOUR_MAKE_WEBHOOK_URL" method="POST">
+            <input type="hidden" id="hidden-id" name="accountID">
+            
+            <div class="form-group">
+                <label>Inventory / Listing Link</label>
+                <input type="url" name="listingUrl" placeholder="https://www.dealership.com/car" required>
+            </div>
+
+            <div class="form-group">
+                <label>Photo Folder (Dropbox/Drive)</label>
+                <input type="url" name="photoFolder" placeholder="Link to raw assets" required>
+            </div>
+
+            <div id="branding-fields" class="hidden-tier-field">
+                <div class="form-group">
+                    <label>Logo Files (for Watermarks)</label>
+                    <input type="url" name="logoFiles" placeholder="Link to PNG/SVG logos">
+                </div>
+                <div class="form-group">
+                    <label>Branding Notes</label>
+                    <textarea name="brandingNotes" rows="3" placeholder="Specific overlay instructions..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit">Submit for Production</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function validateID() {
+        const id = document.getElementById('account-id').value;
+        const errorMsg = document.getElementById('error-message');
+        const webhookUrl = 'YOUR_VALIDATION_WEBHOOK_URL'; // Separate Webhook to check Google Sheet
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountID: id })
+            });
+            
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                document.getElementById('validation-stage').style.display = 'none';
+                document.getElementById('submission-portal').style.display = 'block';
+                document.getElementById('hidden-id').value = id;
+                document.getElementById('credits-remaining').innerText = `Credits Remaining: ${data.credits}`;
                 
-                // Logic: If ID contains 'B' or 'P' or 'U' (Branding/Partner/Unlimited), show branding
-                if(id.includes('B') || id.includes('P') || id.includes('U')) {
-                    branding.classList.remove('hidden');
+                // Tier Check
+                if (data.tier !== 'Upgrade') {
+                    document.getElementById('branding-fields').style.display = 'block';
                 }
             } else {
-                status.innerText = "INVALID ID";
-                status.style.color = "#ff4444";
+                errorMsg.innerText = data.message;
+                errorMsg.style.display = 'block';
             }
+        } catch (error) {
+            errorMsg.innerText = "Connection error. Please try again.";
+            errorMsg.style.display = 'block';
         }
+    }
+</script>
 
-        document.getElementById('productionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            alert("Sent! Our editors are now working on this listing.");
-        });
-    </script>
 </body>
 </html>
