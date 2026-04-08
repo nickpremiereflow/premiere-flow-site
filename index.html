@@ -6,64 +6,56 @@
     <title>Premiere Flow | Virtual Showroom Staging</title>
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <meta property="og:title" content="Premiere Flow | Elite Auto Showroom AI">
-    <meta property="og:description" content="Transform aging inventory into high-end showroom listings.">
+    <meta property="og:title" content="Premiere Flow | Virtual Showroom Staging">
+    <meta property="og:description" content="Cinematic lighting and background replacement for your lot inventory.">
     <meta property="og:image" content="logo.png">
 
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* Ensuring the dual sliders are perfectly aligned and not distorted */
+        /* Ensuring the dual sliders look clean and centered */
         .dual-section {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 40px;
-            padding: 80px 20px;
-            max-width: 1400px;
+            padding: 40px 20px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .comparison-wrapper {
             flex: 1;
             min-width: 320px;
-            max-width: 600px;
+            max-width: 500px;
             text-align: center;
         }
 
-        /* NEW SMOOTH & EXACT DIMENSION SLIDER METHOD */
+        /* Essential fix for non-magnifying sliders */
         .slider-container {
             position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 4px; /* Matches Elite aesthetic */
             line-height: 0;
-            cursor: ew-resize; /* Cursor shows 'east-west resize' */
-            user-select: none;
-            box-shadow: 0 0 1px #333; /* Adds subtle depth without distorting image */
+            border-radius: 4px; /* Optional: matches elite aesthetic */
         }
 
-        /* Essential for exact sizing and smooth clipping */
-        .slider-container::before {
-            content: "";
+        .img-after {
+            width: 100%;
+            height: auto;
             display: block;
-            padding-bottom: 56.25%; /* Forces a 16:9 Aspect Ratio on the container */
+            object-fit: cover; /* CHANGED TO COVER FOR SMOOTH FILL */
         }
 
-        .img-after,
         .img-before {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* ESSENTIAL: Forces images to fill container exactly, no distortion */
-            display: block;
-        }
-
-        .img-before {
             z-index: 2;
-            /* STARTS at 50% */
+            object-fit: cover; /* CHANGED TO COVER FOR SMOOTH FILL */
+            /* Anchors the image so it doesn't magnify when sliding */
             clip-path: inset(0 50% 0 0); 
         }
 
@@ -79,100 +71,7 @@
             outline: none;
             margin: 0;
             z-index: 10;
-        }
-
-        /* Smooth Slider Line & Handle with White Dot */
-        .slider-line {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 2px;
-            height: 100%;
-            background: rgba(255,255,255,0.3);
-            z-index: 5;
-            pointer-events: none;
-            transform: translateX(-50%);
-        }
-
-        .slider-handle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        /* High-End Card Aesthetic (as per image_1.png style) */
-        .pricing-grid {
-            margin-top: 100px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: #0d0d0d;
-            padding: 60px 50px;
-            border-radius: 4px;
-            border: 1px solid #1a1a1a;
-            text-align: left;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover { 
-            border-color: #333;
-            background: #111;
-        }
-
-        .price { 
-            font-size: 3.5rem; 
-            font-weight: 700; 
-            margin: 20px 0; 
-            letter-spacing: -2px;
-            color: #fff;
-        }
-
-        .tier-name { 
-            color: #444; 
-            text-transform: uppercase; 
-            font-size: 0.8rem; 
-            font-weight: 800; 
-            letter-spacing: 2px;
-        }
-
-        .card p {
-            color: #666;
-            font-size: 1rem;
-            margin-bottom: 40px;
-            font-weight: 400;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #fff;
-            color: #000;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: opacity 0.2s;
-        }
-
-        /* Bright Gray Footer Line */
-        .footer-questions {
-            color: #888888; 
-            font-size: 11px;
-            margin-top: 50px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-align: center;
+            cursor: ew-resize;
         }
     </style>
 </head>
@@ -185,7 +84,7 @@
     <main>
         <section class="hero-section">
             <h1>VIRTUAL SHOWROOM <span class="accent">STAGING.</span></h1>
-            <p class="subtitle">Transform aging inventory into high-end showroom listings.</p>
+            <p class="subtitle">Cinematic lighting and background replacement for your lot inventory.</p>
         </section>
 
         <div class="dual-section">
@@ -193,46 +92,81 @@
             <div class="comparison-wrapper">
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="exterior-container">
-                    <img src="exterior-after.png" alt="Showroom After" class="img-after">
-                    <img src="exterior-before.png" alt="Lot Before" class="img-before" id="ext-img">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="updateSlider(this, 'ext-img', 'ext-line')">
-                    <div class="slider-line" id="ext-line"><div class="slider-handle"></div></div>
+                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
+                    <img src="exterior-before.png" alt="Original Lot Photo" class="img-before" id="ext-img">
+                    
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'ext-img', 'ext-line')">
+                    
+                    <div class="slider-line" id="ext-line">
+                        <div class="slider-handle"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="comparison-wrapper">
                 <h3>INTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="interior-container">
-                    <img src="interior-after.png" alt="Interior Cockpit After" class="img-after">
-                    <img src="interior-before.png" alt="Interior Before" class="img-before" id="int-img">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="updateSlider(this, 'int-img', 'int-line')">
-                    <div class="slider-line" id="int-line"><div class="slider-handle" id="int-handle"></div></div>
+                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
+                    <img src="interior-before.png" alt="Original Interior" class="img-before" id="int-img">
+                    
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'int-img', 'int-line')">
+                    
+                    <div class="slider-line" id="int-line">
+                        <div class="slider-handle"></div>
+                    </div>
                 </div>
             </div>
 
         </div>
 
         <section class="pricing">
-            <div class="card">
-                <div class="tier-name">Upgrade</div>
-                <div class="price">$19</div>
-                <p>Single vehicle transformation. High-end showroom look.</p>
-                <a href="/sign-up" class="btn">Enhance One</a>
+            <div class="card" onclick="toggleDropdown('drop1', this)">
+                <h3>The Upgrade</h3>
+                <div class="price-row"><span class="currency">$</span>49</div>
+                <p class="card-sub">Perfect for testing the vibe on a single listing.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop1" class="dropdown-content">
+                    <ul>
+                        <li>10 High-Res Photos for 1 Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Optional Logo Branding (+$20)</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="card" style="border-color: #333;">
+            <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
-                <div class="tier-name">Partner Pack</div>
-                <div class="price">$349</div>
-                <p>One-Time Charge for 20 vehicles. Elite processing.</p>
-                <a href="/sign-up" class="btn">Purchase Pack</a>
+                <h3>The Partner Pack</h3>
+                <div class="price-row"><span class="currency">$</span>349<span class="period">/mo</span></div>
+                <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop2" class="dropdown-content">
+                    <ul>
+                        <li>10 Listing Upgrades Per Month</li>
+                        <li>10 High-Res Photos Per Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Branding & Logos Included</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="tier-name">Unlimited Flow</div>
-                <div class="price">$1,499</div>
-                <p>Unlimited processing. Direct portal staging.</p>
-                <a href="/sign-up" class="btn">Inquire Now</a>
+            <div class="card" onclick="toggleDropdown('drop3', this)">
+                <h3>Unlimited Flow</h3>
+                <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
+                <p class="card-sub">For high-volume dealerships dominating the market.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
+                <div id="drop3" class="dropdown-content">
+                    <ul>
+                        <li>Unlimited Listings Per Month</li>
+                        <li>12 High-Res Photos Per Listing</li>
+                        <li>Studio Background Replacement</li>
+                        <li>Cinematic Lighting Enhancements</li>
+                        <li>Branding & Logos Included</li>
+                        <li>Priority Queue-Jump Processing</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
@@ -240,19 +174,38 @@
             <a href="./sign-up/" style="text-decoration: none; display: inline-block;">
                 <button class="get-started-btn" type="button">GET STARTED</button>
             </a>
-            <p class="footer-questions">Questions? info@premiereflow.com</p>
+            <p style="color: #888; font-size: 11px; margin-top: 30px; letter-spacing: 1px; text-transform: uppercase;">Questions? info@premiereflow.com</p>
         </section>
     </main>
 
     <script>
-        function updateSlider(input, imgId, lineId) {
+        function moveSlider(input, imgId, lineId) {
             const val = input.value;
             const img = document.getElementById(imgId);
             const line = document.getElementById(lineId);
             
-            // The clip-path reveals the image exactly at its position
+            // Core fix: Clip-path reveals instead of resizing the container
             img.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             line.style.left = val + "%";
         }
 
-        // Initialize all sliders to the center position (50
+        function toggleDropdown(id, card) {
+            const content = document.getElementById(id);
+            const allDropdowns = document.querySelectorAll('.dropdown-content');
+            const allArrows = document.querySelectorAll('.arrow');
+
+            allDropdowns.forEach(drop => {
+                if (drop.id !== id) drop.style.display = 'none';
+            });
+
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                card.classList.remove('active');
+            } else {
+                content.style.display = 'block';
+                card.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
