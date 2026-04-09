@@ -55,7 +55,6 @@
             padding: 20px 20px 25px 20px;
             margin: 0;
             list-style: none;
-            text-align: left;
         }
 
         .dropdown-content li {
@@ -63,7 +62,8 @@
             color: #888;
             margin-bottom: 12px;
             display: flex;
-            align-items: flex-start; /* Aligns icon with top of text if it wraps */
+            align-items: flex-start; /* FIX: Keeps diamond at top of wrapped text */
+            text-align: left; /* FIX: Forces all lines to the left */
             line-height: 1.4;
         }
 
@@ -78,7 +78,7 @@
             color: #fff;
             font-size: 8px;
             margin-right: 12px;
-            margin-top: 4px; /* Centers icon vertically with first line */
+            margin-top: 4px; 
             opacity: 0.5;
             flex-shrink: 0;
         }
