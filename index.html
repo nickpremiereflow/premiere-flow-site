@@ -30,6 +30,18 @@
 
         .comparison-wrapper { flex: 1; min-width: 320px; max-width: 500px; }
 
+        /* MOBILE SLIDER STABILITY FIX */
+        .slider-container {
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .slider {
+            touch-action: pan-y;
+            cursor: ew-resize;
+        }
+
         .cta-area { padding-bottom: 0px; text-align: center; }
 
         /* DROPDOWN SPACING FIX */
@@ -261,7 +273,9 @@
             const container = document.getElementById(containerId);
             const afterImg = container.querySelector('.img-after');
             const handle = container.querySelector('.slider-line');
-            let val = e.value;
+            let val = Math.max(0, Math.min(100, e.value)); // Force range between 0-100
+            
+            // Fixed logic for clipping to prevent inversion on mobile
             afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             handle.style.left = `${val}%`;
         }
