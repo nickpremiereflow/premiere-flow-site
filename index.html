@@ -18,67 +18,42 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        .header-container { 
-            margin-top: 40px; 
-            text-align: center; 
-            width: 100%; 
-        }
+        .header-container { margin-top: 40px; text-align: center; width: 100%; }
         .logo-img { height: 40px; }
-
         nav { padding: 0; }
         .hero-section { margin-top: 40px; padding-top: 0; }
 
         .dual-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 40px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 40px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
 
-        .comparison-wrapper {
-            flex: 1;
-            min-width: 320px;
-            max-width: 500px;
-        }
+        .comparison-wrapper { flex: 1; min-width: 320px; max-width: 500px; }
 
-        /* NEW FOOTER STYLING */
-        footer {
-            margin-top: 80px;
-            padding: 40px 20px;
-            border-top: 1px solid #1a1a1a;
-            text-align: center;
-        }
+        footer { margin-top: 80px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
+        .footer-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+        .footer-link { color: #555; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; cursor: pointer; }
+        .footer-link:hover { color: #fff; }
+        .footer-copyright { color: #333; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .footer-nav {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
+        /* Contact Popup Styles */
+        .contact-wrapper { position: relative; display: inline-block; }
+        .contact-bubble {
+            visibility: hidden; background-color: #111; color: #fff; text-align: center;
+            border-radius: 8px; padding: 12px 15px; position: absolute; z-index: 100;
+            bottom: 150%; left: 50%; transform: translateX(-50%);
+            border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
         }
-
-        .footer-link {
-            color: #555;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: color 0.3s;
+        .contact-bubble::after {
+            content: ""; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #333 transparent transparent transparent;
         }
-
-        .footer-link:hover {
-            color: #fff;
-        }
-
-        .footer-copyright {
-            color: #333;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .contact-bubble.show { visibility: visible; opacity: 1; }
+        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 8px; }
+        .copy-btn { background: none; border: none; color: #888; cursor: pointer; font-size: 14px; padding: 0; vertical-align: middle; transition: color 0.2s; }
+        .copy-btn:hover { color: #fff; }
     </style>
 </head>
 <body>
@@ -103,7 +78,6 @@
                     <div class="slider-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
-
             <div class="comparison-wrapper">
                 <h3>INTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="interior-container">
@@ -129,7 +103,6 @@
                     </ul>
                 </div>
             </div>
-
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
                 <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
@@ -146,7 +119,6 @@
                     </ul>
                 </div>
             </div>
-
             <div class="card" onclick="toggleDropdown('drop3', this)">
                 <h3>Unlimited Flow</h3>
                 <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
@@ -175,12 +147,37 @@
     <footer>
         <div class="footer-nav">
             <a href="./about/" class="footer-link">About</a>
-            <a href="mailto:info@premiereflow.com" class="footer-link">Contact</a>
-            <a href="#" class="footer-link">Legal</a>
+            <div class="contact-wrapper">
+                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <div id="contactBubble" class="contact-bubble">
+                    <span style="font-size: 10px; display: block; margin-bottom: 5px; color: #666; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                    <button class="copy-btn" onclick="copyEmail()" title="Copy to clipboard">📋</button>
+                </div>
+            </div>
+            <a href="#" class="footer-link">Terms</a>
         </div>
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        function toggleContact() {
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+        function copyEmail() {
+            navigator.clipboard.writeText("info@premiereflow.com");
+            const btn = document.querySelector(".copy-btn");
+            btn.innerText = "✅";
+            setTimeout(() => { btn.innerText = "📋"; }, 2000);
+        }
+        // Close bubble when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.footer-link')) {
+                const bubble = document.getElementById("contactBubble");
+                if (bubble.classList.contains('show')) { bubble.classList.remove('show'); }
+            }
+        }
+    </script>
 </body>
 </html>
