@@ -4,170 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About | Premiere Flow</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://premiereflow.com/about/">
+    <meta property="og:title" content="About | Premiere Flow Philosophy">
+    <meta property="og:description" content="Proprietary production and digital staging for elite inventory.">
+    <meta property="og:image" content="../premiereflowiconlogo.png?v=2">
+
+    <meta name="theme-color" content="#000000">
+
+    <link rel="stylesheet" href="../style.css">
+    
     <style>
-        :root {
-            --bg-color: #0f0f0f;
-            --text-color: #f5f5f5;
-            --accent: #d4af37;
-            --secondary-text: #a0a0a0;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        /* Cohesive Header matching index.html */
-        header {
-            padding: 30px 10%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: transparent;
-        }
-
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            text-decoration: none;
-            color: var(--text-color);
-            letter-spacing: 1px;
-        }
-
-        nav a {
-            color: var(--secondary-text);
-            text-decoration: none;
-            margin-left: 30px;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--accent);
-        }
-
-        /* Container & Content */
-        .container {
+        /* Custom About Page Layout Adjustments */
+        nav { padding: 10px 0; }
+        
+        .about-container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 60px 10%;
+            padding: 40px 20px 100px 20px;
+            text-align: center;
         }
 
-        .hero-text {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 8vw, 4rem);
+        .about-hero h1 {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 20px;
             line-height: 1.1;
-            margin-bottom: 40px;
         }
 
-        .hero-text i {
+        .about-hero i {
             font-style: italic;
+            font-family: inherit;
         }
 
-        .sub-heading {
-            color: var(--accent);
+        .philosophy-card {
+            background: #111111;
+            border: 1px solid #222;
+            padding: 40px;
+            margin-top: 40px;
+            border-radius: 4px; /* matching your card style */
+            text-align: left;
+        }
+
+        .sub-label {
+            color: #d4af37; /* Using your gold accent color */
             text-transform: uppercase;
             letter-spacing: 3px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 11px;
+            margin-bottom: 15px;
+            display: block;
         }
 
-        .content-block {
+        .philosophy-text {
             font-size: 1.2rem;
+            line-height: 1.8;
+            color: #cccccc;
             font-weight: 300;
-            color: var(--secondary-text);
-            margin-bottom: 40px;
         }
 
-        .highlight {
-            color: var(--text-color);
+        .highlight-white {
+            color: #ffffff;
             font-weight: 400;
         }
 
-        .grid {
+        .about-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 60px;
-            margin-top: 80px;
+            gap: 30px;
+            margin-top: 30px;
+            text-align: left;
         }
 
-        .grid-item h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 15px;
+        .grid-box {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 30px;
         }
 
-        .grid-item p {
-            color: var(--secondary-text);
-            font-weight: 300;
-            font-size: 1rem;
+        .grid-box h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
         }
 
-        .centered-callout {
-            text-align: center;
-            margin-top: 100px;
-            padding: 60px 0;
-            border-top: 1px solid #222;
+        .grid-box p {
+            font-size: 0.95rem;
+            color: #888888;
+            line-height: 1.6;
         }
 
-        footer {
-            padding: 40px 10%;
-            text-align: center;
-            border-top: 1px solid #222;
-            color: #444;
-            font-size: 0.8rem;
+        .back-home {
+            margin-top: 60px;
+            display: block;
+            color: #555555;
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+        }
+
+        .back-home:hover {
+            color: #d4af37;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="/" class="logo">PREMIERE FLOW</a>
-        <nav>
-            <a href="/">Home</a>
-            <a href="mailto:nick@premiereflow.com">Contact</a>
-        </nav>
-    </header>
+    <nav>
+        <a href="../"><img src="../logo.png" alt="Premiere Flow Logo" class="logo"></a>
+    </nav>
 
-    <div class="container">
-        <h1 class="hero-text">Solving the inventory bottleneck through <i>precision</i>.</h1>
-
-        <section class="philosophy-section">
-            <div class="sub-heading">Our Philosophy</div>
-            <div class="content-block">
-                Premiere Flow was built to solve the modern inventory bottleneck. We combine high-speed <span class="highlight">digital processing</span> with a meticulous eye for detail to ensure every vehicle on your lot looks like it belongs in a flagship showroom.
-            </div>
+    <main class="about-container">
+        
+        <section class="about-hero">
+            <span class="sub-label">Our Mission</span>
+            <h1>SOLVING THE INVENTORY <br>BOTTLENECK THROUGH <i>PRECISION.</i></h1>
         </section>
 
-        <div class="grid">
-            <div class="grid-item">
-                <div class="sub-heading">The Engine</div>
-                <h3>Proprietary Production.</h3>
+        <section class="philosophy-card">
+            <span class="sub-label">The Philosophy</span>
+            <p class="philosophy-text">
+                Premiere Flow was built to solve the inventory bottleneck. We combine high-speed <span class="highlight-white">digital processing</span> with a meticulous eye for detail to ensure every vehicle on your lot looks like it belongs in a flagship showroom.
+            </p>
+        </section>
+
+        <div class="about-grid">
+            <div class="grid-box">
+                <span class="sub-label">The Engine</span>
+                <h3>PROPRIETARY PRODUCTION</h3>
                 <p>Our workflow utilizes a proprietary production engine designed specifically for the automotive sector. This system handles the heavy lifting of digital staging, ensuring consistency across thousands of assets.</p>
             </div>
-            <div class="grid-item">
-                <div class="sub-heading">The Specialists</div>
-                <h3>Digital Staging Artists.</h3>
+
+            <div class="grid-box">
+                <span class="sub-label">The Specialists</span>
+                <h3>DIGITAL STAGING ARTISTS</h3>
                 <p>Technology is only as good as the eye behind it. Our digital staging artists oversee every frame, providing a hybrid quality control layer that machines simply cannot replicate.</p>
             </div>
         </div>
 
-        <section class="centered-callout">
-            <div class="sub-heading">The Standard</div>
-            <h2 class="hero-text" style="font-size: 2rem;">"Boutique service. Scalable results."</h2>
+        <section class="cta-area" style="margin-top: 80px;">
+            <p class="subtitle" style="margin-bottom: 30px; font-style: italic;">"Boutique service. Scalable results."</p>
+            <a href="../" class="back-home">RETURN TO SHOWROOM</a>
+            <p class="footer-questions" style="margin-top: 40px;">Questions? info@premiereflow.com</p>
         </section>
-    </div>
 
-    <footer>
-        &copy; 2026 Premiere Flow. Boutique Automotive Production.
-    </footer>
+    </main>
 
 </body>
 </html>
