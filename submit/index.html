@@ -166,7 +166,6 @@
         .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
-        
         #branding-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
 
         /* FOOTER & MENU STYLING */
@@ -179,7 +178,7 @@
         /* ACTIVE PAGE HIGHLIGHT */
         .nav-submit { color: #fff !important; pointer-events: none; }
 
-        /* CONTACT POPUP LOGIC */
+        /* CONTACT POPUP LOGIC - FORCE ROW */
         .contact-wrapper { display: inline-flex; align-items: center; position: relative; }
         .contact-bubble {
             visibility: hidden; background-color: #111; color: #fff; text-align: center;
@@ -187,11 +186,12 @@
             bottom: 180%; left: 50%; transform: translateX(-50%);
             border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
+            display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px;
         }
         .contact-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
         .contact-bubble.show { visibility: visible; opacity: 1; }
-        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; }
+        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; vertical-align: middle; white-space: nowrap; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; white-space: nowrap; }
 
         @media (max-width: 600px) {
             .footer-nav { flex-direction: column; gap: 25px; }
@@ -275,7 +275,6 @@
             <div class="contact-wrapper">
                 <span class="footer-link" onclick="toggleContact()">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
                     <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
                     <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
