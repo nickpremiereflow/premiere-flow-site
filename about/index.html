@@ -7,21 +7,19 @@
     
     <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
     
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://premiereflow.com/about/">
-    <meta property="og:title" content="About | Premiere Flow">
-    <meta property="og:description" content="Better photos. Faster sales.">
-    <meta property="og:image" content="../premiereflowiconlogo.png?v=2">
-
-    <meta name="theme-color" content="#000000">
-
     <link rel="stylesheet" href="../style.css">
     
     <style>
-        nav { padding: 10px 0; }
-        
+        /* Consistent Header Styling */
+        .header-container { 
+            margin-top: 40px; 
+            text-align: center; 
+            width: 100%; 
+        }
+        .logo-img { height: 40px; }
+
         .about-container {
-            max-width: 900px; /* Slightly wider to help line balance */
+            max-width: 900px;
             margin: 0 auto;
             padding: 40px 20px 100px 20px;
             text-align: center;
@@ -57,7 +55,6 @@
             font-weight: 600;
             display: block;
             margin-bottom: 20px;
-            letter-spacing: 0.2px;
             line-height: 1.3;
         }
 
@@ -67,7 +64,7 @@
             color: #bbbbbb;
             font-weight: 300;
             margin: 0 auto;
-            max-width: 700px; /* Balanced for even word distribution */
+            max-width: 700px;
         }
 
         .about-grid {
@@ -108,20 +105,16 @@
             transition: 0.3s;
         }
 
-        .back-home:hover {
-            color: #d4af37;
-            border-bottom: 1px solid #d4af37;
-        }
+        .back-home:hover { color: #d4af37; border-bottom: 1px solid #d4af37; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <a href="../"><img src="../logo.png" alt="Premiere Flow Logo" class="logo"></a>
-    </nav>
+    <header class="header-container">
+        <a href="../"><img src="../logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
+    </header>
 
     <main class="about-container">
-        
         <section class="about-hero">
             <span class="sub-label">The Vision</span>
             <h1>CLEANER PHOTOS.<br>FASTER <i>SALES.</i></h1>
@@ -150,7 +143,6 @@
             <a href="../" class="back-home">RETURN HOME</a>
             <p class="footer-questions" style="margin-top: 40px;">Questions? info@premiereflow.com</p>
         </section>
-
     </main>
 
 </body>
