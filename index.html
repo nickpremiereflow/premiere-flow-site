@@ -19,7 +19,7 @@
     
     <style>
         .header-container { margin-top: 40px; text-align: center; width: 100%; }
-        .logo-img { height: 40px; }
+        .logo-img { height: 40px; border: none; }
         nav { padding: 0; }
         .hero-section { margin-top: 40px; padding-top: 0; }
 
@@ -30,8 +30,7 @@
 
         .comparison-wrapper { flex: 1; min-width: 320px; max-width: 500px; }
 
-        /* Tightened Spacing */
-        .cta-area { padding-bottom: 20px; text-align: center; }
+        .cta-area { padding-bottom: 0px; text-align: center; }
 
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
         .footer-nav { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; white-space: nowrap; }
@@ -61,7 +60,7 @@
 <body>
 
     <header class="header-container">
-        <img src="logo.png" alt="Premiere Flow Logo" class="logo-img">
+        <a href="/"><img src="logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
     </header>
 
     <main>
@@ -156,7 +155,7 @@
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
                     <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">Copy</button>
+                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
             </div>
             <a href="#" class="footer-link">Terms</a>
