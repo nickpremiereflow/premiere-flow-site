@@ -32,6 +32,37 @@
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
+        /* DROPDOWN SPACING FIX */
+        .dropdown-content {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease-out;
+            background: #050505;
+        }
+
+        .dropdown-content ul {
+            padding: 20px 20px 25px 20px; /* Added top padding to prevent crowding */
+            margin: 0;
+            list-style: none;
+            text-align: left;
+        }
+
+        .dropdown-content li {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-content li::before {
+            content: "◆";
+            color: #fff;
+            font-size: 8px;
+            margin-right: 12px;
+            opacity: 0.5;
+        }
+
         /* FOOTER & MENU STYLING */
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
         
@@ -60,15 +91,12 @@
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ACTIVE PAGE HIGHLIGHT */
         .nav-home { color: #fff !important; pointer-events: none; }
 
-        /* CONTACT POPUP LOGIC */
         .contact-wrapper { 
             display: inline-flex; 
             align-items: center; 
             position: relative; 
-            height: auto;
         }
         
         .contact-bubble {
@@ -87,24 +115,11 @@
         .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; white-space: nowrap; }
         .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; white-space: nowrap; }
 
-        /* MOBILE RESPONSIVE FOOTER */
         @media (max-width: 600px) {
-            .footer-nav {
-                flex-direction: column;
-                gap: 25px;
-            }
-            .footer-link {
-                font-size: 12px;
-            }
-            .contact-bubble {
-                bottom: auto;
-                top: 120%;
-            }
-            .contact-bubble::after {
-                top: auto;
-                bottom: 100%;
-                border-color: transparent transparent #333 transparent;
-            }
+            .footer-nav { flex-direction: column; gap: 25px; }
+            .footer-link { font-size: 12px; }
+            .contact-bubble { bottom: auto; top: 120%; }
+            .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
         }
     </style>
 </head>
@@ -152,6 +167,7 @@
                         <li>10 High-Res Photos for 1 Listing</li>
                         <li>Studio Background Replacement</li>
                         <li>Cinematic Lighting Enhancements</li>
+                        <li>Optional Custom Logos & Showroom Notes</li>
                     </ul>
                 </div>
             </div>
@@ -168,7 +184,7 @@
                         <li>10 High-Res Photos Per Listing</li>
                         <li>Studio Background Replacement</li>
                         <li>Cinematic Lighting Enhancements</li>
-                        <li>Showroom Notes & Logos Included</li>
+                        <li>Custom Branding & Showroom Notes</li>
                     </ul>
                 </div>
             </div>
@@ -184,7 +200,7 @@
                         <li>12 High-Res Photos Per Listing</li>
                         <li>Studio Background Replacement</li>
                         <li>Cinematic Lighting Enhancements</li>
-                        <li>Showroom Notes & Logos Included</li>
+                        <li>Custom Branding & Showroom Notes</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
                 </div>
@@ -235,7 +251,7 @@
                 content.style.maxHeight = null;
                 card.querySelector('.arrow').classList.remove('active');
             } else {
-                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.maxHeight = content.scrollHeight + 30 + "px"; /* buffer for padding */
                 card.querySelector('.arrow').classList.add('active');
             }
         }
