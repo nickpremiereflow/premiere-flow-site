@@ -35,11 +35,15 @@
             max-width: 480px;
             padding: 40px;
             animation: fadeInUp 0.8s ease-out;
+            display: flex; /* Added for vertical centering flow */
+            flex-direction: column;
+            align-items: center; /* Centers children horizontally */
         }
 
         .logo-header {
             text-align: center;
             margin-bottom: 50px;
+            width: 100%;
         }
 
         .logo-header img {
@@ -53,11 +57,13 @@
             font-size: 1.1rem;
             margin-bottom: 30px;
             text-align: center;
+            width: 100%;
         }
 
         .form-group {
             margin-bottom: 25px;
             text-align: left;
+            width: 100%;
         }
 
         label {
@@ -108,11 +114,16 @@
             display: none;
             line-height: 1.6;
             padding: 0 10px;
+            width: 100%;
+        }
+
+        #validation-stage, #submission-portal, #success-view {
+            width: 100%;
+            animation: fadeInUp 0.6s ease-out;
         }
 
         #submission-portal, #success-view {
             display: none;
-            animation: fadeInUp 0.6s ease-out;
         }
 
         .success-icon {
@@ -144,13 +155,14 @@
             background: #050505;
             border: 1px solid #111;
             border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
         
-        /* The Branding Fields start hidden */
         #branding-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
     </style>
 </head>
@@ -218,10 +230,59 @@
 </div>
 
 <script>
-    // 1. HANDLE FORM SUBMISSION
+    async function validateID() {
+        const id = document.getElementById('account-id').value;
+        const errorMsg = document.getElementById('error-message');
+        const webhookUrl = 'https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1';
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountID: id })
+            });
+            
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                const roundedCredits = Math.round(data.credits);
+
+                if (roundedCredits <= 0) {
+                    errorMsg.innerHTML = "0 credits remaining. Please purchase a refill to submit new inventory.<br><br>Visit <a href='https://premiereflow.com/sign-up' style='color: white;'>premiereflow.com/sign-up</a>";
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('validation-stage').style.display = 'none';
+                document.getElementById('submission-portal').style.display = 'block';
+                document.getElementById('error-message').style.display = 'none';
+                
+                document.getElementById('hidden-id').value = id;
+                document.getElementById('hidden-tier').value = data.tier;
+                document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
+                document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
+                
+                const brandingFields = document.getElementById('branding-fields');
+                const premiumTiers = ['Unlimited', 'Partner', 'Upgrade Plus'];
+                
+                if (premiumTiers.includes(data.tier)) {
+                    brandingFields.style.display = 'block';
+                } else {
+                    brandingFields.style.display = 'none';
+                }
+
+            } else {
+                errorMsg.innerHTML = "Account ID not found. Please check your welcome email for account number.<br><br>If problem persists please email info@premiereflow.com";
+                errorMsg.style.display = 'block';
+            }
+        } catch (error) {
+            errorMsg.innerText = "Connection error. Please try again.";
+            errorMsg.style.display = 'block';
+        }
+    }
+
     document.getElementById('inventory-form').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const listing = document.querySelector('input[name="listingUrl"]').value.trim();
         const folder = document.querySelector('input[name="photoFolder"]').value.trim();
         const errorMsg = document.getElementById('error-message');
@@ -260,59 +321,6 @@
             errorMsg.style.display = 'block';
         }
     });
-
-    // 2. BOUNCER VALIDATION (UNLOCK)
-    async function validateID() {
-        const id = document.getElementById('account-id').value;
-        const errorMsg = document.getElementById('error-message');
-        const webhookUrl = 'https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1';
-
-        try {
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accountID: id })
-            });
-            
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                const roundedCredits = Math.round(data.credits);
-
-                if (roundedCredits <= 0) {
-                    errorMsg.innerHTML = "0 credits remaining. Please purchase a refill to submit new inventory.<br><br>Visit <a href='https://premiereflow.com/sign-up' style='color: white;'>premiereflow.com/sign-up</a>";
-                    errorMsg.style.display = 'block';
-                    return;
-                }
-
-                document.getElementById('validation-stage').style.display = 'none';
-                document.getElementById('submission-portal').style.display = 'block';
-                document.getElementById('error-message').style.display = 'none';
-                
-                document.getElementById('hidden-id').value = id;
-                document.getElementById('hidden-tier').value = data.tier;
-                document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
-                document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
-                
-                // TIER-BASED FIELD UNLOCKING LOGIC
-                const brandingFields = document.getElementById('branding-fields');
-                const premiumTiers = ['Unlimited', 'Partner', 'Upgrade Plus'];
-                
-                if (premiumTiers.includes(data.tier)) {
-                    brandingFields.style.display = 'block';
-                } else {
-                    brandingFields.style.display = 'none';
-                }
-
-            } else {
-                errorMsg.innerHTML = "Account ID not found. Please check your welcome email for account number.<br><br>If problem persists please email info@premiereflow.com";
-                errorMsg.style.display = 'block';
-            }
-        } catch (error) {
-            errorMsg.innerText = "Connection error. Please try again.";
-            errorMsg.style.display = 'block';
-        }
-    }
 </script>
 
 </body>
