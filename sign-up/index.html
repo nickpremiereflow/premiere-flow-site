@@ -10,8 +10,8 @@
         body { margin: 0; padding: 0 20px; background-color: var(--bg-black); color: var(--accent-white); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
         .header-container { margin-top: 40px; text-align: center; width: 100%; max-width: 850px; }
-        .logo-img { height: 40px; margin-bottom: 15px; }
-        .btn-back { display: inline-block; background: transparent; color: #555; text-decoration: none; padding: 8px 0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; }
+        .logo-img { height: 40px; margin-bottom: 5px; border: none; }
+        .btn-back { display: inline-block; color: #555; text-decoration: none; padding: 8px 0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-bottom: 15px; }
         .btn-back:hover { color: #fff; }
 
         .instructions-container { width: 100%; max-width: 800px; margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left; }
@@ -36,13 +36,15 @@
         .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .addon-label { font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Unified Footer */
-        footer { width: 100%; margin-top: 80px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
+        footer { width: 100%; margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; }
         .footer-nav { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; white-space: nowrap; }
         .footer-link { color: #555; text-decoration: none; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; cursor: pointer; }
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* ACTIVE PAGE HIGHLIGHT */
+        .nav-signup { color: #fff !important; pointer-events: none; }
+        
         .contact-wrapper { position: relative; display: inline-block; }
         .contact-bubble {
             visibility: hidden; background-color: #111; color: #fff; text-align: center;
@@ -51,16 +53,15 @@
             border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
         }
-        .contact-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
         .contact-bubble.show { visibility: visible; opacity: 1; }
         .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 0; vertical-align: middle; transition: color 0.2s; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; }
     </style>
 </head>
 <body>
     <div class="header-container">
-        <img src="../logo.png" alt="Logo" class="logo-img"> <br>
-        <a href="../" class="btn-back">← Back to Home</a>
+        <a href="../"><img src="../logo.png" alt="Logo" class="logo-img"></a><br>
+        <a href="../" class="btn-back">← Return Home</a>
     </div>
 
     <div class="instructions-container">
@@ -75,24 +76,48 @@
         <div class="pkg-grid">
             <div class="pkg-card" onclick="handleSelection('upgrade', this)">
                 <span class="pkg-title shimmer">$49 — The Upgrade</span>
-                <ul class="pkg-list"><li>10 High-Res Photos for 1 Listing</li><li>Studio Background Replacement</li><li>Cinematic Lighting Enhancements</li></ul>
-                <div class="addon-section" onclick="event.stopPropagation()"><label class="addon-label"><input type="checkbox" id="branding-check"><span>Add Personal Branding & Logos (+$20)</span></label></div>
+                <ul class="pkg-list">
+                    <li>10 High-Res Photos for 1 Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
+                </ul>
+                <div class="addon-section" onclick="event.stopPropagation()">
+                    <label class="addon-label">
+                        <input type="checkbox" id="branding-check"> 
+                        <span>Add Personal Branding & Logos (+$20)</span>
+                    </label>
+                </div>
             </div>
+
             <div class="pkg-card" onclick="handleSelection('partner', this)">
                 <span class="pkg-title">$349 — The Partner Pack</span>
-                <ul class="pkg-list"><li>10 Listing Upgrades</li><li>10 High-Res Photos Per Listing</li><li>Studio Background Replacement</li><li>Cinematic Lighting Enhancements</li><li>Branding & Logos Included</li></ul>
+                <ul class="pkg-list">
+                    <li>10 Listing Upgrades</li>
+                    <li>10 High-Res Photos Per Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
+                    <li>Branding & Logos Included</li>
+                </ul>
             </div>
+
             <div class="pkg-card" onclick="handleSelection('unlimited', this)">
                 <span class="pkg-title">$999 — Unlimited Flow</span>
-                <ul class="pkg-list"><li>Unlimited Listings / Month</li><li>12 High-Res Photos Per Listing</li><li>Studio Background Replacement</li><li>Cinematic Lighting Enhancements</li><li>Branding & Logos Included</li></ul>
+                <ul class="pkg-list">
+                    <li>Unlimited Listings / Month</li>
+                    <li>12 High-Res Photos Per Listing</li>
+                    <li>Studio Background Replacement</li>
+                    <li>Cinematic Lighting Enhancements</li>
+                    <li>Branding & Logos Included</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <footer>
         <div class="footer-nav">
+            <a href="../" class="footer-link">Home</a>
             <a href="../about/" class="footer-link">About</a>
-            <a href="./" class="footer-link">Sign Up</a>
+            <a href="./" class="footer-link nav-signup">Sign Up</a>
             <a href="../submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
                 <span class="footer-link" onclick="toggleContact()">Contact</span>
