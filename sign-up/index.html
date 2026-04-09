@@ -26,8 +26,17 @@
         .pkg-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
         
         .pkg-title-area { flex: 1; }
-        .pkg-title { display: block; font-weight: 900; font-size: 1.4rem; margin-bottom: 4px; }
-        .fee-label { font-size: 9px; font-weight: 800; color: #444; letter-spacing: 1px; }
+        .pkg-title { display: block; font-weight: 900; font-size: 1.4rem; margin-bottom: 6px; }
+        
+        /* UPDATED FEE LABEL STYLE */
+        .fee-label { 
+            font-size: 10px; 
+            font-weight: 900; 
+            color: #fff; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
 
         .select-btn {
             background: #fff;
@@ -107,7 +116,7 @@
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
                     <span class="pkg-title shimmer">$49 — The Upgrade</span>
-                    <span class="fee-label">(ONE TIME FEE)</span>
+                    <span class="fee-label">ONE TIME FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('upgrade')">Select</button>
             </div>
@@ -128,7 +137,7 @@
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
                     <span class="pkg-title">$349 — The Partner Pack</span>
-                    <span class="fee-label">(ONE TIME FEE)</span>
+                    <span class="fee-label">ONE TIME FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('partner')">Select</button>
             </div>
@@ -145,7 +154,7 @@
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
                     <span class="pkg-title">$999 — Unlimited Flow</span>
-                    <span class="fee-label">(RECURRING MONTHLY FEE)</span>
+                    <span class="fee-label">RECURRING MONTHLY FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('unlimited')">Select</button>
             </div>
