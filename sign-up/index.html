@@ -53,13 +53,14 @@
         }
         .select-btn:hover { background: #ccc; transform: translateY(-2px); }
 
-        .pkg-list { list-style: none; padding: 0; margin: 0; }
+        .pkg-list { list-style: none; padding: 0; margin: 0; text-align: left; }
         .pkg-list li { 
             font-size: 0.95rem; 
             color: #888; 
             margin-bottom: 12px; 
             display: flex; 
             align-items: flex-start; 
+            text-align: left;
             line-height: 1.4;
         }
         .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; margin-top: 4px; opacity: 0.8; flex-shrink: 0; }
@@ -93,6 +94,7 @@
             border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
         }
+        .contact-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
         .contact-bubble.show { visibility: visible; opacity: 1; }
         .bubble-row { display: flex; align-items: center; gap: 10px; justify-content: center; }
         .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; vertical-align: middle; white-space: nowrap; }
@@ -118,7 +120,7 @@
         <div class="step"><span class="step-num">Step 01</span><span class="step-text">Select package and complete secure checkout.</span></div>
         <div class="step"><span class="step-num">Step 02</span><span class="step-text">Receive Unique Account ID and Submission Portal Link.</span></div>
         <div class="step"><span class="step-num">Step 03</span><span class="step-text">Submit inventory assets via your dedicated Portal.</span></div>
-        <div class="step"><span class="step-num">Step 04</span><span class="step-text">Receive showroom-ready photos directly to your email.</span></div>
+        <div class="step"><span class="step-num">Step 04</span><span class="step-text">Receive upgraded photos directly to your email.</span></div>
     </div>
 
     <div class="signup-form">
@@ -134,7 +136,7 @@
             </div>
             <ul class="pkg-list">
                 <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
-                <li>10 Upgraded Listing Photos</li>
+                <li>10 Upgraded Photos</li>
                 <li>Studio Background Replacement</li>
                 <li>Advanced Lighting Enhancements</li>
             </ul>
@@ -156,7 +158,7 @@
             </div>
             <ul class="pkg-list">
                 <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
-                <li>10 Upgraded Listing Photos Per Listing</li>
+                <li>10 Upgraded Photos Per Listing</li>
                 <li>Custom Branding & Showroom Notes Included</li>
                 <li>Full Studio Background Replacement</li>
             </ul>
@@ -172,7 +174,7 @@
             </div>
             <ul class="pkg-list">
                 <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
-                <li>12 Upgraded Listing Photos Per Listing</li>
+                <li>12 Upgraded Photos Per Listing</li>
                 <li>Custom Branding & Showroom Notes Included</li>
                 <li>Priority Queue-Jump Processing</li>
             </ul>
