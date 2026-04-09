@@ -179,7 +179,6 @@
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
         
-        /* Showroom Fields Section */
         #showroom-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
 
         footer { width: 100%; margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; box-sizing: border-box; }
@@ -220,7 +219,7 @@
         <a href="../" class="btn-back">← Return Home</a>
 
         <div id="validation-stage">
-            <h2>Unlock Portal</h2>
+            <h2>Submission Portal</h2>
             <div class="form-group">
                 <label for="account-id">Account ID</label>
                 <input type="text" id="account-id" placeholder="PF-XXXX-XXXX">
@@ -367,7 +366,6 @@
             submitBtn.innerText = "SCANNING ASSETS FOR QUALITY...";
             submitBtn.disabled = true;
 
-            // Start 10-second fail-safe timer
             const failSafe = setTimeout(() => {
                 scanMsg.innerText = "Deep scan in progress. Analysis is taking longer than expected. You will receive an email confirmation shortly.";
                 scanMsg.style.display = 'block';
@@ -388,7 +386,6 @@
                 if (response.ok) {
                     const result = await response.json();
                     if (result.status === 'error') {
-                        // Handle the case where Claude rejects assets live
                         errorMsg.innerText = result.message || "Error: Assets inconsistent. Please ensure all photos are of the same vehicle.";
                         errorMsg.style.display = 'block';
                         submitBtn.innerText = "Submit for Production";
