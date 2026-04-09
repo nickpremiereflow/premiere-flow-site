@@ -43,7 +43,7 @@
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
-        /* DROPDOWN & SINGLE-LINE BULLET STYLING */
+        /* DROPDOWN & WRAPPING BULLET STYLING */
         .dropdown-content {
             overflow: hidden;
             max-height: 0;
@@ -63,8 +63,8 @@
             color: #888;
             margin-bottom: 12px;
             display: flex;
-            align-items: center;
-            white-space: nowrap; /* FORCES SINGLE LINE */
+            align-items: flex-start; /* Aligns icon with top of text if it wraps */
+            line-height: 1.4;
         }
 
         .bullet-highlight {
@@ -78,8 +78,9 @@
             color: #fff;
             font-size: 8px;
             margin-right: 12px;
+            margin-top: 4px; /* Centers icon vertically with first line */
             opacity: 0.5;
-            flex-shrink: 0; /* PREVENTS ICON SHRINKING */
+            flex-shrink: 0;
         }
 
         /* FOOTER & MENU STYLING */
@@ -139,7 +140,6 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
-            .dropdown-content li { font-size: 0.72rem; } /* Slightly smaller for mobile single-line safety */
         }
     </style>
 </head>
@@ -184,8 +184,8 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
-                        <li>(<span class="bullet-highlight">1</span> Listing Total Upgrade)</li>
-                        <li>10 Updated Cinematic Stills</li>
+                        <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
+                        <li>10 Upgraded Listing Photos</li>
                         <li>Studio Background Replacement</li>
                         <li>Advanced Lighting Enhancements</li>
                     </ul>
@@ -201,7 +201,7 @@
                 <div id="drop2" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
-                        <li>10 Updated Cinematic Stills Per Listing</li>
+                        <li>10 Upgraded Listing Photos Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
                         <li>Full Studio Background Replacement</li>
                     </ul>
@@ -216,7 +216,7 @@
                 <div id="drop3" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
-                        <li>12 Updated Cinematic Stills Per Listing</li>
+                        <li>12 Upgraded Listing Photos Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
