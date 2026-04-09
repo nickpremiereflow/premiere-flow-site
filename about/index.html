@@ -126,14 +126,14 @@
             letter-spacing: 2px; 
             transition: color 0.3s; 
             cursor: pointer;
-            line-height: 1; /* Fixes vertical drift */
+            line-height: 1;
             display: inline-block;
         }
         
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ACTIVE PAGE HIGHLIGHT */
+        /* ACTIVE PAGE HIGHLIGHT: About is active */
         .nav-about { color: #fff !important; pointer-events: none; }
 
         /* CONTACT POPUP LOGIC */
@@ -229,7 +229,7 @@
                     <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
             </div>
-            <a href="#" class="footer-link">Terms</a>
+            <a href="../terms/" class="footer-link">Terms</a>
         </div>
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
@@ -247,7 +247,9 @@
         window.onclick = function(event) {
             if (!event.target.matches('.footer-link')) {
                 const bubble = document.getElementById("contactBubble");
-                if (bubble.classList.contains('show')) { bubble.classList.remove('show'); }
+                if (bubble && bubble.classList.contains('show')) {
+                    bubble.classList.remove('show');
+                }
             }
         }
     </script>
