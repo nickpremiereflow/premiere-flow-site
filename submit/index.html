@@ -145,6 +145,12 @@
             transform: translateY(-2px);
         }
 
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: wait;
+        }
+
         #error-message {
             color: #ff4d4d;
             font-size: 13px;
@@ -261,6 +267,7 @@
                 </div>
 
                 <button type="submit" id="submit-btn" style="margin-top: 20px;">Submit for Production</button>
+                <p id="scan-message" style="display:none; color: #888; font-size: 11px; margin-top: 15px; text-align: center;"></p>
             </form>
         </div>
 
@@ -292,7 +299,7 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="footer-link">Terms</a>
+            <a href="../terms/" class="footer-link">Terms</a>
         </div>
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
@@ -327,7 +334,6 @@
                     const userTier = (data.tier || "").toLowerCase();
                     const showroomFields = document.getElementById('showroom-fields');
                     
-                    // Show for Partner, Unlimited, and Plus tiers
                     if (userTier.includes('partner') || userTier.includes('unlimited') || userTier.includes('plus')) {
                         showroomFields.style.display = 'block';
                     } else {
@@ -348,6 +354,7 @@
             const listing = document.querySelector('input[name="listingUrl"]').value.trim();
             const folder = document.querySelector('input[name="photoFolder"]').value.trim();
             const errorMsg = document.getElementById('error-message');
+            const scanMsg = document.getElementById('scan-message');
             const submitBtn = document.getElementById('submit-btn');
             
             if (!listing && !folder) {
@@ -356,8 +363,15 @@
                 return;
             }
             
-            submitBtn.innerText = "Securing Assets...";
+            errorMsg.style.display = 'none';
+            submitBtn.innerText = "SCANNING ASSETS FOR QUALITY...";
             submitBtn.disabled = true;
+
+            // Start 10-second fail-safe timer
+            const failSafe = setTimeout(() => {
+                scanMsg.innerText = "Deep scan in progress. Analysis is taking longer than expected. You will receive an email confirmation shortly.";
+                scanMsg.style.display = 'block';
+            }, 10000);
             
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
@@ -368,18 +382,33 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
+                
+                clearTimeout(failSafe);
+                
                 if (response.ok) {
-                    document.getElementById('submission-portal').style.display = 'none';
-                    document.getElementById('success-view').style.display = 'block';
-                    document.getElementById('error-message').style.display = 'none';
+                    const result = await response.json();
+                    if (result.status === 'error') {
+                        // Handle the case where Claude rejects assets live
+                        errorMsg.innerText = result.message || "Error: Assets inconsistent. Please ensure all photos are of the same vehicle.";
+                        errorMsg.style.display = 'block';
+                        submitBtn.innerText = "Submit for Production";
+                        submitBtn.disabled = false;
+                        scanMsg.style.display = 'none';
+                    } else {
+                        document.getElementById('submission-portal').style.display = 'none';
+                        document.getElementById('success-view').style.display = 'block';
+                        document.getElementById('error-message').style.display = 'none';
+                    }
                 } else {
                     throw new Error('Submission failed');
                 }
             } catch (error) {
+                clearTimeout(failSafe);
                 submitBtn.innerText = "Submit for Production";
                 submitBtn.disabled = false;
                 errorMsg.innerText = "Submission failed. Please try again.";
                 errorMsg.style.display = 'block';
+                scanMsg.style.display = 'none';
             }
         });
 
