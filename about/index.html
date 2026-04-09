@@ -4,112 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About | Premiere Flow</title>
-    
     <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
-    
     <link rel="stylesheet" href="../style.css">
-    
     <style>
-        /* Consistent Header Styling */
-        .header-container { 
-            margin-top: 40px; 
-            text-align: center; 
-            width: 100%; 
-        }
+        .header-container { margin-top: 40px; text-align: center; width: 100%; }
         .logo-img { height: 40px; }
-
-        .about-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px 100px 20px;
-            text-align: center;
-        }
-
-        .about-hero h1 {
-            font-size: clamp(2.2rem, 9vw, 4rem);
-            margin-bottom: 15px;
-            line-height: 1.1;
-            letter-spacing: -1px;
-        }
-
-        .philosophy-card {
-            background: #111111;
-            border: 1px solid #222;
-            padding: 60px 40px;
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .sub-label {
-            color: #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 10px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .emotional-hook {
-            font-size: 1.7rem;
-            color: #ffffff;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-
-        .philosophy-text {
-            font-size: 1.4rem;
-            line-height: 1.4;
-            color: #bbbbbb;
-            font-weight: 300;
-            margin: 0 auto;
-            max-width: 700px;
-        }
-
-        .about-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .grid-box {
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 30px;
-        }
-
-        .grid-box h3 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #d4af37;
-        }
-
-        .grid-box p {
-            font-size: 1rem;
-            color: #999;
-            line-height: 1.5;
-            margin-bottom: 0;
-        }
-
-        .back-home {
-            margin-top: 60px;
-            display: inline-block;
-            color: #666;
-            text-decoration: none;
-            font-size: 11px;
-            letter-spacing: 2px;
-            border-bottom: 1px solid transparent;
-            transition: 0.3s;
-        }
-
+        .about-container { max-width: 900px; margin: 0 auto; padding: 40px 20px 100px 20px; text-align: center; }
+        .about-hero h1 { font-size: clamp(2.2rem, 9vw, 4rem); margin-bottom: 15px; line-height: 1.1; letter-spacing: -1px; }
+        .philosophy-card { background: #111111; border: 1px solid #222; padding: 60px 40px; margin-top: 30px; text-align: center; }
+        .sub-label { color: #d4af37; text-transform: uppercase; letter-spacing: 2px; font-size: 10px; margin-bottom: 10px; display: block; }
+        .emotional-hook { font-size: 1.7rem; color: #ffffff; font-weight: 600; display: block; margin-bottom: 20px; line-height: 1.3; }
+        .philosophy-text { font-size: 1.4rem; line-height: 1.4; color: #bbbbbb; font-weight: 300; margin: 0 auto; max-width: 700px; }
+        .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; text-align: left; }
+        .grid-box { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 30px; }
+        .grid-box h3 { margin-top: 0; font-size: 1.2rem; color: #d4af37; }
+        .grid-box p { font-size: 1rem; color: #999; line-height: 1.5; margin-bottom: 0; }
+        .back-home { margin-top: 60px; display: inline-block; color: #666; text-decoration: none; font-size: 11px; letter-spacing: 2px; border-bottom: 1px solid transparent; transition: 0.3s; }
         .back-home:hover { color: #d4af37; border-bottom: 1px solid #d4af37; }
+
+        footer { margin-top: 80px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
+        .footer-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+        .footer-link { color: #555; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.3s; cursor: pointer; }
+        .footer-link:hover { color: #fff; }
+        .footer-copyright { color: #333; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .contact-wrapper { position: relative; display: inline-block; }
+        .contact-bubble {
+            visibility: hidden; background-color: #111; color: #fff; text-align: center;
+            border-radius: 8px; padding: 12px 15px; position: absolute; z-index: 100;
+            bottom: 150%; left: 50%; transform: translateX(-50%);
+            border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
+        }
+        .contact-bubble::after {
+            content: ""; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .contact-bubble.show { visibility: visible; opacity: 1; }
+        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 8px; }
+        .copy-btn { background: none; border: none; color: #888; cursor: pointer; font-size: 14px; padding: 0; vertical-align: middle; transition: color 0.2s; }
+        .copy-btn:hover { color: #fff; }
     </style>
 </head>
 <body>
-
     <header class="header-container">
         <a href="../"><img src="../logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
     </header>
@@ -119,31 +57,57 @@
             <span class="sub-label">The Vision</span>
             <h1>CLEANER PHOTOS.<br>FASTER <i>SALES.</i></h1>
         </section>
-
         <section class="philosophy-card">
             <span class="emotional-hook">Bad lighting and messy lot photos stop customers from even showing up.</span>
-            <p class="philosophy-text">
-                We fix your inventory photos so every vehicle looks like it is sitting in a flagship showroom.
-            </p>
+            <p class="philosophy-text">We fix your inventory photos so every vehicle looks like it is sitting in a flagship showroom.</p>
         </section>
-
         <div class="about-grid">
             <div class="grid-box">
                 <h3>Total Consistency</h3>
                 <p>Whether you are upgrading a single listing or your entire lot, our system ensures every photo follows the same high-end brand standard.</p>
             </div>
-
             <div class="grid-box">
                 <h3>Surgical Precision</h3>
                 <p>We focus on the details that matter including lighting, reflections, and seamless backgrounds to create a natural look that actually converts.</p>
             </div>
         </div>
-
-        <section class="cta-area" style="margin-top: 40px;">
+        <section class="cta-area" style="text-align: center;">
             <a href="../" class="back-home">RETURN HOME</a>
-            <p class="footer-questions" style="margin-top: 40px;">Questions? info@premiereflow.com</p>
         </section>
     </main>
 
+    <footer>
+        <div class="footer-nav">
+            <a href="../about/" class="footer-link">About</a>
+            <div class="contact-wrapper">
+                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <div id="contactBubble" class="contact-bubble">
+                    <span style="font-size: 10px; display: block; margin-bottom: 5px; color: #666; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                    <button class="copy-btn" onclick="copyEmail()" title="Copy to clipboard">📋</button>
+                </div>
+            </div>
+            <a href="#" class="footer-link">Terms</a>
+        </div>
+        <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleContact() {
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+        function copyEmail() {
+            navigator.clipboard.writeText("info@premiereflow.com");
+            const btn = document.querySelector(".copy-btn");
+            btn.innerText = "✅";
+            setTimeout(() => { btn.innerText = "📋"; }, 2000);
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.footer-link')) {
+                const bubble = document.getElementById("contactBubble");
+                if (bubble.classList.contains('show')) { bubble.classList.remove('show'); }
+            }
+        }
+    </script>
 </body>
 </html>
