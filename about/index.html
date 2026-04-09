@@ -19,21 +19,22 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 0;
+            line-height: 1.6;
         }
 
+        /* Cohesive Header matching index.html */
         header {
-            padding: 40px 10%;
+            padding: 30px 10%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: transparent;
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             text-decoration: none;
             color: var(--text-color);
             letter-spacing: 1px;
@@ -51,21 +52,22 @@
             color: var(--accent);
         }
 
+        /* Container & Content */
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 80px 20px;
+            padding: 60px 10%;
         }
 
         .hero-text {
             font-family: 'Playfair Display', serif;
             font-size: clamp(2.5rem, 8vw, 4rem);
-            margin-bottom: 40px;
             line-height: 1.1;
+            margin-bottom: 40px;
         }
 
-        .philosophy-section {
-            margin-top: 60px;
+        .hero-text i {
+            font-style: italic;
         }
 
         .sub-heading {
@@ -91,34 +93,36 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
             margin-top: 80px;
         }
 
         .grid-item h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .grid-item p {
-            font-size: 1rem;
-            font-weight: 300;
             color: var(--secondary-text);
+            font-weight: 300;
+            font-size: 1rem;
+        }
+
+        .centered-callout {
+            text-align: center;
+            margin-top: 100px;
+            padding: 60px 0;
+            border-top: 1px solid #222;
         }
 
         footer {
-            padding: 60px 10%;
-            border-top: 1px solid #222;
+            padding: 40px 10%;
             text-align: center;
-            font-size: 0.9rem;
-            color: var(--secondary-text);
-            margin-top: 100px;
-        }
-
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
+            border-top: 1px solid #222;
+            color: #444;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -133,9 +137,7 @@
     </header>
 
     <div class="container">
-        <div class="hero-text">
-            Solving the inventory bottleneck through <i>precision</i>.
-        </div>
+        <h1 class="hero-text">Solving the inventory bottleneck through <i>precision</i>.</h1>
 
         <section class="philosophy-section">
             <div class="sub-heading">Our Philosophy</div>
@@ -157,16 +159,14 @@
             </div>
         </div>
 
-        <section class="philosophy-section" style="text-align: center; margin-top: 100px;">
+        <section class="centered-callout">
             <div class="sub-heading">The Standard</div>
-            <div class="hero-text" style="font-size: 2rem;">
-                "Boutique service. Scalable results."
-            </div>
+            <h2 class="hero-text" style="font-size: 2rem;">"Boutique service. Scalable results."</h2>
         </section>
     </div>
 
     <footer>
-        &copy; 2026 Premiere Flow. Boutique Digital Production.
+        &copy; 2026 Premiere Flow. Boutique Automotive Production.
     </footer>
 
 </body>
