@@ -38,6 +38,9 @@
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* ACTIVE PAGE HIGHLIGHT */
+        .nav-home { color: #fff !important; pointer-events: none; }
+
         .contact-wrapper { position: relative; display: inline-block; }
         .contact-bubble {
             visibility: hidden; background-color: #111; color: #fff; text-align: center;
@@ -53,8 +56,7 @@
         }
         .contact-bubble.show { visibility: visible; opacity: 1; }
         .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 0; vertical-align: middle; transition: color 0.2s; }
-        .copy-btn:hover { color: #fff; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -147,6 +149,7 @@
 
     <footer>
         <div class="footer-nav">
+            <a href="/" class="footer-link nav-home">Home</a>
             <a href="./about/" class="footer-link">About</a>
             <a href="./sign-up/" class="footer-link">Sign Up</a>
             <a href="./submit/" class="footer-link">Submit Portal</a>
