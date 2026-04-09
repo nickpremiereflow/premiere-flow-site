@@ -55,6 +55,8 @@
             padding: 20px 20px 25px 20px;
             margin: 0;
             list-style: none;
+            display: block; /* Ensure container is a block */
+            text-align: left; /* Explicitly align contents left */
         }
 
         .dropdown-content li {
@@ -62,9 +64,11 @@
             color: #888;
             margin-bottom: 12px;
             display: flex;
-            align-items: flex-start; /* FIX: Keeps diamond at top of wrapped text */
-            text-align: left; /* FIX: Forces all lines to the left */
+            align-items: flex-start; 
+            justify-content: flex-start; /* Forces flex children to the left */
+            text-align: left; /* Forces wrapped text lines to the left */
             line-height: 1.4;
+            width: 100%; /* Ensures bullet takes full width of card */
         }
 
         .bullet-highlight {
@@ -185,7 +189,7 @@
                 <div id="drop1" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
-                        <li>10 Upgraded Listing Photos</li>
+                        <li>10 Upgraded Photos</li>
                         <li>Studio Background Replacement</li>
                         <li>Advanced Lighting Enhancements</li>
                     </ul>
@@ -201,7 +205,7 @@
                 <div id="drop2" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
-                        <li>10 Upgraded Listing Photos Per Listing</li>
+                        <li>10 Upgraded Photos Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
                         <li>Full Studio Background Replacement</li>
                     </ul>
@@ -216,7 +220,7 @@
                 <div id="drop3" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
-                        <li>12 Upgraded Listing Photos Per Listing</li>
+                        <li>12 Upgraded Photos Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
