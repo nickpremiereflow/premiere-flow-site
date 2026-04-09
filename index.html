@@ -41,7 +41,7 @@
         }
 
         .dropdown-content ul {
-            padding: 20px 20px 25px 20px; /* Added top padding to prevent crowding */
+            padding: 20px 20px 25px 20px;
             margin: 0;
             list-style: none;
             text-align: left;
@@ -91,6 +91,7 @@
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* ACTIVE PAGE HIGHLIGHT: Home is active */
         .nav-home { color: #fff !important; pointer-events: none; }
 
         .contact-wrapper { 
@@ -230,7 +231,7 @@
                     </div>
                 </div>
             </div>
-            <a href="#" class="footer-link">Terms</a>
+            <a href="./terms/" class="footer-link">Terms</a>
         </div>
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
@@ -251,7 +252,7 @@
                 content.style.maxHeight = null;
                 card.querySelector('.arrow').classList.remove('active');
             } else {
-                content.style.maxHeight = content.scrollHeight + 30 + "px"; /* buffer for padding */
+                content.style.maxHeight = content.scrollHeight + 30 + "px";
                 card.querySelector('.arrow').classList.add('active');
             }
         }
