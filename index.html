@@ -30,7 +30,6 @@
 
         .comparison-wrapper { flex: 1; min-width: 320px; max-width: 500px; }
 
-        /* MOBILE SLIDER STABILITY FIX */
         .slider-container {
             touch-action: pan-y;
             user-select: none;
@@ -44,7 +43,7 @@
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
-        /* DROPDOWN SPACING FIX */
+        /* DROPDOWN & SINGLE-LINE BULLET STYLING */
         .dropdown-content {
             overflow: hidden;
             max-height: 0;
@@ -60,11 +59,18 @@
         }
 
         .dropdown-content li {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #888;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
+            white-space: nowrap; /* FORCES SINGLE LINE */
+        }
+
+        .bullet-highlight {
+            color: #fff;
+            font-weight: 800;
+            margin-right: 4px;
         }
 
         .dropdown-content li::before {
@@ -73,6 +79,7 @@
             font-size: 8px;
             margin-right: 12px;
             opacity: 0.5;
+            flex-shrink: 0; /* PREVENTS ICON SHRINKING */
         }
 
         /* FOOTER & MENU STYLING */
@@ -103,7 +110,6 @@
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ACTIVE PAGE HIGHLIGHT: Home is active */
         .nav-home { color: #fff !important; pointer-events: none; }
 
         .contact-wrapper { 
@@ -133,6 +139,7 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
+            .dropdown-content li { font-size: 0.72rem; } /* Slightly smaller for mobile single-line safety */
         }
     </style>
 </head>
@@ -177,10 +184,10 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
-                        <li>10 High-Res Photos for 1 Listing</li>
+                        <li>(<span class="bullet-highlight">1</span> Listing Total Upgrade)</li>
+                        <li>10 Updated Cinematic Stills</li>
                         <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
-                        <li>Optional Custom Logos & Showroom Notes</li>
+                        <li>Advanced Lighting Enhancements</li>
                     </ul>
                 </div>
             </div>
@@ -193,11 +200,10 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
-                        <li>10 Listing Upgrades</li>
-                        <li>10 High-Res Photos Per Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
+                        <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
+                        <li>10 Updated Cinematic Stills Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
+                        <li>Full Studio Background Replacement</li>
                     </ul>
                 </div>
             </div>
@@ -209,10 +215,8 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop3" class="dropdown-content">
                     <ul>
-                        <li>Unlimited Listings Per Month</li>
-                        <li>12 High-Res Photos Per Listing</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Cinematic Lighting Enhancements</li>
+                        <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
+                        <li>12 Updated Cinematic Stills Per Listing</li>
                         <li>Custom Branding & Showroom Notes</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
@@ -273,9 +277,7 @@
             const container = document.getElementById(containerId);
             const afterImg = container.querySelector('.img-after');
             const handle = container.querySelector('.slider-line');
-            let val = Math.max(0, Math.min(100, e.value)); // Force range between 0-100
-            
-            // Fixed logic for clipping to prevent inversion on mobile
+            let val = Math.max(0, Math.min(100, e.value));
             afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             handle.style.left = `${val}%`;
         }
