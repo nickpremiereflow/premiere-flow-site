@@ -35,15 +35,11 @@
             max-width: 480px;
             padding: 40px;
             animation: fadeInUp 0.8s ease-out;
-            display: flex; /* Added for vertical centering flow */
-            flex-direction: column;
-            align-items: center; /* Centers children horizontally */
         }
 
         .logo-header {
             text-align: center;
             margin-bottom: 50px;
-            width: 100%;
         }
 
         .logo-header img {
@@ -57,13 +53,11 @@
             font-size: 1.1rem;
             margin-bottom: 30px;
             text-align: center;
-            width: 100%;
         }
 
         .form-group {
             margin-bottom: 25px;
             text-align: left;
-            width: 100%;
         }
 
         label {
@@ -114,38 +108,11 @@
             display: none;
             line-height: 1.6;
             padding: 0 10px;
-            width: 100%;
-        }
-
-        #validation-stage, #submission-portal, #success-view {
-            width: 100%;
-            animation: fadeInUp 0.6s ease-out;
         }
 
         #submission-portal, #success-view {
             display: none;
-        }
-
-        .success-icon {
-            font-size: 3rem;
-            color: var(--accent-gold);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .success-title {
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .success-message {
-            color: #888;
-            text-align: center;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out;
         }
 
         #account-header {
@@ -155,14 +122,11 @@
             background: #050505;
             border: 1px solid #111;
             border-radius: 12px;
-            width: 100%;
-            box-sizing: border-box;
         }
 
         .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
-        
         #branding-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
     </style>
 </head>
@@ -218,15 +182,6 @@
             <button type="submit" id="submit-btn" style="margin-top: 20px;">Submit for Production</button>
         </form>
     </div>
-
-    <div id="success-view">
-        <div class="success-icon">✦</div>
-        <div class="success-title">Submission Received</div>
-        <p class="success-message">
-            Your inventory has been queued for production. Our team is now reviewing your assets to ensure brand alignment. You will receive an email once your high-fidelity media is ready for review.
-        </p>
-        <button onclick="location.reload()">Submit Another Vehicle</button>
-    </div>
 </div>
 
 <script>
@@ -241,7 +196,6 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accountID: id })
             });
-            
             const data = await response.json();
 
             if (data.status === 'success') {
@@ -309,8 +263,9 @@
 
             if (response.ok) {
                 document.getElementById('submission-portal').style.display = 'none';
-                document.getElementById('success-view').style.display = 'block';
-                document.getElementById('error-message').style.display = 'none';
+                // You could add a success view toggle here if needed
+                alert("Success! Your inventory has been queued.");
+                location.reload();
             } else {
                 throw new Error('Submission failed');
             }
