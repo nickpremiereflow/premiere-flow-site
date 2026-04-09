@@ -54,9 +54,23 @@
         .select-btn:hover { background: #ccc; transform: translateY(-2px); }
 
         .pkg-list { list-style: none; padding: 0; margin: 0; }
-        .pkg-list li { font-size: 0.95rem; color: #888; margin-bottom: 12px; display: flex; align-items: center; }
-        .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; opacity: 0.8; }
+        .pkg-list li { 
+            font-size: 0.95rem; 
+            color: #888; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            white-space: nowrap; /* Forces bullets to stay on one line */
+        }
+        .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; opacity: 0.8; flex-shrink: 0; }
         
+        /* HIGHLIGHT FOR NUMBERS */
+        .bullet-highlight {
+            color: #fff;
+            font-weight: 800;
+            margin-right: 4px;
+        }
+
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
         
@@ -92,6 +106,7 @@
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
             .pkg-header-row { flex-direction: column; gap: 15px; }
             .select-btn { width: 100%; }
+            .pkg-list li { font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -120,9 +135,10 @@
                 <button class="select-btn" onclick="handleSelection('upgrade')">Select</button>
             </div>
             <ul class="pkg-list">
-                <li>10 High-Res Photos for 1 Listing</li>
+                <li>(<span class="bullet-highlight">1</span> Listing Total Upgrade)</li>
+                <li>10 Updated Cinematic Stills</li>
                 <li>Studio Background Replacement</li>
-                <li>Cinematic Lighting Enhancements</li>
+                <li>Advanced Lighting Enhancements</li>
             </ul>
             <div class="addon-section">
                 <label class="addon-label">
@@ -141,11 +157,10 @@
                 <button class="select-btn" onclick="handleSelection('partner')">Select</button>
             </div>
             <ul class="pkg-list">
-                <li>10 Listing Upgrades</li>
-                <li>10 High-Res Photos Per Listing</li>
-                <li>Studio Background Replacement</li>
-                <li>Cinematic Lighting Enhancements</li>
+                <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
+                <li>10 Updated Cinematic Stills Per Listing</li>
                 <li>Custom Branding & Showroom Notes Included</li>
+                <li>Full Studio Background Replacement</li>
             </ul>
         </div>
 
@@ -158,11 +173,10 @@
                 <button class="select-btn" onclick="handleSelection('unlimited')">Select</button>
             </div>
             <ul class="pkg-list">
-                <li>Unlimited Listings / Month</li>
-                <li>12 High-Res Photos Per Listing</li>
-                <li>Studio Background Replacement</li>
-                <li>Cinematic Lighting Enhancements</li>
+                <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
+                <li>12 Updated Cinematic Stills Per Listing</li>
                 <li>Custom Branding & Showroom Notes Included</li>
+                <li>Priority Queue-Jump Processing</li>
             </ul>
         </div>
     </div>
@@ -192,8 +206,9 @@
         function handleSelection(plan) {
             const brandingCheck = document.getElementById('branding-check');
             const brandingChecked = brandingCheck ? brandingCheck.checked : false;
+            let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS" : plan.toUpperCase();
             let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
-            alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + plan.toUpperCase());
+            alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
         }
 
         function toggleContact() { document.getElementById("contactBubble").classList.toggle("show"); }
