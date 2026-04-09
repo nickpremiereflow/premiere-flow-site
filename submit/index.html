@@ -121,7 +121,7 @@
             transition: var(--transition);
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             border-color: #333;
             outline: none;
         }
@@ -173,6 +173,7 @@
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
         
+        /* Showroom Fields Section */
         #showroom-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
 
         footer { width: 100%; margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; box-sizing: border-box; }
@@ -326,7 +327,7 @@
                     const userTier = (data.tier || "").toLowerCase();
                     const showroomFields = document.getElementById('showroom-fields');
                     
-                    // Logic updated to reflect Showroom terminology
+                    // Show for Partner, Unlimited, and Plus tiers
                     if (userTier.includes('partner') || userTier.includes('unlimited') || userTier.includes('plus')) {
                         showroomFields.style.display = 'block';
                     } else {
@@ -348,15 +349,19 @@
             const folder = document.querySelector('input[name="photoFolder"]').value.trim();
             const errorMsg = document.getElementById('error-message');
             const submitBtn = document.getElementById('submit-btn');
+            
             if (!listing && !folder) {
                 errorMsg.innerText = "Please provide either a Listing Link or a Photo Folder.";
                 errorMsg.style.display = 'block';
                 return;
             }
+            
             submitBtn.innerText = "Securing Assets...";
             submitBtn.disabled = true;
+            
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
+            
             try {
                 const response = await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
                     method: 'POST',
