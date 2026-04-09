@@ -132,28 +132,6 @@
             animation: fadeInUp 0.6s ease-out;
         }
 
-        .success-icon {
-            font-size: 3rem;
-            color: var(--accent-gold);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .success-title {
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .success-message {
-            color: #888;
-            text-align: center;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
         #account-header {
             text-align: center;
             margin-bottom: 40px;
@@ -178,7 +156,7 @@
         /* ACTIVE PAGE HIGHLIGHT */
         .nav-submit { color: #fff !important; pointer-events: none; }
 
-        /* CONTACT POPUP LOGIC - FORCE ROW */
+        /* CONTACT POPUP LOGIC - CONSISTENT WITH HOME/ABOUT */
         .contact-wrapper { display: inline-flex; align-items: center; position: relative; }
         .contact-bubble {
             visibility: hidden; background-color: #111; color: #fff; text-align: center;
@@ -186,12 +164,14 @@
             bottom: 180%; left: 50%; transform: translateX(-50%);
             border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             width: max-content; opacity: 0; transition: opacity 0.3s; font-family: sans-serif;
-            display: flex !important; flex-direction: row !important; align-items: center !important; gap: 10px;
         }
         .contact-bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #333 transparent transparent transparent; }
         .contact-bubble.show { visibility: visible; opacity: 1; }
+        
+        .bubble-row { display: flex; align-items: center; gap: 10px; justify-content: center; }
         .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; vertical-align: middle; white-space: nowrap; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; white-space: nowrap; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; white-space: nowrap; transition: color 0.2s; }
+        .copy-btn:hover { color: #fff; }
 
         @media (max-width: 600px) {
             .footer-nav { flex-direction: column; gap: 25px; }
@@ -257,12 +237,14 @@
         </div>
 
         <div id="success-view">
-            <div class="success-icon">✦</div>
-            <div class="success-title">Submission Received</div>
-            <p class="success-message">
-                Your inventory has been queued for production. Our team is now reviewing your assets to ensure brand alignment. You will receive an email once your high-fidelity media is ready for review.
-            </p>
-            <button onclick="location.reload()">Submit Another Vehicle</button>
+            <div style="text-align:center;">
+                <div style="font-size:3rem; color:var(--accent-gold); margin-bottom:20px;">✦</div>
+                <h2 style="margin-bottom:15px;">Submission Received</h2>
+                <p style="color:#888; font-size:0.95rem; line-height:1.6; margin-bottom:30px;">
+                    Your inventory has been queued for production. Our team is now reviewing your assets to ensure brand alignment. You will receive an email once your high-fidelity media is ready for review.
+                </p>
+                <button onclick="location.reload()">Submit Another Vehicle</button>
+            </div>
         </div>
     </div>
 
@@ -275,8 +257,11 @@
             <div class="contact-wrapper">
                 <span class="footer-link" onclick="toggleContact()">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
+                    <div class="bubble-row">
+                        <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                        <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    </div>
                 </div>
             </div>
             <a href="#" class="footer-link">Terms</a>
