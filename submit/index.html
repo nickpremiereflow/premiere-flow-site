@@ -86,13 +86,18 @@
             color: #666;
         }
 
+        /* UPDATED DISCLAIMER STYLE */
         .input-note {
             display: block;
-            font-size: 10px;
-            color: #444;
-            margin-top: 8px;
-            line-height: 1.4;
-            font-style: italic;
+            font-size: 11px;
+            color: #ffffff;
+            margin-top: 15px;
+            line-height: 1.5;
+            font-weight: 600;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 4px;
         }
 
         input, textarea {
@@ -158,6 +163,7 @@
         .owner-label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
         #owner-display { font-size: 1.5rem; font-weight: 400; color: #fff; margin-bottom: 15px; }
         #credits-display { font-size: 11px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid #1a1a1a; display: inline-block; padding-top: 15px; }
+        
         #branding-fields { display: none; margin-top: 25px; border-top: 1px solid #111; padding-top: 25px; }
 
         footer { width: 100%; margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; box-sizing: border-box; }
@@ -226,7 +232,7 @@
                 <div class="form-group">
                     <label>Photo Folder (Dropbox/Drive)</label>
                     <input type="text" name="photoFolder" placeholder="Link to raw assets">
-                    <span class="input-note">*Please ensure the link contains photos for THIS vehicle only. Mixed inventory folders will be rejected by the engine.</span>
+                    <span class="input-note">⚠️ PLEASE ENSURE the link contains photos for THIS vehicle only. Mixed inventory folders will be rejected by the engine.</span>
                 </div>
 
                 <div id="branding-fields">
@@ -303,8 +309,15 @@
                     document.getElementById('hidden-tier').value = data.tier;
                     document.getElementById('owner-display').innerText = data.accountOwner || 'Authorized Dealer';
                     document.getElementById('credits-display').innerText = `${roundedCredits} Credits Remaining`;
-                    if (['Unlimited', 'Partner', 'Upgrade Plus'].includes(data.tier)) {
-                        document.getElementById('branding-fields').style.display = 'block';
+                    
+                    // ROBUST TIER CHECKING
+                    const userTier = (data.tier || "").toLowerCase();
+                    const brandingFields = document.getElementById('branding-fields');
+                    
+                    if (userTier.includes('partner') || userTier.includes('unlimited') || userTier.includes('plus')) {
+                        brandingFields.style.display = 'block';
+                    } else {
+                        brandingFields.style.display = 'none';
                     }
                 } else {
                     errorMsg.innerHTML = "Account ID not found. Please check your welcome email.";
