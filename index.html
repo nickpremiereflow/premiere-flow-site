@@ -34,6 +34,8 @@
             touch-action: pan-y;
             user-select: none;
             -webkit-user-select: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .slider {
@@ -48,27 +50,28 @@
             overflow: hidden;
             max-height: 0;
             transition: max-height 0.4s ease-out;
-            background: #050505;
+            background: transparent; /* Removed black box */
         }
 
         .dropdown-content ul {
-            padding: 20px 20px 25px 20px;
+            padding: 15px 10px 20px 10px;
             margin: 0;
             list-style: none;
-            display: block; /* Ensure container is a block */
-            text-align: left; /* Explicitly align contents left */
+            display: block; 
+            text-align: left; 
         }
 
         .dropdown-content li {
             font-size: 0.85rem;
             color: #888;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             display: flex;
-            align-items: flex-start; 
-            justify-content: flex-start; /* Forces flex children to the left */
-            text-align: left; /* Forces wrapped text lines to the left */
-            line-height: 1.4;
-            width: 100%; /* Ensures bullet takes full width of card */
+            align-items: center; 
+            justify-content: flex-start;
+            text-align: left; 
+            line-height: 1.2;
+            width: 100%;
+            white-space: nowrap; /* Ensures one line */
         }
 
         .bullet-highlight {
@@ -81,8 +84,7 @@
             content: "◆";
             color: #fff;
             font-size: 8px;
-            margin-right: 12px;
-            margin-top: 4px; 
+            margin-right: 8px; /* Closer alignment to bullet */
             opacity: 0.5;
             flex-shrink: 0;
         }
@@ -144,6 +146,7 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
+            .dropdown-content li { font-size: 0.75rem; } /* Slight scale down for mobile to prevent cutoff */
         }
     </style>
 </head>
@@ -164,18 +167,18 @@
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="exterior-container">
                     <img src="exterior-before.png" alt="Original Lot Photo" class="img-before">
-                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after">
+                    <img src="exterior-after.png" alt="Premiere Showroom Edit" class="img-after" style="clip-path: inset(0 0 0 50%);">
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
-                    <div class="slider-line"><div class="slider-handle"></div></div>
+                    <div class="slider-line" style="left: 50%;"><div class="slider-handle"></div></div>
                 </div>
             </div>
             <div class="comparison-wrapper">
                 <h3>INTERIOR SHOWROOM SWAP</h3>
                 <div class="slider-container" id="interior-container">
                     <img src="interior-before.png" alt="Original Interior Photo" class="img-before">
-                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after">
+                    <img src="interior-after.png" alt="Premiere Interior Edit" class="img-after" style="clip-path: inset(0 0 0 50%);">
                     <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
-                    <div class="slider-line"><div class="slider-handle"></div></div>
+                    <div class="slider-line" style="left: 50%;"><div class="slider-handle"></div></div>
                 </div>
             </div>
         </div>
@@ -188,10 +191,10 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
-                        <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
+                        <li><span class="bullet-highlight">1</span> Single Listing Upgrade</li>
                         <li>10 Upgraded Photos</li>
-                        <li>Studio Background Replacement</li>
-                        <li>Advanced Lighting Enhancements</li>
+                        <li>Background Replacement & Improved Lighting</li>
+                        <li>Optional Branding & Showroom Notes</li>
                     </ul>
                 </div>
             </div>
@@ -206,8 +209,8 @@
                     <ul>
                         <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
                         <li>10 Upgraded Photos Per Listing</li>
-                        <li>Custom Branding & Showroom Notes</li>
-                        <li>Full Studio Background Replacement</li>
+                        <li>Background Replacement & Improved Lighting</li>
+                        <li>Custom Branding & Showroom Notes Included</li>
                     </ul>
                 </div>
             </div>
@@ -221,7 +224,8 @@
                     <ul>
                         <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
                         <li>12 Upgraded Photos Per Listing</li>
-                        <li>Custom Branding & Showroom Notes</li>
+                        <li>Background Replacement & Improved Lighting</li>
+                        <li>Custom Branding & Showroom Notes Included</li>
                         <li>Priority Queue-Jump Processing</li>
                     </ul>
                 </div>
@@ -242,7 +246,7 @@
             <a href="./sign-up/" class="footer-link">Sign Up</a>
             <a href="./submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
-                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <span class="footer-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
                     <div class="bubble-row">
@@ -282,11 +286,13 @@
             const afterImg = container.querySelector('.img-after');
             const handle = container.querySelector('.slider-line');
             let val = Math.max(0, Math.min(100, e.value));
-            afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+            // Fixed: "After" image is now on the right and stays there
+            afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
             handle.style.left = `${val}%`;
         }
 
-        function toggleContact() {
+        function toggleContact(event) {
+            event.stopPropagation(); // Prevents immediate closing from window click
             document.getElementById("contactBubble").classList.toggle("show");
         }
         
@@ -297,12 +303,13 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
         
+        // Closes bubble when clicking anywhere outside
         window.onclick = function(event) {
-            if (!event.target.matches('.footer-link')) {
-                const bubble = document.getElementById("contactBubble");
-                if (bubble && bubble.classList.contains('show')) {
-                    bubble.classList.remove('show');
-                }
+            const bubble = document.getElementById("contactBubble");
+            const contactBtn = document.getElementById("contactBtn");
+            
+            if (bubble.classList.contains('show') && !bubble.contains(event.target) && event.target !== contactBtn) {
+                bubble.classList.remove('show');
             }
         }
     </script>
