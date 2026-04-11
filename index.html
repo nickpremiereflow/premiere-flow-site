@@ -21,32 +21,41 @@
         .header-container { margin-top: 40px; text-align: center; width: 100%; }
         .logo-img { height: 40px; border: none; }
         nav { padding: 0; }
+        
+        /* Hero Section Refinements */
         .hero-section { margin-top: 40px; padding-top: 0; text-align: center; }
         
-        /* Updated Subtitle Styling */
+        .hero-section h1 {
+            margin-bottom: 18px; /* Consistent gap to subhead */
+        }
+
         .subtitle { 
-            line-height: 1.6; 
+            line-height: 1.4; 
             max-width: 800px; 
             margin: 0 auto; 
             color: #888;
+            font-style: italic; /* Sexy Italics */
+            font-size: 1.1rem;
+            letter-spacing: 0.3px;
         }
 
         .subtitle-focus {
             display: block;
-            margin-top: 15px;
-            color: #fff;
+            margin-top: 18px; /* Balanced spacing matching the top gap */
+            color: #888; /* Supporting text in grey */
             font-weight: 700;
-            letter-spacing: 1.5px;
-            font-size: 0.9rem;
+            letter-spacing: 2px;
+            font-size: 1rem; /* Slightly bigger overall */
             text-align: center;
+            font-style: normal; /* Remove italics for the NO line */
         }
 
-        /* Emphasis on the NOs */
+        /* High-Impact NO Styling */
         .highlight-no {
-            font-size: 1.2rem;
+            font-size: 1.3rem; /* Bigger for emphasis */
             font-weight: 900;
-            color: #fff;
-            margin-right: 2px;
+            color: #fff; /* Keeping NO white */
+            margin-right: 4px;
         }
 
         .dual-section {
@@ -171,8 +180,9 @@
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
             .dropdown-content li { font-size: 0.78rem; }
-            .subtitle-focus { font-size: 0.75rem; }
-            .highlight-no { font-size: 1rem; }
+            .subtitle { font-size: 0.95rem; }
+            .subtitle-focus { font-size: 0.8rem; margin-top: 12px; }
+            .highlight-no { font-size: 1.1rem; }
         }
     </style>
 </head>
