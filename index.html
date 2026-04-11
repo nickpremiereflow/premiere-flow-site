@@ -52,7 +52,7 @@
         }
 
         .dropdown-content ul {
-            padding: 20px 20px 25px 40px; /* Increased left padding for bullet alignment */
+            padding: 20px 20px 25px 40px; 
             margin: 0;
             list-style: none;
             text-align: left;
@@ -64,7 +64,7 @@
             margin-bottom: 12px;
             line-height: 1.4;
             position: relative;
-            text-align: left; /* Explicitly forces all lines left */
+            text-align: left; 
         }
 
         .bullet-highlight {
@@ -73,7 +73,6 @@
             margin-right: 4px;
         }
 
-        /* Bullet alignment fix using absolute position to prevent flex-centering on wrap */
         .dropdown-content li::before {
             content: "◆";
             color: #fff;
@@ -185,7 +184,7 @@
                 <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
-                        <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
+                        <li><span class="bullet-highlight">1</span> Single Listing Upgrade</li>
                         <li>10 Upgraded Photos</li>
                         <li>Studio Background Replacement</li>
                         <li>Advanced Lighting Enhancements</li>
@@ -294,10 +293,12 @@
         }
         
         window.onclick = function(event) {
-            // Close Contact Bubble
             const bubble = document.getElementById("contactBubble");
-            if (bubble && !bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
-                bubble.classList.remove('show');
+            const trigger = document.getElementById("contactTrigger");
+            if (bubble && bubble.classList.contains('show')) {
+                if (!bubble.contains(event.target) && event.target !== trigger) {
+                    bubble.classList.remove('show');
+                }
             }
         }
     </script>
