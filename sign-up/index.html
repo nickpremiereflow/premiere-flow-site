@@ -113,7 +113,7 @@
         <div class="step"><span class="step-num">Step 01</span><span class="step-text">Select package and complete secure checkout.</span></div>
         <div class="step"><span class="step-num">Step 02</span><span class="step-text">Receive Unique Account ID and Submission Portal Link.</span></div>
         <div class="step"><span class="step-num">Step 03</span><span class="step-text">Submit inventory assets via your dedicated Portal.</span></div>
-        <div class="step"><span class="step-num">Step 04</span><span class="step-text">Receive upgraded photos directly to your email.</span></div>
+        <div class="step"><span class="step-num">Step 04</span><span class="step-text">Receive showroom-ready photos directly to your email.</span></div>
     </div>
 
     <div class="signup-form">
@@ -128,7 +128,7 @@
                 <button class="select-btn" onclick="handleSelection('upgrade')">Select</button>
             </div>
             <ul class="pkg-list">
-                <li><span class="bullet-highlight">1</span> Listing Total Upgrade</li>
+                <li><span class="bullet-highlight">1</span> Single Listing Upgrade</li>
                 <li>10 Upgraded Photos</li>
                 <li>Studio Background Replacement</li>
                 <li>Advanced Lighting Enhancements</li>
@@ -218,9 +218,10 @@
 
         window.onclick = function(event) {
             const bubble = document.getElementById("contactBubble");
+            const trigger = document.getElementById("contactTrigger");
+            
             if (bubble && bubble.classList.contains('show')) {
-                // If the click is outside the bubble AND not on the trigger link
-                if (!bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
+                if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
             }
