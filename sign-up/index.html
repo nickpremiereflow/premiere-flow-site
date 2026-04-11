@@ -65,12 +65,7 @@
         }
         .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; margin-top: 4px; opacity: 0.8; flex-shrink: 0; }
         
-        /* HIGHLIGHT FOR NUMBERS */
-        .bullet-highlight {
-            color: #fff;
-            font-weight: 800;
-            margin-right: 4px;
-        }
+        .bullet-highlight { color: #fff; font-weight: 800; margin-right: 4px; }
 
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
@@ -105,8 +100,6 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
-            .pkg-header-row { flex-direction: column; gap: 15px; }
-            .select-btn { width: 100%; }
         }
     </style>
 </head>
@@ -188,7 +181,7 @@
             <a href="./" class="footer-link nav-signup">Sign Up</a>
             <a href="../submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
-                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
                     <div class="bubble-row">
@@ -211,17 +204,23 @@
             alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
         }
 
-        function toggleContact() { document.getElementById("contactBubble").classList.toggle("show"); }
+        function toggleContact(event) {
+            event.stopPropagation();
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+
         function copyEmail() {
             navigator.clipboard.writeText("info@premiereflow.com");
             const btn = document.querySelector(".copy-btn");
             btn.innerText = "DONE";
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
+
         window.onclick = function(event) {
-            if (!event.target.matches('.footer-link')) {
-                const bubble = document.getElementById("contactBubble");
-                if (bubble && bubble.classList.contains('show')) {
+            const bubble = document.getElementById("contactBubble");
+            if (bubble && bubble.classList.contains('show')) {
+                // If the click is outside the bubble AND not on the trigger link
+                if (!bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
                     bubble.classList.remove('show');
                 }
             }
