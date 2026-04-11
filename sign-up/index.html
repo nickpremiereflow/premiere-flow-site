@@ -62,7 +62,6 @@
             position: relative;
             text-align: left;
         }
-        /* Bullet point fix using absolute position to ensure text never centers on wrap */
         .pkg-list li::before { 
             content: "◆"; 
             color: #fff; 
@@ -73,11 +72,7 @@
             opacity: 0.8; 
         }
         
-        .bullet-highlight {
-            color: #fff;
-            font-weight: 800;
-            margin-right: 4px;
-        }
+        .bullet-highlight { color: #fff; font-weight: 800; margin-right: 4px; }
 
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
@@ -220,6 +215,7 @@
 
         function toggleContact(event) {
             event.stopPropagation();
+            event.preventDefault();
             document.getElementById("contactBubble").classList.toggle("show");
         }
 
@@ -230,7 +226,7 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
-        window.onclick = function(event) {
+        function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
             if (bubble && bubble.classList.contains('show')) {
@@ -239,6 +235,9 @@
                 }
             }
         }
+
+        window.addEventListener('click', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups);
     </script>
 </body>
 </html>
