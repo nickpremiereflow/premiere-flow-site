@@ -31,15 +31,86 @@
         .comparison-wrapper { flex: 1; min-width: 320px; max-width: 500px; }
 
         .slider-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
             touch-action: pan-y;
             user-select: none;
             -webkit-user-select: none;
         }
 
+        .img-before { display: block; width: 100%; height: auto; }
+        .img-after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Inset(top, right, bottom, left) - we control the RIGHT value */
+            clip-path: inset(0 50% 0 0);
+        }
+
         .slider {
-            touch-action: pan-y;
+            position: absolute;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0);
+            outline: none;
+            margin: 0;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            cursor: ew-resize;
+            top: 0;
+            left: 0;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 2px;
+            height: 100vh;
+            background: white;
             cursor: ew-resize;
         }
+
+        .slider-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: white;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 9;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .slider-handle::before { content: '◀'; margin-right: 2px; font-size: 10px; }
+        .slider-handle::after { content: '▶'; margin-left: 2px; font-size: 10px; }
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
@@ -250,7 +321,6 @@
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
 
-    <script src="script.js"></script>
     <script>
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
@@ -271,18 +341,26 @@
             }
         }
 
-        function moveSlider(e, containerId) {
+        function moveSlider(sliderInput, containerId) {
             const container = document.getElementById(containerId);
             const afterImg = container.querySelector('.img-after');
-            const handle = container.querySelector('.slider-line');
-            let val = Math.max(0, Math.min(100, e.value));
-            afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
-            handle.style.left = `${val}%`;
+            const handleLine = container.querySelector('.slider-line');
+            let val = sliderInput.value;
+            
+            // Force After image to stay on the right side logic
+            afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
+            handleLine.style.left = `${val}%`;
         }
+
+        // Initialize sliders properly on load
+        document.querySelectorAll('.slider').forEach(s => {
+            const container = s.parentElement.id;
+            moveSlider(s, container);
+        });
 
         function toggleContact(event) {
             event.stopPropagation();
-            event.preventDefault(); // Prevents ghost clicks on mobile
+            event.preventDefault();
             document.getElementById("contactBubble").classList.toggle("show");
         }
         
@@ -293,22 +371,18 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
         
-        // Comprehensive close logic for both mobile and desktop
         function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
-            
             if (bubble && bubble.classList.contains('show')) {
-                // If the tap/click is NOT on the bubble itself AND NOT on the trigger
                 if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
             }
         }
 
-        // Apply listeners for all interaction types
         window.addEventListener('click', closeAllPopups);
-        window.addEventListener('touchstart', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups, {passive: true});
     </script>
 </body>
 </html>
