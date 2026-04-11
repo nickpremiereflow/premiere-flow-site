@@ -54,7 +54,7 @@
         }
 
         .dropdown-content ul {
-            padding: 15px 15px 20px 15px;
+            padding: 15px 8px 20px 8px; /* Reduced side padding to gain space */
             margin: 0;
             list-style: none;
             display: block; 
@@ -62,7 +62,7 @@
         }
 
         .dropdown-content li {
-            font-size: 0.85rem; 
+            font-size: 0.8rem; /* Slightly reduced to ensure one-line fit */
             color: #888;
             margin-bottom: 8px;
             display: flex;
@@ -70,7 +70,8 @@
             text-align: left; 
             line-height: 1.2;
             width: 100%;
-            white-space: nowrap; /* Forces single line */
+            white-space: nowrap; 
+            letter-spacing: -0.2px; /* Tightened slightly for fit */
         }
 
         .bullet-highlight {
@@ -84,7 +85,7 @@
             content: "◆";
             color: #fff;
             font-size: 8px;
-            margin-right: 8px;
+            margin-right: 6px; /* Closer to text */
             opacity: 0.7;
             flex-shrink: 0;
         }
@@ -146,7 +147,7 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
-            .dropdown-content li { font-size: 0.78rem; }
+            .dropdown-content li { font-size: 0.72rem; } /* Further reduction for mobile safety */
         }
     </style>
 </head>
