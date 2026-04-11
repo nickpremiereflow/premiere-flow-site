@@ -192,7 +192,7 @@
 
             <div class="grid-box">
                 <h3>Revision Policy</h3>
-                <p>Upgrade and Partner Pack tiers include one (1) revision submission per listing. Unlimited Flow members are eligible for two (2) revision submissions per listing to ensure total satisfaction.</p>
+                <p>Upgrade and Partner Pack tiers include one (1) revision submission per listing. The Unlimited Pack members are eligible for two (2) revision submissions per listing to ensure total satisfaction.</p>
             </div>
 
             <div class="grid-box">
@@ -231,6 +231,7 @@
     <script>
         function toggleContact(event) {
             event.stopPropagation();
+            event.preventDefault();
             document.getElementById("contactBubble").classList.toggle("show");
         }
 
@@ -241,7 +242,7 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
-        window.onclick = function(event) {
+        function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
             
@@ -251,6 +252,9 @@
                 }
             }
         }
+
+        window.addEventListener('click', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups);
     </script>
 </body>
 </html>
