@@ -43,30 +43,32 @@
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
-        /* DROPDOWN & SINGLE-LINE BULLET STYLING */
+        /* DROPDOWN & WRAPPING BULLET STYLING */
         .dropdown-content {
             overflow: hidden;
             max-height: 0;
             transition: max-height 0.4s ease-out;
-            background: transparent; /* Removed black box background */
+            background: #050505;
         }
 
         .dropdown-content ul {
-            padding: 20px 15px 25px 25px; /* Tightened padding for better alignment */
+            padding: 20px 20px 25px 20px;
             margin: 0;
             list-style: none;
-            text-align: left;
+            display: block; /* Ensure container is a block */
+            text-align: left; /* Explicitly align contents left */
         }
 
         .dropdown-content li {
             font-size: 0.85rem;
             color: #888;
             margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start; 
+            justify-content: flex-start; /* Forces flex children to the left */
+            text-align: left; /* Forces wrapped text lines to the left */
             line-height: 1.4;
-            position: relative;
-            text-align: left; 
-            white-space: nowrap; /* Forces text to stay on one line */
-            letter-spacing: -0.1px; /* Subtle compression to ensure fit */
+            width: 100%; /* Ensures bullet takes full width of card */
         }
 
         .bullet-highlight {
@@ -79,10 +81,10 @@
             content: "◆";
             color: #fff;
             font-size: 8px;
-            position: absolute;
-            left: -18px; /* Moved closer to the text as requested */
-            top: 4px;
+            margin-right: 12px;
+            margin-top: 4px; 
             opacity: 0.5;
+            flex-shrink: 0;
         }
 
         /* FOOTER & MENU STYLING */
@@ -142,22 +144,6 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
-            
-            /* Center price cards on mobile */
-            .pricing {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
-            }
-            .card {
-                width: 100%;
-                max-width: 350px;
-                margin: 0 auto;
-            }
-            .dropdown-content li {
-                font-size: 0.75rem; /* Slightly smaller on mobile to maintain single line */
-            }
         }
     </style>
 </head>
@@ -256,11 +242,13 @@
             <a href="./sign-up/" class="footer-link">Sign Up</a>
             <a href="./submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
-                <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
+                <span class="footer-link" onclick="toggleContact()">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
-                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    <div class="bubble-row">
+                        <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                        <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    </div>
                 </div>
             </div>
             <a href="./terms/" class="footer-link">Terms</a>
@@ -293,15 +281,12 @@
             const container = document.getElementById(containerId);
             const afterImg = container.querySelector('.img-after');
             const handle = container.querySelector('.slider-line');
-            let val = Math.max(0, Math.min(100, parseFloat(e.value)));
-            
-            // Robust inset logic to prevent image swapping on mobile
+            let val = Math.max(0, Math.min(100, e.value));
             afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
-            handle.style.left = val + "%";
+            handle.style.left = `${val}%`;
         }
 
-        function toggleContact(event) {
-            event.stopPropagation();
+        function toggleContact() {
             document.getElementById("contactBubble").classList.toggle("show");
         }
         
@@ -313,9 +298,11 @@
         }
         
         window.onclick = function(event) {
-            const bubble = document.getElementById("contactBubble");
-            if (bubble && !bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
-                bubble.classList.remove('show');
+            if (!event.target.matches('.footer-link')) {
+                const bubble = document.getElementById("contactBubble");
+                if (bubble && bubble.classList.contains('show')) {
+                    bubble.classList.remove('show');
+                }
             }
         }
     </script>
