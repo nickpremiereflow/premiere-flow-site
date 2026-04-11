@@ -21,14 +21,32 @@
         .header-container { margin-top: 40px; text-align: center; width: 100%; }
         .logo-img { height: 40px; border: none; }
         nav { padding: 0; }
-        .hero-section { margin-top: 40px; padding-top: 0; }
+        .hero-section { margin-top: 40px; padding-top: 0; text-align: center; }
         
-        /* Updated Subtitle Styling for the three-line stack */
+        /* Updated Subtitle Styling */
         .subtitle { 
             line-height: 1.6; 
             max-width: 800px; 
             margin: 0 auto; 
             color: #888;
+        }
+
+        .subtitle-focus {
+            display: block;
+            margin-top: 15px;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Emphasis on the NOs */
+        .highlight-no {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-right: 2px;
         }
 
         .dual-section {
@@ -153,6 +171,8 @@
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
             .dropdown-content li { font-size: 0.78rem; }
+            .subtitle-focus { font-size: 0.75rem; }
+            .highlight-no { font-size: 1rem; }
         }
     </style>
 </head>
@@ -166,8 +186,12 @@
         <section class="hero-section">
             <h1>ELITE SHOWROOM <span class="accent">STAGING.</span></h1>
             <p class="subtitle">
-                Studio-quality staging for your lot photos. Every listing — elevated instantly.<br>
-                No physical studio, no photographers, no delays.
+                Studio-quality staging for your lot photos. Every listing — elevated instantly.
+                <span class="subtitle-focus">
+                    <span class="highlight-no">NO</span> PHYSICAL STUDIO, 
+                    <span class="highlight-no">NO</span> PHOTOGRAPHERS, 
+                    <span class="highlight-no">NO</span> DELAYS.
+                </span>
             </p>
         </section>
 
