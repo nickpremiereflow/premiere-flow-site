@@ -52,23 +52,19 @@
         }
 
         .dropdown-content ul {
-            padding: 20px 20px 25px 20px;
+            padding: 20px 20px 25px 40px; /* Increased left padding for bullet alignment */
             margin: 0;
             list-style: none;
-            display: block; /* Ensure container is a block */
-            text-align: left; /* Explicitly align contents left */
+            text-align: left;
         }
 
         .dropdown-content li {
             font-size: 0.85rem;
             color: #888;
             margin-bottom: 12px;
-            display: flex;
-            align-items: flex-start; 
-            justify-content: flex-start; /* Forces flex children to the left */
-            text-align: left; /* Forces wrapped text lines to the left */
             line-height: 1.4;
-            width: 100%; /* Ensures bullet takes full width of card */
+            position: relative;
+            text-align: left; /* Explicitly forces all lines left */
         }
 
         .bullet-highlight {
@@ -77,14 +73,15 @@
             margin-right: 4px;
         }
 
+        /* Bullet alignment fix using absolute position to prevent flex-centering on wrap */
         .dropdown-content li::before {
             content: "◆";
             color: #fff;
             font-size: 8px;
-            margin-right: 12px;
-            margin-top: 4px; 
+            position: absolute;
+            left: -20px;
+            top: 4px;
             opacity: 0.5;
-            flex-shrink: 0;
         }
 
         /* FOOTER & MENU STYLING */
@@ -242,13 +239,11 @@
             <a href="./sign-up/" class="footer-link">Sign Up</a>
             <a href="./submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
-                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
-                    <div class="bubble-row">
-                        <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                        <button class="copy-btn" onclick="copyEmail()">COPY</button>
-                    </div>
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
             </div>
             <a href="./terms/" class="footer-link">Terms</a>
@@ -286,7 +281,8 @@
             handle.style.left = `${val}%`;
         }
 
-        function toggleContact() {
+        function toggleContact(event) {
+            event.stopPropagation();
             document.getElementById("contactBubble").classList.toggle("show");
         }
         
@@ -298,11 +294,10 @@
         }
         
         window.onclick = function(event) {
-            if (!event.target.matches('.footer-link')) {
-                const bubble = document.getElementById("contactBubble");
-                if (bubble && bubble.classList.contains('show')) {
-                    bubble.classList.remove('show');
-                }
+            // Close Contact Bubble
+            const bubble = document.getElementById("contactBubble");
+            if (bubble && !bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
+                bubble.classList.remove('show');
             }
         }
     </script>
