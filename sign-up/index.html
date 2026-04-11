@@ -53,19 +53,31 @@
         }
         .select-btn:hover { background: #ccc; transform: translateY(-2px); }
 
-        .pkg-list { list-style: none; padding: 0; margin: 0; text-align: left; }
+        .pkg-list { list-style: none; padding: 0 0 0 25px; margin: 0; text-align: left; }
         .pkg-list li { 
             font-size: 0.95rem; 
             color: #888; 
             margin-bottom: 12px; 
-            display: flex; 
-            align-items: flex-start; 
-            text-align: left;
             line-height: 1.4;
+            position: relative;
+            text-align: left;
         }
-        .pkg-list li::before { content: "◆"; color: #fff; font-size: 10px; margin-right: 12px; margin-top: 4px; opacity: 0.8; flex-shrink: 0; }
+        /* Bullet point fix using absolute position to ensure text never centers on wrap */
+        .pkg-list li::before { 
+            content: "◆"; 
+            color: #fff; 
+            font-size: 10px; 
+            position: absolute;
+            left: -20px;
+            top: 2px;
+            opacity: 0.8; 
+        }
         
-        .bullet-highlight { color: #fff; font-weight: 800; margin-right: 4px; }
+        .bullet-highlight {
+            color: #fff;
+            font-weight: 800;
+            margin-right: 4px;
+        }
 
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
         @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
@@ -100,6 +112,8 @@
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
+            .pkg-header-row { flex-direction: column; gap: 15px; }
+            .select-btn { width: 100%; }
         }
     </style>
 </head>
@@ -160,7 +174,7 @@
         <div class="pkg-card">
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
-                    <span class="pkg-title">$999 — Unlimited Flow</span>
+                    <span class="pkg-title">$999 — The Unlimited Pack</span>
                     <span class="fee-label">RECURRING MONTHLY FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('unlimited')">Select</button>
@@ -199,7 +213,7 @@
         function handleSelection(plan) {
             const brandingCheck = document.getElementById('branding-check');
             const brandingChecked = brandingCheck ? brandingCheck.checked : false;
-            let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS" : plan.toUpperCase();
+            let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS" : (plan === 'unlimited' ? "THE UNLIMITED PACK" : plan.toUpperCase());
             let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
             alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
         }
@@ -219,7 +233,6 @@
         window.onclick = function(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
-            
             if (bubble && bubble.classList.contains('show')) {
                 if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
