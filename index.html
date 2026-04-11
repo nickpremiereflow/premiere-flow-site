@@ -6,14 +6,12 @@
     <title>Premiere Flow | Virtual Showroom Staging</title>
     
     <link rel="icon" type="image/png" href="premiereflowfavicon.png">
-    
     <link rel="stylesheet" href="style.css">
     
     <style>
         .header-container { margin-top: 40px; text-align: center; width: 100%; }
         .logo-img { height: 40px; border: none; }
-        nav { padding: 0; }
-        .hero-section { margin-top: 40px; padding-top: 0; }
+        .hero-section { margin-top: 40px; text-align: center; }
 
         .dual-section {
             display: flex; flex-wrap: wrap; justify-content: center;
@@ -26,7 +24,9 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            touch-action: pan-y; /* Crucial for mobile horizontal sliding */
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .img-before { display: block; width: 100%; height: auto; }
@@ -38,7 +38,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            clip-path: inset(0 0 0 50%); /* Keeps 'After' on the right */
+            clip-path: inset(0 0 0 50%); 
         }
 
         .slider {
@@ -91,9 +91,10 @@
             font-size: 14px;
             font-weight: bold;
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            z-index: 11;
         }
 
-        /* PRICE CARD SPACING UPDATES */
+        /* PRICE CARD BRANDING & SINGLE-LINE LOGIC */
         .pricing {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -106,14 +107,22 @@
         .card {
             background: #080808;
             border: 1px solid #1a1a1a;
-            padding: 40px 15px; /* Tightened horizontal padding */
+            padding: 40px 15px;
             border-radius: 24px;
             text-align: center;
             cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown-content {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease-out;
+            background: #050505;
         }
 
         .dropdown-content ul {
-            padding: 20px 10px 25px 25px; /* Tight left alignment */
+            padding: 20px 10px 25px 25px;
             margin: 0;
             list-style: none;
             text-align: left;
@@ -125,8 +134,14 @@
             margin-bottom: 12px;
             line-height: 1.4;
             position: relative;
-            white-space: nowrap; /* Prevents wrapping to second line */
-            letter-spacing: -0.1px; /* Subtle compression */
+            white-space: nowrap; 
+            letter-spacing: -0.1px;
+        }
+
+        .bullet-highlight {
+            color: #fff !important;
+            font-weight: 800 !important;
+            margin-right: 4px;
         }
 
         .dropdown-content li::before {
@@ -134,22 +149,44 @@
             color: #fff;
             font-size: 8px;
             position: absolute;
-            left: -18px; /* Moves bullet closer to text */
-            top: 3px;
+            left: -18px;
+            top: 4px;
             opacity: 0.5;
         }
 
-        /* FOOTER & CONTACT STYLING */
+        .dropdown-header {
+            margin-top: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .arrow {
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+            margin-bottom: 4px;
+            transition: transform 0.4s;
+        }
+        .arrow.active { transform: rotate(-135deg) translateY(-2px); }
+
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
-        .footer-nav { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: nowrap; }
-        .footer-link { color: #555; text-decoration: none; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .footer-nav { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .footer-link { color: #555; text-decoration: none; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
         .nav-home { color: #fff !important; pointer-events: none; }
         .contact-bubble { visibility: hidden; background-color: #111; color: #fff; border-radius: 8px; padding: 12px 15px; position: absolute; z-index: 100; bottom: 180%; left: 50%; transform: translateX(-50%); border: 1px solid #333; opacity: 0; transition: 0.3s; width: max-content; }
         .contact-bubble.show { visibility: visible; opacity: 1; }
 
         @media (max-width: 600px) {
             .footer-nav { flex-direction: column; gap: 25px; }
-            .dropdown-content li { font-size: 0.8rem; } /* Scales down only if needed on tiny phones */
+            .dropdown-content li { font-size: 0.78rem; }
         }
     </style>
 </head>
@@ -168,19 +205,19 @@
         <div class="dual-section">
             <div class="comparison-wrapper">
                 <h3>EXTERIOR SHOWROOM SWAP</h3>
-                <div class="slider-container" id="exterior-container">
+                <div class="slider-container" id="ext-ui">
                     <img src="exterior-before.png" alt="Before" class="img-before">
                     <img src="exterior-after.png" alt="After" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'exterior-container')">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'ext-ui')">
                     <div class="slider-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
             <div class="comparison-wrapper">
                 <h3>INTERIOR SHOWROOM SWAP</h3>
-                <div class="slider-container" id="interior-container">
+                <div class="slider-container" id="int-ui">
                     <img src="interior-before.png" alt="Before" class="img-before">
                     <img src="interior-after.png" alt="After" class="img-after">
-                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'interior-container')">
+                    <input type="range" min="0" max="100" value="50" class="slider" oninput="moveSlider(this, 'int-ui')">
                     <div class="slider-line"><div class="slider-handle"></div></div>
                 </div>
             </div>
@@ -191,6 +228,7 @@
                 <h3>The Upgrade</h3>
                 <div class="price-row"><span class="currency">$</span>49</div>
                 <p class="card-sub">Perfect for testing the vibe on a single listing.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop1" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">1</span> Single Listing Upgrade</li>
@@ -202,9 +240,11 @@
             </div>
 
             <div class="card highlighted" onclick="toggleDropdown('drop2', this)">
+                <div class="badge">MOST POPULAR</div>
                 <h3>The Partner Pack</h3>
                 <div class="price-row"><span class="currency">$</span>349</div>
                 <p class="card-sub">The secret weapon for consistent inventory turnover.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop2" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">10</span> Individual Listing Upgrades</li>
@@ -219,6 +259,7 @@
                 <h3>The Unlimited Pack</h3>
                 <div class="price-row"><span class="currency">$</span>999<span class="period">/mo</span></div>
                 <p class="card-sub">For high-volume dealerships dominating the market.</p>
+                <div class="dropdown-header"><span>VIEW PACKAGE</span><div class="arrow"></div></div>
                 <div id="drop3" class="dropdown-content">
                     <ul>
                         <li><span class="bullet-highlight">Unlimited</span> Monthly Inventory Upgrades</li>
@@ -230,7 +271,7 @@
             </div>
         </section>
 
-        <section class="cta-area">
+        <section style="text-align:center; margin-bottom: 80px;">
             <a href="./sign-up/"><button class="get-started-btn">GET STARTED</button></a>
         </section>
     </main>
@@ -243,7 +284,7 @@
             <div class="contact-wrapper">
                 <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <a href="mailto:info@premiereflow.com">info@premiereflow.com</a>
+                    <a href="mailto:info@premiereflow.com" style="color:#d4af37; text-decoration:none;">info@premiereflow.com</a>
                 </div>
             </div>
         </div>
@@ -255,17 +296,23 @@
             const afterImg = container.querySelector('.img-after');
             const line = container.querySelector('.slider-line');
             let val = input.value;
-            // Keeps the After image revealed on the right side
             afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
             line.style.left = `${val}%`;
         }
 
         function toggleDropdown(id, card) {
             const content = document.getElementById(id);
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
+            const arrow = card.querySelector('.arrow');
+            const isOpen = content.style.maxHeight;
+
+            // CLOSE ALL OPEN DROPDOWNS FIRST (The Accordion Logic)
+            document.querySelectorAll('.dropdown-content').forEach(d => d.style.maxHeight = null);
+            document.querySelectorAll('.arrow').forEach(a => a.classList.remove('active'));
+
+            // IF IT WASN'T OPEN, OPEN IT
+            if (!isOpen) {
                 content.style.maxHeight = content.scrollHeight + "px";
+                arrow.classList.add('active');
             }
         }
 
@@ -274,21 +321,12 @@
             document.getElementById("contactBubble").classList.toggle("show");
         }
 
-        window.addEventListener('click', function(e) {
+        window.onclick = function(event) {
             const bubble = document.getElementById("contactBubble");
-            if (bubble.classList.contains('show') && !bubble.contains(e.target)) {
+            if (bubble.classList.contains('show') && !bubble.contains(event.target)) {
                 bubble.classList.remove('show');
             }
-        });
-
-        // Add touchstart to ensure mobile closing works
-        window.addEventListener('touchstart', function(e) {
-            const bubble = document.getElementById("contactBubble");
-            const trigger = document.getElementById("contactTrigger");
-            if (bubble.classList.contains('show') && e.target !== trigger && !bubble.contains(e.target)) {
-                bubble.classList.remove('show');
-            }
-        }, {passive: true});
+        }
     </script>
 </body>
 </html>
