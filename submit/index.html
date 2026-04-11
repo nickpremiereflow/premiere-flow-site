@@ -291,7 +291,7 @@
             <div class="contact-wrapper">
                 <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
+                    <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
                     <div class="bubble-row">
                         <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
                         <button class="copy-btn" onclick="copyEmail()">COPY</button>
@@ -411,6 +411,7 @@
 
         function toggleContact(event) {
             event.stopPropagation();
+            event.preventDefault();
             document.getElementById("contactBubble").classList.toggle("show");
         }
 
@@ -421,14 +422,18 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
-        window.onclick = function(event) {
+        function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
+            const trigger = document.getElementById("contactTrigger");
             if (bubble && bubble.classList.contains('show')) {
-                if (!bubble.contains(event.target) && event.target.id !== 'contactTrigger') {
+                if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
             }
         }
+
+        window.addEventListener('click', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups);
     </script>
 </body>
 </html>
