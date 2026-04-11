@@ -282,6 +282,7 @@
 
         function toggleContact(event) {
             event.stopPropagation();
+            event.preventDefault(); // Prevents ghost clicks on mobile
             document.getElementById("contactBubble").classList.toggle("show");
         }
         
@@ -292,15 +293,22 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
         
-        window.onclick = function(event) {
+        // Comprehensive close logic for both mobile and desktop
+        function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
+            
             if (bubble && bubble.classList.contains('show')) {
+                // If the tap/click is NOT on the bubble itself AND NOT on the trigger
                 if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
             }
         }
+
+        // Apply listeners for all interaction types
+        window.addEventListener('click', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups);
     </script>
 </body>
 </html>
