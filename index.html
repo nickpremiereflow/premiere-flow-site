@@ -43,16 +43,16 @@
 
         .cta-area { padding-bottom: 0px; text-align: center; }
 
-        /* DROPDOWN & SINGLE-LINE BULLET STYLING */
+        /* DROPDOWN & CLEAN BULLET STYLING */
         .dropdown-content {
-            overflow: hidden;
+            overflow: visible; /* Prevents bullets from being cut off */
             max-height: 0;
             transition: max-height 0.4s ease-out;
-            background: #050505;
+            background: transparent; /* Removed black box */
         }
 
         .dropdown-content ul {
-            padding: 20px 15px 25px 25px; /* Tightened padding for better alignment */
+            padding: 20px 15px 25px 30px; /* Adjusted padding for bullet clearance */
             margin: 0;
             list-style: none;
             text-align: left;
@@ -65,8 +65,9 @@
             line-height: 1.4;
             position: relative;
             text-align: left; 
-            white-space: nowrap; /* Forces text to stay on one line */
-            letter-spacing: -0.1px; /* Subtle compression to ensure fit */
+            white-space: nowrap; 
+            letter-spacing: -0.1px;
+            overflow: visible;
         }
 
         .bullet-highlight {
@@ -80,7 +81,7 @@
             color: #fff;
             font-size: 8px;
             position: absolute;
-            left: -18px; /* Moved closer to the text */
+            left: -20px; 
             top: 4px;
             opacity: 0.5;
         }
@@ -143,7 +144,6 @@
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
             
-            /* Center price cards on mobile */
             .pricing {
                 display: flex;
                 flex-direction: column;
@@ -156,7 +156,7 @@
                 margin: 0 auto;
             }
             .dropdown-content li {
-                font-size: 0.75rem; /* Slightly smaller on mobile to maintain single line */
+                font-size: 0.75rem; 
             }
         }
     </style>
@@ -295,7 +295,6 @@
             const handle = container.querySelector('.slider-line');
             let val = Math.max(0, Math.min(100, parseFloat(e.value)));
             
-            // Robust inset logic to prevent image swapping on mobile
             afterImg.style.clipPath = `inset(0 ${100 - val}% 0 0)`;
             handle.style.left = val + "%";
         }
