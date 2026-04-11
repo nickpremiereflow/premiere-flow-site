@@ -104,7 +104,6 @@
             margin-bottom: 0;
         }
 
-        /* FOOTER & MENU STYLING */
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
         
         .footer-nav { 
@@ -132,15 +131,12 @@
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ACTIVE PAGE HIGHLIGHT: Terms is active */
         .nav-terms { color: #fff !important; pointer-events: none; }
 
-        /* CONTACT POPUP LOGIC */
         .contact-wrapper { 
             display: inline-flex; 
             align-items: center; 
             position: relative; 
-            height: auto;
         }
         
         .contact-bubble {
@@ -156,11 +152,12 @@
             border-color: #333 transparent transparent transparent;
         }
         .contact-bubble.show { visibility: visible; opacity: 1; }
-        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; }
+        .contact-email { color: #d4af37; text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; vertical-align: middle; white-space: nowrap; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 0; vertical-align: middle; white-space: nowrap; }
 
         @media (max-width: 600px) {
             .footer-nav { flex-direction: column; gap: 25px; }
+            .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
             .contact-bubble::after { top: auto; bottom: 100%; border-color: transparent transparent #333 transparent; }
         }
@@ -217,11 +214,13 @@
             <a href="../sign-up/" class="footer-link">Sign Up</a>
             <a href="../submit/" class="footer-link">Submit Portal</a>
             <div class="contact-wrapper">
-                <span class="footer-link" onclick="toggleContact()">Contact</span>
+                <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 5px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Reach out</span>
-                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    <div class="bubble-row">
+                        <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                        <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                    </div>
                 </div>
             </div>
             <a href="./" class="footer-link nav-terms">Terms</a>
@@ -230,19 +229,26 @@
     </footer>
 
     <script>
-        function toggleContact() {
+        function toggleContact(event) {
+            event.stopPropagation();
             document.getElementById("contactBubble").classList.toggle("show");
         }
+
         function copyEmail() {
             navigator.clipboard.writeText("info@premiereflow.com");
             const btn = document.querySelector(".copy-btn");
             btn.innerText = "DONE";
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
+
         window.onclick = function(event) {
-            if (!event.target.matches('.footer-link')) {
-                const bubble = document.getElementById("contactBubble");
-                if (bubble.classList.contains('show')) { bubble.classList.remove('show'); }
+            const bubble = document.getElementById("contactBubble");
+            const trigger = document.getElementById("contactTrigger");
+            
+            if (bubble && bubble.classList.contains('show')) {
+                if (!bubble.contains(event.target) && event.target !== trigger) {
+                    bubble.classList.remove('show');
+                }
             }
         }
     </script>
