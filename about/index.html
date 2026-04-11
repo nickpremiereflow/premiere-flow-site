@@ -221,6 +221,7 @@
     <script>
         function toggleContact(event) {
             event.stopPropagation();
+            event.preventDefault();
             document.getElementById("contactBubble").classList.toggle("show");
         }
 
@@ -231,18 +232,19 @@
             setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
-        window.onclick = function(event) {
+        function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
             
-            // If the bubble is open
             if (bubble && bubble.classList.contains('show')) {
-                // If click is not inside the bubble and not on the trigger link
                 if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
             }
         }
+
+        window.addEventListener('click', closeAllPopups);
+        window.addEventListener('touchstart', closeAllPopups);
     </script>
 </body>
 </html>
