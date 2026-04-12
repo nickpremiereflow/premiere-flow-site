@@ -264,7 +264,7 @@
                     </div>
                     <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
                     <div class="form-group">
-                        <label>Camera Capture</label>
+                        <label>Camera Capture (Up to 10)</label>
                         <input type="file" id="f-files" multiple accept="image/*" capture="environment" style="border: 1px dashed #222; padding: 15px; font-size: 11px; color: #444;">
                     </div>
                     <div class="form-group" style="margin-top: 30px;">
@@ -350,7 +350,7 @@
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits) + ' CREDITS';
-            document.getElementById('profile-tier').innerText = userData.tier.toUpperCase();
+            document.getElementById('profile-tier').innerText = (userData.tier || 'Standard').toUpperCase();
             
             if(userData.logo) {
                 document.getElementById('logo-preview').style.backgroundImage = `url('${userData.logo}')`;
@@ -393,7 +393,8 @@
             formData.append('accountID', userData.accountID);
 
             try {
-                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', {
+                // IMPORTANT: Replace this URL with your new Logo Initializer Scenario Webhook
+                const res = await fetch('YOUR_NEW_LOGO_SCENARIO_WEBHOOK_URL', {
                     method: 'POST',
                     body: formData
                 });
@@ -406,32 +407,49 @@
             }
         }
 
-        // 5. PRODUCTION SUBMISSION
+        // 5. PRODUCTION SUBMISSION (MULTI-FILE ARRAY FIX)
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
-            const payload = {
-                accountID: userData.accountID,
-                vehicleName: document.getElementById('f-name').value,
-                assetSource: document.getElementById('f-source').value,
-                showroomNotes: document.getElementById('f-notes').value
-            };
+            // Use FormData to securely package the text fields alongside the raw image files
+            const formData = new FormData();
+            formData.append('accountID', userData.accountID);
+            formData.append('vehicleName', document.getElementById('f-name').value);
+            formData.append('assetSource', document.getElementById('f-source').value);
+            formData.append('showroomNotes', document.getElementById('f-notes').value);
 
-            await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            
-            showTab('dashboard');
-            
-            // Local Notification Mock
-            const notif = document.getElementById('notif-list');
-            notif.innerHTML = `<div class="card" style="border-left: 3px solid #fbbf24;">
-                <p style="font-size:12px; margin:0;"><b>Staging Initiated:</b> ${payload.vehicleName} has entered the studio.</p>
-                <span style="font-size:9px; color:#444; display:block; margin-top:10px; font-weight:800; text-transform:uppercase;">Just Now</span>
-            </div>` + notif.innerHTML;
+            // Dynamically loop through the uploaded files and append them as an array
+            const fileInput = document.getElementById('f-files');
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('manualFiles[]', fileInput.files[i]);
+            }
+
+            try {
+                // Your existing Submission Scenario Webhook
+                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
+                    method: 'POST', 
+                    body: formData // Fetch handles the multipart boundaries automatically
+                });
+                
+                showTab('dashboard');
+                
+                // Local Notification Mock Update
+                const notif = document.getElementById('notif-list');
+                const vName = document.getElementById('f-name').value;
+                notif.innerHTML = `<div class="card" style="border-left: 3px solid #fbbf24;">
+                    <p style="font-size:12px; margin:0;"><b>Staging Initiated:</b> ${vName} has entered the studio.</p>
+                    <span style="font-size:9px; color:#444; display:block; margin-top:10px; font-weight:800; text-transform:uppercase;">Just Now</span>
+                </div>` + notif.innerHTML;
+
+                // Clean the form state
+                btn.innerText = "Begin Staging"; btn.disabled = false;
+                document.getElementById('inventory-form').reset();
+
+            } catch (err) {
+                btn.innerText = "FAILED. RETRY."; btn.disabled = false;
+            }
         });
     </script>
 </body>
