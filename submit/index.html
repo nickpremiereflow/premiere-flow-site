@@ -48,6 +48,7 @@
         .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
         .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
+        /* --- MAIN APP CONTAINER --- */
         #app-container {
             margin-top: 90px;
             margin-bottom: 100px;
@@ -60,6 +61,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- NAVIGATION --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -91,6 +93,7 @@
         .nav-item.active { color: #fff; }
         .nav-icon { font-size: 22px; margin-bottom: 6px; }
 
+        /* --- UI COMPONENTS --- */
         .view-section { display: none; }
         .view-section.active { display: block; }
 
@@ -101,6 +104,7 @@
             padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: var(--transition);
         }
 
         h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: #555; margin-bottom: 20px; font-weight: 900; }
@@ -117,8 +121,11 @@
             color: #fff;
             box-sizing: border-box;
             font-size: 14px;
+            transition: border-color 0.3s;
         }
+        input:focus { border-color: #333; outline: none; }
 
+        /* --- BUTTONS --- */
         .btn-main {
             width: 100%;
             padding: 20px;
@@ -132,6 +139,8 @@
             cursor: pointer;
             transition: var(--transition);
         }
+        .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
+        .btn-main:disabled { background: #111; color: #444; cursor: not-allowed; }
 
         .btn-gold { background: var(--accent-gold); color: #000; }
         
@@ -139,9 +148,11 @@
             flex: 1; padding: 15px; background: #111; color: #fff; 
             border: 1px solid #333; border-radius: 8px; cursor: pointer; 
             font-size: 11px; text-transform: uppercase; font-weight: 800;
+            transition: 0.2s;
         }
+        .btn-split:active { background: #222; transform: scale(0.98); }
 
-        /* --- STAGING GALLERY STYLES --- */
+        /* --- STAGING GALLERY --- */
         #staging-gallery {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -155,6 +166,7 @@
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid #222;
+            background: #050505;
         }
 
         .thumb-wrapper img {
@@ -196,10 +208,15 @@
             background-color: #050505;
         }
 
+        /* --- LOGIN OVERLAY --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center;
         }
+
+        /* --- LOAD MORE --- */
+        #load-more-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
+        .btn-load-more { background: none; border: 1px solid #222; color: #666; padding: 10px 20px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
 
         @media (min-width: 800px) {
             .bottom-nav { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; background: none; border: none; height: 70px; padding: 0; }
@@ -244,11 +261,19 @@
                     <p style="color: #444; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">No vehicles in staging.</p>
                 </div>
             </div>
+            <div id="load-more-container" style="display:none;">
+                <button class="btn-load-more" id="load-more-btn" onclick="fetchMoreHistory()">Load More</button>
+            </div>
         </section>
 
         <section id="view-notifications" class="view-section">
             <h3>Recent Activity</h3>
-            <div id="notif-list"></div>
+            <div id="notif-list">
+                <div class="card" style="border-left: 3px solid var(--accent-gold);">
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome to Premiere Flow.</p>
+                    <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
+                </div>
+            </div>
         </section>
 
         <section id="view-profile" class="view-section">
@@ -258,10 +283,24 @@
                 <div id="logo-preview" class="logo-preview-box">
                     <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo Found</span>
                 </div>
+                
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
+                
                 <div style="display: flex; gap: 10px;">
                     <button onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Select File</button>
-                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save Logo</button>
+                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split" style="background:var(--accent-gold); color:#000;">Save to Profile</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Account Details</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
+                    <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Status</span>
+                    <span style="font-size: 11px; font-weight: 900; color: #4ade80;">ACTIVE</span>
                 </div>
             </div>
         </section>
@@ -273,9 +312,15 @@
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name</label>
+                        <label>Vehicle Name (Year Make Model)</label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
+                    <div class="form-group">
+                        <label>Asset Source (Listing URL)</label>
+                        <input type="text" id="f-source" placeholder="Paste link here...">
+                    </div>
+                    
+                    <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
                     
                     <div class="form-group">
                         <label>Photo Capture (Limit 10)</label>
@@ -283,14 +328,14 @@
                             <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
-
+                        
                         <div id="staging-gallery"></div>
 
                         <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top: 30px;">
                         <label>Showroom Styles / Special Notes</label>
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
@@ -317,33 +362,108 @@
     </nav>
 
     <script>
-        let userData = {};
-        let stagedSubmissionFiles = []; 
+        let userData = { history: [] };
+        let stagedFiles = [];
+        let historyPage = 1;
 
+        // 1. AUTHENTICATION & INITIAL LOAD
         async function portalAuth() {
             const id = document.getElementById('login-id').value;
+            const error = document.getElementById('auth-error');
+            
             try {
                 const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ accountID: id })
+                    body: JSON.stringify({ accountID: id, page: 1 })
                 });
                 const data = await res.json();
+                
                 if (data.status === 'success') {
-                    userData = data; userData.accountID = id;
+                    userData = data;
+                    userData.accountID = id; 
+                    
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('bottom-nav').style.display = 'flex';
+                    
                     refreshUI();
-                } else { alert("ACCESS DENIED."); }
-            } catch (err) { alert("CONNECTION ERROR."); }
+                } else {
+                    error.innerText = data.message || "ACCESS DENIED.";
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                error.innerText = "CONNECTION ERROR.";
+                error.style.display = 'block';
+            }
         }
 
+        // 2. PAGINATION LOGIC
+        async function fetchMoreHistory() {
+            historyPage++;
+            const btn = document.getElementById('load-more-btn');
+            btn.innerText = "LOADING...";
+            
+            try {
+                const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ accountID: userData.accountID, page: historyPage })
+                });
+                const data = await res.json();
+                
+                if (data.history && data.history.length > 0) {
+                    userData.history = [...userData.history, ...data.history];
+                    refreshUI();
+                    btn.innerText = "Load More";
+                } else {
+                    document.getElementById('load-more-container').style.display = 'none';
+                }
+            } catch (err) { btn.innerText = "ERROR"; }
+        }
+
+        // 3. UI REFRESH & PERSISTENCE
+        function refreshUI() {
+            document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
+            document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
+            document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
+            
+            // Logo Persistence
+            if(userData.logo && userData.logo !== "") {
+                const lp = document.getElementById('logo-preview');
+                lp.style.backgroundImage = `url('${userData.logo}')`;
+                document.getElementById('no-logo-text').style.display = 'none';
+            }
+
+            // History Persistence
+            const list = document.getElementById('submissions-list');
+            if(userData.history && userData.history.length > 0) {
+                list.innerHTML = userData.history.map(item => `
+                    <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <div>
+                            <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.name}</p>
+                            <span style="font-size:9px; color:#444; font-weight:700; text-transform:uppercase;">${item.date}</span>
+                        </div>
+                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900; letter-spacing:1px;">${item.status.toUpperCase()}</span>
+                    </div>
+                `).join('');
+                
+                // Show Load More if multiple of 10
+                if (userData.history.length >= 10 && userData.history.length % 10 === 0) {
+                    document.getElementById('load-more-container').style.display = 'block';
+                } else {
+                    document.getElementById('load-more-container').style.display = 'none';
+                }
+            }
+        }
+
+        // 4. NAVIGATION
         function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + t).classList.add('active');
-            if(t !== 'submit') document.getElementById('nav-' + t).classList.add('active');
+            const nav = document.querySelector(`.nav-item[onclick="showTab('${t}')"]`);
+            if(nav) nav.classList.add('active');
+            window.scrollTo(0,0);
         }
 
         function openSubmit() {
@@ -351,88 +471,81 @@
             showTab('submit');
         }
 
-        function refreshUI() {
-            document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
-            document.getElementById('header-credits').innerText = Math.round(userData.credits) + ' CREDITS';
-        }
-
-        // --- NEW GALLERY STAGING LOGIC ---
+        // 5. PHOTO STAGING GALLERY
         function stageFiles(input) {
-            const incomingFiles = Array.from(input.files);
-            let addedCount = 0;
-
-            incomingFiles.forEach(file => {
-                if (stagedSubmissionFiles.length < 10) {
-                    stagedSubmissionFiles.push(file);
-                    addedCount++;
+            const incoming = Array.from(input.files);
+            let added = 0;
+            incoming.forEach(f => {
+                if (stagedFiles.length < 10) {
+                    stagedFiles.push(f);
+                    added++;
                 }
             });
-
-            if (incomingFiles.length > addedCount) {
-                alert(`Only 10 photos allowed. ${incomingFiles.length - addedCount} files were ignored.`);
-            }
-
-            input.value = ''; // Reset input for repeat clicks
+            if (incoming.length > added) alert("Limit 10 photos per production.");
+            input.value = '';
             renderGallery();
         }
 
         function renderGallery() {
-            const container = document.getElementById('staging-gallery');
-            container.innerHTML = '';
-
-            stagedSubmissionFiles.forEach((file, index) => {
-                const url = URL.createObjectURL(file);
-                const wrapper = document.createElement('div');
-                wrapper.className = 'thumb-wrapper';
-                wrapper.innerHTML = `
-                    <img src="${url}">
-                    <button type="button" class="remove-thumb" onclick="removePhoto(${index})">✕</button>
-                `;
-                container.appendChild(wrapper);
+            const cont = document.getElementById('staging-gallery');
+            cont.innerHTML = '';
+            stagedFiles.forEach((f, i) => {
+                const url = URL.createObjectURL(f);
+                const wrap = document.createElement('div');
+                wrap.className = 'thumb-wrapper';
+                wrap.innerHTML = `<img src="${url}"><button type="button" class="remove-thumb" onclick="removePhoto(${i})">✕</button>`;
+                cont.appendChild(wrap);
             });
         }
 
-        function removePhoto(index) {
-            stagedSubmissionFiles.splice(index, 1);
+        function removePhoto(i) {
+            stagedFiles.splice(i, 1);
             renderGallery();
         }
 
+        // 6. MAIN PRODUCTION SUBMISSION
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (stagedSubmissionFiles.length === 0) { alert("Please take at least one photo."); return; }
-
             const btn = document.getElementById('submit-btn');
+            const vName = document.getElementById('f-name').value;
+            
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const formData = new FormData();
             formData.append('accountID', userData.accountID);
-            formData.append('vehicleName', document.getElementById('f-name').value);
+            formData.append('vehicleName', vName);
+            formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
 
-            stagedSubmissionFiles.forEach(file => {
-                formData.append('uploadAssets', file);
-            });
+            stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
-                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
-                    method: 'POST', body: formData
-                });
+                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
+                
+                // Optimistic UI Update
+                userData.history.unshift({ name: vName, date: 'Just Now', status: 'In Staging' });
+                refreshUI();
+                
                 showTab('dashboard');
-                btn.innerText = "Begin Staging"; btn.disabled = false;
-                document.getElementById('inventory-form').reset();
-                stagedSubmissionFiles = [];
+                stagedFiles = [];
                 renderGallery();
-            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; }
+                document.getElementById('inventory-form').reset();
+                btn.innerText = "Begin Staging"; btn.disabled = false;
+            } catch (err) {
+                alert("SUBMISSION FAILED.");
+                btn.innerText = "Begin Staging"; btn.disabled = false;
+            }
         });
 
+        // 7. LOGO UPLOAD
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = e => {
                     document.getElementById('logo-preview').style.backgroundImage = `url('${e.target.result}')`;
                     document.getElementById('no-logo-text').style.display = 'none';
                     document.getElementById('save-logo-btn').style.display = 'block';
-                }
+                };
                 reader.readAsDataURL(input.files[0]);
             }
         }
@@ -443,10 +556,16 @@
             const formData = new FormData();
             formData.append('logoFile', file);
             formData.append('accountID', userData.accountID);
+            
+            btn.innerText = "SAVING...";
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
-                if (res.ok) { btn.innerText = "SUCCESS"; setTimeout(() => btn.style.display = 'none', 2000); }
-            } catch (err) { alert("LOGO UPLOAD FAILED."); }
+                if (res.ok) {
+                    userData.logo = URL.createObjectURL(file);
+                    btn.innerText = "SUCCESS";
+                    setTimeout(() => btn.style.display = 'none', 2000);
+                }
+            } catch (err) { alert("UPLOAD FAILED."); }
         }
     </script>
 </body>
