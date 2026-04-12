@@ -48,7 +48,6 @@
         .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
         .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
-        /* --- MAIN APP CONTAINER --- */
         #app-container {
             margin-top: 90px;
             margin-bottom: 100px;
@@ -61,7 +60,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- NAVIGATION --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -93,7 +91,6 @@
         .nav-item.active { color: #fff; }
         .nav-icon { font-size: 22px; margin-bottom: 6px; }
 
-        /* --- UI COMPONENTS --- */
         .view-section { display: none; }
         .view-section.active { display: block; }
 
@@ -120,11 +117,8 @@
             color: #fff;
             box-sizing: border-box;
             font-size: 14px;
-            transition: border-color 0.3s;
         }
-        input:focus { border-color: #333; outline: none; }
 
-        /* --- BUTTONS --- */
         .btn-main {
             width: 100%;
             padding: 20px;
@@ -138,7 +132,6 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
 
         .btn-gold { background: var(--accent-gold); color: #000; }
         
@@ -146,6 +139,46 @@
             flex: 1; padding: 15px; background: #111; color: #fff; 
             border: 1px solid #333; border-radius: 8px; cursor: pointer; 
             font-size: 11px; text-transform: uppercase; font-weight: 800;
+        }
+
+        /* --- STAGING GALLERY STYLES --- */
+        #staging-gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .thumb-wrapper {
+            position: relative;
+            aspect-ratio: 1/1;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+
+        .thumb-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-thumb {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(255, 77, 77, 0.9);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .logo-preview-box {
@@ -163,13 +196,11 @@
             background-color: #050505;
         }
 
-        /* --- LOGIN OVERLAY --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Desktop Adjustments */
         @media (min-width: 800px) {
             .bottom-nav { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; background: none; border: none; height: 70px; padding: 0; }
             .nav-item { margin: 0 25px; }
@@ -217,39 +248,20 @@
 
         <section id="view-notifications" class="view-section">
             <h3>Recent Activity</h3>
-            <div id="notif-list">
-                <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome to Premiere Flow.</p>
-                    <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
-                </div>
-            </div>
+            <div id="notif-list"></div>
         </section>
 
         <section id="view-profile" class="view-section">
             <div class="card">
                 <h3>Brand Identity</h3>
-                <label>Account Logo (Transparent PNG Preferred)</label>
+                <label>Account Logo</label>
                 <div id="logo-preview" class="logo-preview-box">
                     <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo Found</span>
                 </div>
-                
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
-                
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="document.getElementById('field-logoUpload').click()" style="flex: 1; padding: 12px; font-size: 10px; background: #111; color: #fff; border: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Select File</button>
-                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; flex: 1; padding: 12px; font-size: 10px; background: var(--accent-gold); color: #000; border: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Save Logo</button>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h3>Subscription Details</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
-                    <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Status</span>
-                    <span style="font-size: 11px; font-weight: 900; color: #4ade80;">ACTIVE</span>
+                    <button onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Select File</button>
+                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save Logo</button>
                 </div>
             </div>
         </section>
@@ -261,33 +273,24 @@
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name (Year Make Model)</label>
+                        <label>Vehicle Name</label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
-                    <div class="form-group">
-                        <label>Asset Source (Listing URL)</label>
-                        <input type="text" id="f-source" placeholder="Paste link here...">
-                    </div>
-                    
-                    <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
                     
                     <div class="form-group">
-                        <label>Photo Capture (Max 10)</label>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <label>Photo Capture (Limit 10)</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 5px;">
-                            <span id="file-counter" style="font-size: 11px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">0 Photos Staged</span>
-                            <button type="button" id="clear-files-btn" onclick="clearStagedFiles()" style="display:none; background:none; border:none; color:#ff4d4d; font-size:9px; font-weight:900; cursor:pointer; text-transform:uppercase;">[ Clear ]</button>
-                        </div>
+
+                        <div id="staging-gallery"></div>
 
                         <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
 
-                    <div class="form-group" style="margin-top: 30px;">
+                    <div class="form-group">
                         <label>Showroom Styles / Special Notes</label>
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
@@ -315,84 +318,118 @@
 
     <script>
         let userData = {};
-        let stagedSubmissionFiles = []; // The Javascript Vault for photos
+        let stagedSubmissionFiles = []; 
 
-        // 1. AUTHENTICATION LOGIC
         async function portalAuth() {
             const id = document.getElementById('login-id').value;
-            const error = document.getElementById('auth-error');
-            
             try {
                 const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ accountID: id })
                 });
                 const data = await res.json();
-                
                 if (data.status === 'success') {
-                    userData = data;
-                    userData.accountID = id; 
-                    
+                    userData = data; userData.accountID = id;
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('bottom-nav').style.display = 'flex';
-                    
                     refreshUI();
-                } else {
-                    error.innerText = "ACCESS DENIED. CHECK ID.";
-                    error.style.display = 'block';
-                }
-            } catch (err) {
-                error.innerText = "CONNECTION TIMEOUT.";
-                error.style.display = 'block';
-            }
+                } else { alert("ACCESS DENIED."); }
+            } catch (err) { alert("CONNECTION ERROR."); }
         }
 
-        // 2. TAB SWITCHING
         function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             document.getElementById('view-' + t).classList.add('active');
             if(t !== 'submit') document.getElementById('nav-' + t).classList.add('active');
-            window.scrollTo(0,0);
         }
 
         function openSubmit() {
-            if(userData.credits <= 0) {
-                alert("INSUFFICIENT CREDITS. PLEASE REFILL.");
-                return;
-            }
+            if(userData.credits <= 0) { alert("INSUFFICIENT CREDITS."); return; }
             showTab('submit');
         }
 
-        // 3. UI REFRESH
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits) + ' CREDITS';
-            document.getElementById('profile-tier').innerText = userData.tier.toUpperCase();
-            
-            if(userData.logo) {
-                document.getElementById('logo-preview').style.backgroundImage = `url('${userData.logo}')`;
-                document.getElementById('no-logo-text').style.display = 'none';
-            }
-
-            const actionBtn = document.getElementById('action-btn');
-            if(userData.credits <= 0) {
-                actionBtn.innerText = "Refill Credits";
-                actionBtn.style.background = "#1a1a1a";
-                actionBtn.style.color = "#444";
-            }
         }
 
-        // 4. LOGO UPLOAD LOGIC
+        // --- NEW GALLERY STAGING LOGIC ---
+        function stageFiles(input) {
+            const incomingFiles = Array.from(input.files);
+            let addedCount = 0;
+
+            incomingFiles.forEach(file => {
+                if (stagedSubmissionFiles.length < 10) {
+                    stagedSubmissionFiles.push(file);
+                    addedCount++;
+                }
+            });
+
+            if (incomingFiles.length > addedCount) {
+                alert(`Only 10 photos allowed. ${incomingFiles.length - addedCount} files were ignored.`);
+            }
+
+            input.value = ''; // Reset input for repeat clicks
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const container = document.getElementById('staging-gallery');
+            container.innerHTML = '';
+
+            stagedSubmissionFiles.forEach((file, index) => {
+                const url = URL.createObjectURL(file);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'thumb-wrapper';
+                wrapper.innerHTML = `
+                    <img src="${url}">
+                    <button type="button" class="remove-thumb" onclick="removePhoto(${index})">✕</button>
+                `;
+                container.appendChild(wrapper);
+            });
+        }
+
+        function removePhoto(index) {
+            stagedSubmissionFiles.splice(index, 1);
+            renderGallery();
+        }
+
+        document.getElementById('inventory-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (stagedSubmissionFiles.length === 0) { alert("Please take at least one photo."); return; }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "QUEUEING..."; btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('accountID', userData.accountID);
+            formData.append('vehicleName', document.getElementById('f-name').value);
+            formData.append('showroomNotes', document.getElementById('f-notes').value);
+
+            stagedSubmissionFiles.forEach(file => {
+                formData.append('uploadAssets', file);
+            });
+
+            try {
+                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
+                    method: 'POST', body: formData
+                });
+                showTab('dashboard');
+                btn.innerText = "Begin Staging"; btn.disabled = false;
+                document.getElementById('inventory-form').reset();
+                stagedSubmissionFiles = [];
+                renderGallery();
+            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; }
+        });
+
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const preview = document.getElementById('logo-preview');
-                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    document.getElementById('logo-preview').style.backgroundImage = `url('${e.target.result}')`;
                     document.getElementById('no-logo-text').style.display = 'none';
                     document.getElementById('save-logo-btn').style.display = 'block';
                 }
@@ -401,103 +438,16 @@
         }
 
         async function uploadNewLogo() {
-            const fileInput = document.getElementById('field-logoUpload');
-            const file = fileInput.files[0];
+            const file = document.getElementById('field-logoUpload').files[0];
             const btn = document.getElementById('save-logo-btn');
-            
-            if (!file) return;
-
-            btn.innerText = "LOCKED..."; btn.disabled = true;
-
             const formData = new FormData();
             formData.append('logoFile', file);
             formData.append('accountID', userData.accountID);
-
             try {
-                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', {
-                    method: 'POST',
-                    body: formData
-                });
-                if (res.ok) {
-                    btn.innerText = "SUCCESS";
-                    setTimeout(() => { btn.style.display = 'none'; btn.innerText = "SAVE LOGO"; btn.disabled = false; }, 2000);
-                }
-            } catch (err) {
-                btn.innerText = "RETRY"; btn.disabled = false;
-            }
+                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
+                if (res.ok) { btn.innerText = "SUCCESS"; setTimeout(() => btn.style.display = 'none', 2000); }
+            } catch (err) { alert("LOGO UPLOAD FAILED."); }
         }
-
-        // 5. PRODUCTION STAGING & SUBMISSION LOGIC
-        
-        // This function builds the array seamlessly whether using camera or gallery
-        function stageFiles(input) {
-            if (input.files && input.files.length > 0) {
-                for (let i = 0; i < input.files.length; i++) {
-                    if (stagedSubmissionFiles.length < 10) {
-                        stagedSubmissionFiles.push(input.files[i]);
-                    } else {
-                        alert("Maximum of 10 photos reached.");
-                        break;
-                    }
-                }
-                
-                // Update the UI
-                document.getElementById('file-counter').innerText = `${stagedSubmissionFiles.length} Photos Staged`;
-                document.getElementById('clear-files-btn').style.display = 'block';
-                
-                // Reset the input so the user can click "Camera" again without bugs
-                input.value = ''; 
-            }
-        }
-
-        function clearStagedFiles() {
-            stagedSubmissionFiles = [];
-            document.getElementById('file-counter').innerText = `0 Photos Staged`;
-            document.getElementById('clear-files-btn').style.display = 'none';
-        }
-
-        document.getElementById('inventory-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.innerText = "QUEUEING..."; btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('accountID', userData.accountID);
-            formData.append('vehicleName', document.getElementById('f-name').value);
-            formData.append('assetSource', document.getElementById('f-source').value);
-            formData.append('showroomNotes', document.getElementById('f-notes').value);
-
-            // Pull files from the Javascript Vault, not the HTML input directly
-            for (let i = 0; i < stagedSubmissionFiles.length; i++) {
-                formData.append('uploadAssets', stagedSubmissionFiles[i]);
-            }
-
-            try {
-                // Ensure this matches your Main Submission Make.com Webhook
-                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', {
-                    method: 'POST', 
-                    body: formData
-                });
-                
-                showTab('dashboard');
-                
-                // Local Notification Mock
-                const notif = document.getElementById('notif-list');
-                const vName = document.getElementById('f-name').value;
-                notif.innerHTML = `<div class="card" style="border-left: 3px solid #fbbf24;">
-                    <p style="font-size:12px; margin:0;"><b>Staging Initiated:</b> ${vName} has entered the studio.</p>
-                    <span style="font-size:9px; color:#444; display:block; margin-top:10px; font-weight:800; text-transform:uppercase;">Just Now</span>
-                </div>` + notif.innerHTML;
-
-                // Reset form and variables for next use
-                btn.innerText = "Begin Staging"; btn.disabled = false;
-                document.getElementById('inventory-form').reset();
-                clearStagedFiles(); // Clear the vault
-
-            } catch (err) {
-                btn.innerText = "FAILED. RETRY."; btn.disabled = false;
-            }
-        });
     </script>
 </body>
 </html>
