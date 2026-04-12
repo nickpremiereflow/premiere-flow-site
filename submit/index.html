@@ -32,8 +32,8 @@
             top: 0;
             width: 100%;
             height: 70px;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid #111;
             display: flex;
             align-items: center;
@@ -43,221 +43,235 @@
             z-index: 1000;
         }
 
-        .header-left img { height: 25px; }
+        .header-left img { height: 22px; border: none; }
         .header-right { text-align: right; }
-        .user-email { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
-        .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 800; display: block; margin-top: 2px; }
+        .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+        .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
-        /* --- APP CONTAINER --- */
+        /* --- MAIN APP CONTAINER --- */
         #app-container {
-            margin-top: 70px;
-            margin-bottom: 80px; /* Space for mobile nav */
-            padding: 20px;
-            max-width: 800px;
+            margin-top: 90px;
+            margin-bottom: 100px;
+            padding: 0 20px;
+            max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.6s ease-out;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- MOBILE BOTTOM NAV --- */
+        /* --- NAVIGATION --- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            height: 65px;
+            height: 75px;
             background: #050505;
             border-top: 1px solid #111;
             display: flex;
             justify-content: space-around;
             align-items: center;
             z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--text-dim);
+            color: #444;
             text-decoration: none;
             font-size: 9px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             cursor: pointer;
             transition: var(--transition);
+            font-weight: 800;
         }
 
         .nav-item.active { color: #fff; }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        .nav-icon { font-size: 22px; margin-bottom: 6px; }
 
-        /* --- CARDS & UI ELEMENTS --- */
+        /* --- UI COMPONENTS --- */
         .view-section { display: none; }
         .view-section.active { display: block; }
 
         .card {
             background: var(--card-bg);
             border: 1px solid #111;
-            border-radius: 12px;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: #555; margin-bottom: 20px; font-weight: 900; }
+
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 10px; font-weight: 700; }
+
+        input, textarea {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: #333; outline: none; }
+
+        /* --- BUTTONS --- */
+        .btn-main {
+            width: 100%;
             padding: 20px;
-            margin-bottom: 15px;
-            transition: var(--transition);
-        }
-
-        .status-badge {
-            font-size: 9px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: #111;
-            color: #888;
-        }
-        .status-ready { background: #1a2e1a; color: #4ade80; }
-        .status-staging { background: #2e261a; color: #fbbf24; }
-
-        .btn-action {
-            padding: 10px 15px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 800;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            margin-right: 10px;
-        }
-        .btn-download { background: #fff; color: #000; }
-        .btn-revise { background: transparent; border: 1px solid #333; color: #fff; }
-
-        /* --- NEW SUBMISSION MODAL / BUTTON --- */
-        .fab-container { text-align: center; margin: 30px 0; }
-        .btn-new {
-            background: var(--accent-gold);
+            background: #fff;
             color: #000;
-            padding: 18px 40px;
+            border: none;
             border-radius: 50px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
-            border: none;
-            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
         }
+        .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
 
-        /* --- LOGO UPLOAD AREA --- */
+        .btn-gold { background: var(--accent-gold); color: #000; }
+
         .logo-preview-box {
-            width: 100px;
-            height: 100px;
-            border: 1px dashed #333;
-            border-radius: 8px;
+            width: 120px;
+            height: 120px;
+            border: 1px dashed #222;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin: 15px 0;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            background-color: #050505;
         }
 
-        /* --- HIDE ELEMENTS --- */
+        /* --- LOGIN OVERLAY --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center;
         }
 
+        /* Desktop Adjustments */
         @media (min-width: 800px) {
-            .bottom-nav { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; background: none; border: none; height: 70px; }
-            .nav-item { margin: 0 20px; }
-            header { padding: 0 10%; }
+            .bottom-nav { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; background: none; border: none; height: 70px; padding: 0; }
+            .nav-item { margin: 0 25px; }
+            header { padding: 0 15%; }
         }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div style="width: 100%; max-width: 350px; padding: 20px; text-align: center;">
-            <img src="https://premiereflow.com/logo.png" style="width: 150px; margin-bottom: 40px;">
-            <div style="text-align: left; margin-bottom: 20px;">
-                <label style="font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px;">Account ID</label>
-                <input type="text" id="login-id" placeholder="PF-XXXX-XXXX" style="width: 100%; padding: 15px; background: #0a0a0a; border: 1px solid #111; color: #fff; border-radius: 4px; margin-top: 10px;">
+        <div style="width: 100%; max-width: 380px; padding: 30px; text-align: center;">
+            <img src="https://premiereflow.com/logo.png" style="width: 160px; margin-bottom: 50px;">
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label>Portal Access ID</label>
+                <input type="text" id="login-id" placeholder="PF-XXXX-XXXX">
             </div>
-            <button onclick="portalAuth()" style="width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; border-radius: 4px; cursor: pointer;">Unlock Portal</button>
-            <p id="auth-error" style="color: #ff4d4d; font-size: 11px; margin-top: 20px; display: none;"></p>
+            <button class="btn-main" onclick="portalAuth()">Unlock Studio</button>
+            <p id="auth-error" style="color: #ff4d4d; font-size: 11px; margin-top: 25px; display: none; font-weight: 700;"></p>
         </div>
     </div>
 
     <header id="main-header" style="display: none;">
         <div class="header-left">
-            <img src="https://premiereflow.com/logo.png" alt="PF">
+            <img src="https://premiereflow.com/logo.png" alt="Premiere Flow">
         </div>
         <div class="header-right">
-            <span class="user-email" id="header-email">---</span>
-            <span class="user-credits" id="header-credits">0 Credits</span>
+            <span class="user-email" id="header-email">NOT LOGGED IN</span>
+            <span class="user-credits" id="header-credits">0 CREDITS</span>
         </div>
     </header>
 
     <div id="app-container" style="display: none;">
         
         <section id="view-dashboard" class="view-section active">
-            <div class="fab-container">
-                <button class="btn-new" id="main-action-btn" onclick="openSubmit()">New Submission</button>
+            <div style="margin-bottom: 40px;">
+                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Production</button>
             </div>
-            <h3 style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #444; margin-bottom: 20px;">Active Productions</h3>
+            <h3>Active Pipeline</h3>
             <div id="submissions-list">
-                <div class="card" style="text-align:center; border: 1px dashed #222;">
-                    <p style="color: #333; font-size: 11px;">No active listings. Capture your first vehicle to begin.</p>
+                <div class="card" style="text-align:center; border: 1px dashed #1a1a1a;">
+                    <p style="color: #444; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">No vehicles in staging.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-notifications" class="view-section">
+            <h3>Recent Activity</h3>
+            <div id="notif-list">
+                <div class="card" style="border-left: 3px solid var(--accent-gold);">
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome to Premiere Flow.</p>
+                    <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
                 </div>
             </div>
         </section>
 
         <section id="view-profile" class="view-section">
             <div class="card">
-                <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0;">Brand Identity</h3>
-                <label style="font-size: 9px; color: #555; text-transform: uppercase;">Constant Brand Logo</label>
+                <h3>Brand Identity</h3>
+                <label>Account Logo (Transparent PNG Preferred)</label>
                 <div id="logo-preview" class="logo-preview-box">
-                    <span id="no-logo-text" style="font-size: 10px; color: #333;">No Logo Set</span>
+                    <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo Found</span>
                 </div>
-                <button style="font-size: 10px; background: #111; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Update Logo</button>
+                
+                <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
+                
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="document.getElementById('field-logoUpload').click()" style="flex: 1; padding: 12px; font-size: 10px; background: #111; color: #fff; border: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Select File</button>
+                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; flex: 1; padding: 12px; font-size: 10px; background: var(--accent-gold); color: #000; border: none; border-radius: 6px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Save Logo</button>
+                </div>
             </div>
+            
             <div class="card">
-                <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0;">Account Details</h3>
-                <p id="profile-tier" style="font-size: 11px; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 5px;"></p>
-                <p id="profile-joined" style="font-size: 11px; color: #666;"></p>
-            </div>
-        </section>
-
-        <section id="view-notifications" class="view-section">
-            <h3 style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #444; margin-bottom: 20px;">Recent Alerts</h3>
-            <div id="notif-list">
-                <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0;"><b>System:</b> Your account is active. Ready for production.</p>
-                    <span style="font-size: 9px; color: #444;">Just now</span>
+                <h3>Subscription Details</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
+                    <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Status</span>
+                    <span style="font-size: 11px; font-weight: 900; color: #4ade80;">ACTIVE</span>
                 </div>
             </div>
         </section>
 
         <section id="view-submit" class="view-section">
-            <button onclick="showTab('dashboard')" style="background:none; border:none; color:#555; font-size:10px; text-transform:uppercase; margin-bottom:20px; cursor:pointer;">← Back to Dashboard</button>
+            <div style="margin-bottom: 25px;">
+                <button onclick="showTab('dashboard')" style="background:none; border:none; color:#666; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Production</button>
+            </div>
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name</label>
-                        <input type="text" id="f-name" required placeholder="2024 Kia K4">
+                        <label>Vehicle Name (Year Make Model)</label>
+                        <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
                     <div class="form-group">
-                        <label>Asset Source (Link or Folder)</label>
-                        <input type="text" id="f-source" placeholder="Paste listing URL...">
+                        <label>Asset Source (Listing URL)</label>
+                        <input type="text" id="f-source" placeholder="Paste link here...">
                     </div>
-                    <div style="text-align:center; margin: 15px 0; font-size: 9px; color: #222;">OR</div>
+                    <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
                     <div class="form-group">
                         <label>Camera Capture</label>
-                        <input type="file" id="f-files" multiple accept="image/*" capture="environment">
+                        <input type="file" id="f-files" multiple accept="image/*" capture="environment" style="border: 1px dashed #222; padding: 15px; font-size: 11px; color: #444;">
                     </div>
-                    <div class="form-group">
-                        <label>Showroom / Background Notes</label>
-                        <textarea id="f-notes" rows="3" placeholder="Elite styling notes..."></textarea>
+                    <div class="form-group" style="margin-top: 30px;">
+                        <label>Showroom Styles / Special Notes</label>
+                        <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
-                    <button type="submit" id="submit-btn" style="background: #fff; color: #000; font-weight: 900; width: 100%; padding: 18px; border: none; text-transform: uppercase; letter-spacing: 2px;">Start Production</button>
+                    <button type="submit" id="submit-btn" class="btn-main">Begin Staging</button>
                 </form>
             </div>
         </section>
@@ -265,15 +279,15 @@
     </div>
 
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
-        <div class="nav-item active" onclick="showTab('dashboard')" id="nav-dashboard">
+        <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
             <span class="nav-icon">▤</span>
             <span>Dashboard</span>
         </div>
-        <div class="nav-item" onclick="showTab('notifications')" id="nav-notifications">
+        <div class="nav-item" id="nav-notifications" onclick="showTab('notifications')">
             <span class="nav-icon">◈</span>
             <span>Alerts</span>
         </div>
-        <div class="nav-item" onclick="showTab('profile')" id="nav-profile">
+        <div class="nav-item" id="nav-profile" onclick="showTab('profile')">
             <span class="nav-icon">👤</span>
             <span>Profile</span>
         </div>
@@ -282,80 +296,121 @@
     <script>
         let userData = {};
 
-        // AUTHENTICATION
+        // 1. AUTHENTICATION LOGIC
         async function portalAuth() {
             const id = document.getElementById('login-id').value;
-            const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ accountID: id })
-            });
-            const data = await res.json();
+            const error = document.getElementById('auth-error');
             
-            if (data.status === 'success') {
-                userData = data;
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-header').style.display = 'flex';
-                document.getElementById('app-container').style.display = 'block';
-                document.getElementById('bottom-nav').style.display = 'flex';
+            try {
+                const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ accountID: id })
+                });
+                const data = await res.json();
                 
-                updateUI();
-                fetchSubmissions();
-            } else {
-                document.getElementById('auth-error').innerText = "Invalid ID. Check your welcome email.";
-                document.getElementById('auth-error').style.display = 'block';
+                if (data.status === 'success') {
+                    userData = data;
+                    userData.accountID = id; // Store ID for subsequent calls
+                    
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('main-header').style.display = 'flex';
+                    document.getElementById('app-container').style.display = 'block';
+                    document.getElementById('bottom-nav').style.display = 'flex';
+                    
+                    refreshUI();
+                } else {
+                    error.innerText = "ACCESS DENIED. CHECK ID.";
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                error.innerText = "CONNECTION TIMEOUT.";
+                error.style.display = 'block';
             }
         }
 
-        // TAB SWITCHING
-        function showTab(tabId) {
+        // 2. TAB SWITCHING
+        function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            document.getElementById('view-' + tabId).classList.add('active');
-            if(tabId !== 'submit') document.getElementById('nav-' + tabId).classList.add('active');
+            document.getElementById('view-' + t).classList.add('active');
+            if(t !== 'submit') document.getElementById('nav-' + t).classList.add('active');
             window.scrollTo(0,0);
         }
 
         function openSubmit() {
             if(userData.credits <= 0) {
-                alert("Please add credits to continue.");
+                alert("INSUFFICIENT CREDITS. PLEASE REFILL.");
                 return;
             }
             showTab('submit');
         }
 
-        // UI UPDATES
-        function updateUI() {
-            document.getElementById('header-email').innerText = userData.email || 'Authorized Dealer';
-            document.getElementById('header-credits').innerText = Math.round(userData.credits) + ' Credits';
-            document.getElementById('profile-tier').innerText = userData.tier + ' Tier';
-            document.getElementById('profile-joined').innerText = 'Member Since: ' + (userData.dateJoined || '2026');
+        // 3. UI REFRESH
+        function refreshUI() {
+            document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
+            document.getElementById('header-credits').innerText = Math.round(userData.credits) + ' CREDITS';
+            document.getElementById('profile-tier').innerText = userData.tier.toUpperCase();
             
             if(userData.logo) {
                 document.getElementById('logo-preview').style.backgroundImage = `url('${userData.logo}')`;
                 document.getElementById('no-logo-text').style.display = 'none';
             }
-            
-            // Action Button Logic
-            const actionBtn = document.getElementById('main-action-btn');
+
+            const actionBtn = document.getElementById('action-btn');
             if(userData.credits <= 0) {
-                actionBtn.innerText = "Add Credits";
-                actionBtn.style.background = "#333";
-                actionBtn.style.color = "#888";
+                actionBtn.innerText = "Refill Credits";
+                actionBtn.style.background = "#1a1a1a";
+                actionBtn.style.color = "#444";
             }
         }
 
-        // FETCH SUBMISSIONS (SCENARIO C - To be built)
-        async function fetchSubmissions() {
-            const list = document.getElementById('submissions-list');
-            // This would be another webhook to get user's rows from Sheets
+        // 4. LOGO UPLOAD LOGIC
+        function handleLogoSelect(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logo-preview');
+                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    document.getElementById('no-logo-text').style.display = 'none';
+                    document.getElementById('save-logo-btn').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
-        // SUBMISSION HANDLER
+        async function uploadNewLogo() {
+            const fileInput = document.getElementById('field-logoUpload');
+            const file = fileInput.files[0];
+            const btn = document.getElementById('save-logo-btn');
+            
+            if (!file) return;
+
+            btn.innerText = "LOCKED..."; btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('logoFile', file);
+            formData.append('accountID', userData.accountID);
+
+            try {
+                const res = await fetch('YOUR_NEW_LOGO_SCENARIO_WEBHOOK_URL', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    btn.innerText = "SUCCESS";
+                    setTimeout(() => { btn.style.display = 'none'; btn.innerText = "SAVE LOGO"; btn.disabled = false; }, 2000);
+                }
+            } catch (err) {
+                btn.innerText = "RETRY"; btn.disabled = false;
+            }
+        }
+
+        // 5. PRODUCTION SUBMISSION
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.innerText = "INITIALIZING PRODUCTION..."; btn.disabled = true;
+            btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const payload = {
                 accountID: userData.accountID,
@@ -370,11 +425,12 @@
             });
             
             showTab('dashboard');
-            // Trigger local notification
+            
+            // Local Notification Mock
             const notif = document.getElementById('notif-list');
             notif.innerHTML = `<div class="card" style="border-left: 3px solid #fbbf24;">
-                <p style="font-size:12px; margin:0;"><b>Production Started:</b> ${payload.vehicleName} is being staged.</p>
-                <span style="font-size:9px; color:#444;">Just now</span>
+                <p style="font-size:12px; margin:0;"><b>Staging Initiated:</b> ${payload.vehicleName} has entered the studio.</p>
+                <span style="font-size:9px; color:#444; display:block; margin-top:10px; font-weight:800; text-transform:uppercase;">Just Now</span>
             </div>` + notif.innerHTML;
         });
     </script>
