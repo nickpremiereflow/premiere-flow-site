@@ -141,6 +141,12 @@
         .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
 
         .btn-gold { background: var(--accent-gold); color: #000; }
+        
+        .btn-split {
+            flex: 1; padding: 15px; background: #111; color: #fff; 
+            border: 1px solid #333; border-radius: 8px; cursor: pointer; 
+            font-size: 11px; text-transform: uppercase; font-weight: 800;
+        }
 
         .logo-preview-box {
             width: 120px;
@@ -262,11 +268,25 @@
                         <label>Asset Source (Listing URL)</label>
                         <input type="text" id="f-source" placeholder="Paste link here...">
                     </div>
+                    
                     <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
+                    
                     <div class="form-group">
-                        <label>Camera Capture</label>
-                        <input type="file" id="f-files" multiple accept="image/*" capture="environment" style="border: 1px dashed #222; padding: 15px; font-size: 11px; color: #444;">
+                        <label>Photo Capture (Max 10)</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
+                            <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 5px;">
+                            <span id="file-counter" style="font-size: 11px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">0 Photos Staged</span>
+                            <button type="button" id="clear-files-btn" onclick="clearStagedFiles()" style="display:none; background:none; border:none; color:#ff4d4d; font-size:9px; font-weight:900; cursor:pointer; text-transform:uppercase;">[ Clear ]</button>
+                        </div>
+
+                        <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
+                        <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
+
                     <div class="form-group" style="margin-top: 30px;">
                         <label>Showroom Styles / Special Notes</label>
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
@@ -295,6 +315,7 @@
 
     <script>
         let userData = {};
+        let stagedSubmissionFiles = []; // The Javascript Vault for photos
 
         // 1. AUTHENTICATION LOGIC
         async function portalAuth() {
@@ -393,7 +414,6 @@
             formData.append('accountID', userData.accountID);
 
             try {
-                // Ensure this matches your Profile Logo Update Make.com Webhook
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', {
                     method: 'POST',
                     body: formData
@@ -407,7 +427,35 @@
             }
         }
 
-        // 5. PRODUCTION SUBMISSION (UPDATED FOR CLEAN ARRAY PARSING)
+        // 5. PRODUCTION STAGING & SUBMISSION LOGIC
+        
+        // This function builds the array seamlessly whether using camera or gallery
+        function stageFiles(input) {
+            if (input.files && input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    if (stagedSubmissionFiles.length < 10) {
+                        stagedSubmissionFiles.push(input.files[i]);
+                    } else {
+                        alert("Maximum of 10 photos reached.");
+                        break;
+                    }
+                }
+                
+                // Update the UI
+                document.getElementById('file-counter').innerText = `${stagedSubmissionFiles.length} Photos Staged`;
+                document.getElementById('clear-files-btn').style.display = 'block';
+                
+                // Reset the input so the user can click "Camera" again without bugs
+                input.value = ''; 
+            }
+        }
+
+        function clearStagedFiles() {
+            stagedSubmissionFiles = [];
+            document.getElementById('file-counter').innerText = `0 Photos Staged`;
+            document.getElementById('clear-files-btn').style.display = 'none';
+        }
+
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
@@ -419,10 +467,9 @@
             formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
 
-            // Append files with a clean key to prevent Make.com parsing errors
-            const fileInput = document.getElementById('f-files');
-            for (let i = 0; i < fileInput.files.length; i++) {
-                formData.append('uploadAssets', fileInput.files[i]);
+            // Pull files from the Javascript Vault, not the HTML input directly
+            for (let i = 0; i < stagedSubmissionFiles.length; i++) {
+                formData.append('uploadAssets', stagedSubmissionFiles[i]);
             }
 
             try {
@@ -442,9 +489,10 @@
                     <span style="font-size:9px; color:#444; display:block; margin-top:10px; font-weight:800; text-transform:uppercase;">Just Now</span>
                 </div>` + notif.innerHTML;
 
-                // Reset form for next use
+                // Reset form and variables for next use
                 btn.innerText = "Begin Staging"; btn.disabled = false;
                 document.getElementById('inventory-form').reset();
+                clearStagedFiles(); // Clear the vault
 
             } catch (err) {
                 btn.innerText = "FAILED. RETRY."; btn.disabled = false;
