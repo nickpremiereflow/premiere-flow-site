@@ -287,7 +287,7 @@
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
                 
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Select File</button>
+                    <button id="trigger-upload-btn" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Upload Logo</button>
                     <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split" style="background:var(--accent-gold); color:#000;">Save to Profile</button>
                 </div>
             </div>
@@ -428,10 +428,18 @@
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
             // Logo Persistence
-            if(userData.logo && userData.logo !== "") {
+            const uploadTriggerBtn = document.getElementById('trigger-upload-btn');
+            
+            // Check if Make actually sent a valid logo URL
+            if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 const lp = document.getElementById('logo-preview');
                 lp.style.backgroundImage = `url('${userData.logo}')`;
                 document.getElementById('no-logo-text').style.display = 'none';
+                uploadTriggerBtn.innerText = "Update Logo";
+            } else {
+                uploadTriggerBtn.innerText = "Upload Logo";
+                document.getElementById('no-logo-text').style.display = 'block';
+                document.getElementById('logo-preview').style.backgroundImage = 'none';
             }
 
             // History Persistence (UPDATED TO USE .vehicle)
@@ -562,6 +570,7 @@
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
                     userData.logo = URL.createObjectURL(file);
+                    refreshUI(); // Instantly update the UI to show the new button text
                     btn.innerText = "SUCCESS";
                     setTimeout(() => btn.style.display = 'none', 2000);
                 }
