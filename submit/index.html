@@ -84,7 +84,7 @@
                 <label>Password</label>
                 <input type="password" id="login-password" placeholder="••••••••">
             </div>
-            <button class="btn-main" onclick="portalAuth()">Unlock Dashboard</button>
+            <button class="btn-main" id="login-btn" onclick="portalAuth()">Unlock Dashboard</button>
             <p id="auth-error" style="color: #ff4d4d; font-size: 11px; margin-top: 25px; display: none; font-weight: 700;"></p>
         </div>
     </div>
@@ -220,6 +220,9 @@
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
             const error = document.getElementById('auth-error');
+            const btn = document.getElementById('login-btn');
+            
+            btn.innerText = "AUTHENTICATING...";
             
             try {
                 const res = await fetch(loginWebhook, {
@@ -234,6 +237,7 @@
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
                     
+                    // TRANSITION TO DASHBOARD
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
@@ -241,10 +245,12 @@
                     
                     refreshUI();
                 } else {
+                    btn.innerText = "Unlock Dashboard";
                     error.innerText = data.error || "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
+                btn.innerText = "Unlock Dashboard";
                 error.innerText = "CONNECTION ERROR.";
                 error.style.display = 'block';
             }
@@ -252,7 +258,7 @@
 
         function signOut() {
             localStorage.clear();
-            window.location.href = "/";
+            window.location.reload(); // Reload to show login overlay again
         }
 
         async function fetchMoreHistory() {
@@ -351,7 +357,8 @@
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const formData = new FormData();
-            formData.append('accountID', userData.accountID);
+            // Note: Matching Make's accountId label
+            formData.append('accountId', userData.accountId);
             formData.append('vehicleName', document.getElementById('f-name').value);
             formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
@@ -360,7 +367,7 @@
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 window.location.reload(); 
-            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; }
+            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; btn.innerText = "Begin Staging"; }
         });
 
         function handleLogoSelect(input) {
@@ -382,7 +389,7 @@
             const btn = document.getElementById('save-logo-btn');
             const formData = new FormData();
             formData.append('logoFile', file);
-            formData.append('accountID', userData.accountID);
+            formData.append('accountId', userData.accountId);
             
             btn.innerText = "SAVING...";
             try {
