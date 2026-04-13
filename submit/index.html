@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premiere Flow | Portal</title>
+    <title>Account Dashboard | Premiere Flow</title>
     
     <link rel="stylesheet" href="../style.css">
     <style>
@@ -229,11 +229,15 @@
     <div id="login-overlay">
         <div style="width: 100%; max-width: 380px; padding: 30px; text-align: center;">
             <img src="https://premiereflow.com/logo.png" style="width: 160px; margin-bottom: 50px;">
-            <div style="text-align: left; margin-bottom: 25px;">
-                <label>Portal Access ID</label>
-                <input type="text" id="login-id" placeholder="PF-XXXX-XXXX">
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label>Email Address</label>
+                <input type="email" id="login-email" placeholder="name@company.com">
             </div>
-            <button class="btn-main" onclick="portalAuth()">Unlock Studio</button>
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button class="btn-main" onclick="portalAuth()">Unlock Dashboard</button>
             <p id="auth-error" style="color: #ff4d4d; font-size: 11px; margin-top: 25px; display: none; font-weight: 700;"></p>
         </div>
     </div>
@@ -269,7 +273,7 @@
             <h3>Recent Activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome to Premiere Flow.</p>
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome back.</p>
                     <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
                 </div>
             </div>
@@ -287,7 +291,7 @@
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
                 
                 <div style="display: flex; gap: 10px;">
-                    <button id="trigger-upload-btn" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Upload Logo</button>
+                    <button id="trigger-upload-btn" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Update Logo</button>
                     <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split" style="background:var(--accent-gold); color:#000;">Save to Profile</button>
                 </div>
             </div>
@@ -298,10 +302,11 @@
                     <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
                     <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
                     <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Status</span>
                     <span style="font-size: 11px; font-weight: 900; color: #4ade80;">ACTIVE</span>
                 </div>
+                <button onclick="signOut()" style="width: 100%; background: transparent; border: 1px solid #222; color: #555; padding: 15px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Sign Out</button>
             </div>
         </section>
 
@@ -366,21 +371,35 @@
         let stagedFiles = [];
         let historyPage = 1;
 
-        // 1. AUTHENTICATION & INITIAL LOAD
+        // AUTO-LOGIN CHECK
+        window.onload = function() {
+            const savedEmail = localStorage.getItem('pf_email');
+            const savedPass = localStorage.getItem('pf_pass');
+            if (savedEmail && savedPass) {
+                document.getElementById('login-email').value = savedEmail;
+                document.getElementById('login-password').value = savedPass;
+                portalAuth();
+            }
+        };
+
+        // AUTHENTICATION LOGIC (Now with Email/Pass)
         async function portalAuth() {
-            const id = document.getElementById('login-id').value;
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
             const error = document.getElementById('auth-error');
             
             try {
-                const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
+                // UPDATE THIS URL to your NEW [PORTAL] Login Verify Webhook
+                const res = await fetch('YOUR_NEW_LOGIN_VERIFY_WEBHOOK_URL', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ accountID: id, page: 1 })
+                    body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
                 const data = await res.json();
                 
-                if (data.status === 'success') {
+                if (data.success) {
                     userData = data;
-                    userData.accountID = id; 
+                    localStorage.setItem('pf_email', email);
+                    localStorage.setItem('pf_pass', pass);
                     
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
@@ -389,7 +408,7 @@
                     
                     refreshUI();
                 } else {
-                    error.innerText = data.message || "ACCESS DENIED.";
+                    error.innerText = data.error || "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
@@ -398,16 +417,21 @@
             }
         }
 
-        // 2. PAGINATION LOGIC
+        function signOut() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        // PAGINATION
         async function fetchMoreHistory() {
             historyPage++;
             const btn = document.getElementById('load-more-btn');
             btn.innerText = "LOADING...";
             
             try {
-                const res = await fetch('https://hook.us2.make.com/3fo42xcb1acfxniws2bblqoid56go4r1', {
+                const res = await fetch('YOUR_NEW_LOGIN_VERIFY_WEBHOOK_URL', {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ accountID: userData.accountID, page: historyPage })
+                    body: JSON.stringify({ email: localStorage.getItem('pf_email'), password: localStorage.getItem('pf_pass'), page: historyPage })
                 });
                 const data = await res.json();
                 
@@ -421,19 +445,17 @@
             } catch (err) { btn.innerText = "ERROR"; }
         }
 
-        // 3. UI REFRESH & PERSISTENCE
+        // UI REFRESH
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
-            // Logo Persistence
             const uploadTriggerBtn = document.getElementById('trigger-upload-btn');
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
             
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
-                // Try to load physical image tag instead of CSS background
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
@@ -445,7 +467,6 @@
                 uploadTriggerBtn.innerText = "Upload Logo";
             }
 
-            // History Persistence
             const list = document.getElementById('submissions-list');
             if(userData.history && userData.history.length > 0) {
                 list.innerHTML = userData.history.map(item => `
@@ -466,7 +487,7 @@
             }
         }
 
-        // 4. NAVIGATION
+        // NAVIGATION
         function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -481,7 +502,7 @@
             showTab('submit');
         }
 
-        // 5. PHOTO STAGING GALLERY
+        // PHOTO STAGING
         function stageFiles(input) {
             const incoming = Array.from(input.files);
             let added = 0;
@@ -513,7 +534,7 @@
             renderGallery();
         }
 
-        // 6. MAIN PRODUCTION SUBMISSION
+        // PRODUCTION SUBMISSION
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
@@ -530,6 +551,7 @@
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
+                // Ensure this Webhook URL is correct
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 
                 userData.history.unshift({ vehicle: vName, date: 'Just Now', status: 'In Staging' });
@@ -546,7 +568,7 @@
             }
         });
 
-        // 7. LOGO UPLOAD
+        // LOGO HANDLING
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -555,7 +577,7 @@
                     actualImg.src = e.target.result;
                     actualImg.style.display = 'block';
                     document.getElementById('no-logo-text').style.display = 'none';
-                    document.getElementById('save-logo-btn').style.display = 'block'; // Shows Save Button
+                    document.getElementById('save-logo-btn').style.display = 'block';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -570,15 +592,15 @@
             
             btn.innerText = "SAVING...";
             try {
+                // Ensure this Webhook URL is correct
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
-                    // Update user data with new temporary object URL
                     userData.logo = URL.createObjectURL(file);
-                    refreshUI(); // Re-render UI to update the Upload/Update button text
+                    refreshUI();
                     btn.innerText = "SUCCESS";
                     setTimeout(() => {
                         btn.style.display = 'none';
-                        btn.innerText = "Save to Profile"; // Reset button text for next time
+                        btn.innerText = "Save to Profile";
                     }, 2000);
                 }
             } catch (err) { alert("UPLOAD FAILED."); }
