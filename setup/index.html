@@ -4,23 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Setup | Premiere Flow</title>
-    <style>
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .setup-card { background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333; width: 100%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        #msg { margin-top: 20px; font-size: 14px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="setup-card">
-        <img src="https://premiereflow.com/logo.png" style="width: 120px; margin-bottom: 20px;">
-        <h2>Set Your Password</h2>
-        <p style="color: #888; font-size: 13px;">Create a secure password to access your studio.</p>
-        <input type="password" id="pass1" placeholder="New Password">
-        <input type="password" id="pass2" placeholder="Confirm Password">
-        <button onclick="submitSetup()">Finish Setup</button>
-        <p id="msg"></p>
+<body class="login-body"> <div class="setup-container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div class="login-card" style="background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333; width: 100%; max-width: 400px; text-align: center;">
+            <img src="https://premiereflow.com/logo.png" style="width: 140px; margin-bottom: 30px;">
+            <h2 style="color: #fff; margin-bottom: 10px;">Set Your Password</h2>
+            <p style="color: #888; font-size: 13px; margin-bottom: 25px;">Secure your studio access below.</p>
+            
+            <input type="password" id="pass1" placeholder="New Password" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px;">
+            <input type="password" id="pass2" placeholder="Confirm Password" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px;">
+            
+            <button class="btn-main" onclick="submitSetup()" style="width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px;">Finish Setup</button>
+            
+            <p id="msg" style="margin-top: 20px; font-size: 14px; color: #fff;"></p>
+        </div>
     </div>
 
     <script>
@@ -44,9 +42,9 @@
                 });
 
                 if (response.ok) {
-                    msg.innerHTML = "Success! <a href='/' style='color:#fff;'>Login here</a>";
+                    msg.innerHTML = "Success! <a href='/' style='color:#fff; text-decoration: underline;'>Login here</a>";
                 } else {
-                    msg.innerText = "Error: Token may be expired.";
+                    msg.innerText = "Error: Link expired or invalid.";
                 }
             } catch (err) { msg.innerText = "Connection error."; }
         }
