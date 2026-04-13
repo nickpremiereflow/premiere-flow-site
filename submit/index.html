@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Account Dashboard | Premiere Flow</title>
     
-    <link rel="stylesheet" href="../style.css">
     <style>
         :root {
             --primary-black: #000000;
@@ -56,7 +55,7 @@
         input, textarea { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         input:focus { border-color: #333; outline: none; }
 
-        .btn-main { width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); }
+        .btn-main { width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
         .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; transition: 0.2s; }
@@ -66,11 +65,24 @@
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .remove-thumb { position: absolute; top: 2px; right: 2px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 4px; width: 18px; height: 18px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+        /* LOADING SPINNER */
+        .loader {
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 2px solid #000;
+            width: 14px;
+            height: 14px;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+        .btn-gold .loader { border-top-color: #000; border-color: rgba(0,0,0,0.1); }
+        .btn-main:not(.btn-gold) .loader { border-top-color: #fff; border-color: rgba(255,255,255,0.1); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
         #load-more-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .btn-load-more { background: none; border: 1px solid #222; color: #666; padding: 10px 20px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
 
-        /* --- RESPONSIVE DESKTOP OVERRIDES --- */
         @media (min-width: 768px) {
             .bottom-nav {
                 top: 0; bottom: auto; left: 50%; transform: translateX(-50%);
@@ -168,14 +180,12 @@
             </div>
             <div class="card">
                 <form id="inventory-form">
-                    
                     <div class="form-group">
                         <label>Vehicle Name (Year Make Model) <span style="color: #ff4d4d; font-size: 8px;">*REQUIRED</span></label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
 
                     <div class="form-group" style="background: #050505; padding: 20px; border-radius: 12px; border: 1px solid #1a1a1a;">
-                        
                         <label>Asset Link (Listing or Folder URL)</label>
                         <input type="text" id="f-source" placeholder="Paste listing, Drive, or Dropbox link here...">
                         
@@ -196,7 +206,7 @@
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
                     
-                    <button type="submit" id="submit-btn" class="btn-main">Begin Staging</button>
+                    <button type="submit" id="submit-btn" class="btn-main btn-gold">Begin Staging</button>
                 </form>
             </div>
         </section>
@@ -241,7 +251,8 @@
             
             if(!email || !pass) return;
 
-            btn.innerText = "AUTHENTICATING...";
+            btn.innerHTML = '<div class="loader"></div> AUTHENTICATING...';
+            btn.disabled = true;
             error.style.display = 'none';
             
             try {
@@ -251,13 +262,10 @@
                     body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
 
-                const rawText = await res.text();
-                const data = JSON.parse(rawText);
+                const data = await res.json();
                 
                 if (data.success) {
-                    data.accountId = data.accountId || data.accountID;
                     userData = data;
-                    
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
                     
@@ -269,12 +277,13 @@
                     refreshUI();
                 } else {
                     btn.innerText = "Unlock Dashboard";
+                    btn.disabled = false;
                     error.innerText = data.error || "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
-                console.error("Auth Error:", err);
                 btn.innerText = "Unlock Dashboard";
+                btn.disabled = false;
                 error.innerText = "CONNECTION ERROR.";
                 error.style.display = 'block';
             }
@@ -301,10 +310,12 @@
 
             const list = document.getElementById('submissions-list');
             if(userData.history && userData.history.length > 0) {
-                list.innerHTML = userData.history.map(item => `
+                list.innerHTML = userData.history.map(item => {
+                    const thumb = item.thumbnail && item.thumbnail !== "" ? item.thumbnail : '';
+                    return `
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div style="display:flex; align-items:center; gap:12px;">
-                            ${item.thumbnail && item.thumbnail !== "" ? `<img src="${item.thumbnail}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : ''}
+                            ${thumb ? `<img src="${thumb}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : `<div style="width:40px; height:40px; background:#000; border:1px solid #222; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#333;">PF</div>`}
                             <div>
                                 <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
                                 <span style="font-size:9px; color:#444; font-weight:700;">${item.date || 'Just Now'}</span>
@@ -312,15 +323,27 @@
                         </div>
                         <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>
-                `).join('');
+                `}).join('');
             }
+        }
+
+        function addAlert(msg) {
+            const list = document.getElementById('notif-list');
+            const alert = document.createElement('div');
+            alert.className = 'card';
+            alert.style.borderLeft = '3px solid var(--accent-gold)';
+            alert.innerHTML = `
+                <p style="font-size: 12px; margin: 0; line-height: 1.5;">${msg}</p>
+                <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
+            `;
+            list.prepend(alert);
         }
 
         function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + t).classList.add('active');
-            const nav = document.querySelector(`.nav-item[onclick="showTab('${t}')"]`);
+            const nav = document.getElementById('nav-' + t);
             if(nav) nav.classList.add('active');
             window.scrollTo(0,0);
         }
@@ -353,34 +376,18 @@
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.innerText = "QUEUEING..."; btn.disabled = true;
+            btn.innerHTML = '<div class="loader"></div> PROCESSING...'; 
+            btn.disabled = true;
 
             const vehicleName = document.getElementById('f-name').value.trim();
             const assetLink = document.getElementById('f-source').value.trim();
 
-            // --- REQUIRE EITHER LINK OR FILE ---
             if (assetLink === "" && stagedFiles.length === 0) {
-                alert("Please provide an Asset Link OR Direct Upload photos to proceed.");
+                alert("Please provide an Asset Link OR Direct Upload photos.");
                 btn.innerText = "Begin Staging";
                 btn.disabled = false;
                 return;
             }
-
-            // --- DUPLICATE VEHICLE NAME CHECK ---
-            if (userData.history && userData.history.length > 0) {
-                const isDuplicate = userData.history.some(item => 
-                    (item.vehicle && item.vehicle.toLowerCase() === vehicleName.toLowerCase()) || 
-                    (item.name && item.name.toLowerCase() === vehicleName.toLowerCase())
-                );
-                
-                if (isDuplicate) {
-                    alert("You already have a vehicle with that exact name in your dashboard.");
-                    btn.innerText = "Begin Staging";
-                    btn.disabled = false;
-                    return;
-                }
-            }
-            // ------------------------------------
 
             let tempThumbnail = null;
             if (stagedFiles.length > 0) tempThumbnail = URL.createObjectURL(stagedFiles[0]);
@@ -404,6 +411,8 @@
                     thumbnail: tempThumbnail
                 });
                 
+                addAlert(`<b>Staging:</b> ${vehicleName} has been queued for production.`);
+                
                 document.getElementById('inventory-form').reset();
                 stagedFiles = [];
                 renderGallery();
@@ -414,7 +423,11 @@
                 refreshUI();
                 showTab('dashboard');
 
-            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; btn.innerText = "Begin Staging"; }
+            } catch (err) { 
+                alert("SUBMISSION FAILED."); 
+                btn.disabled = false; 
+                btn.innerText = "Begin Staging"; 
+            }
         });
 
         function handleLogoSelect(input) {
@@ -439,7 +452,7 @@
             formData.append('logoFile', file);
             formData.append('accountId', activeID);
             
-            btn.innerText = "SAVING...";
+            btn.innerHTML = '<div class="loader"></div> SAVING...';
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
