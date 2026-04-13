@@ -234,18 +234,19 @@
                     body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
 
-                // If Make sends a 204 OPTIONS response, fetch handles it, but we need the JSON from the 200 POST
-                const data = await res.json();
+                // --- NEW DEBUG LOGIC ---
+                const rawText = await res.text();
+                console.log("Raw Response from Make:", rawText);
+                const data = JSON.parse(rawText);
+                // -----------------------
                 
                 if (data.success) {
-                    // Sync case-sensitive IDs
                     data.accountId = data.accountId || data.accountID;
-                    
                     userData = data;
+                    
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
                     
-                    // TRANSITION TO DASHBOARD
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
@@ -366,7 +367,6 @@
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const formData = new FormData();
-            // Handle both ID cases
             const activeID = userData.accountId || userData.accountID;
             formData.append('accountId', activeID);
             formData.append('vehicleName', document.getElementById('f-name').value);
