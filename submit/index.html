@@ -116,7 +116,7 @@
             <div style="margin-bottom: 40px;">
                 <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Production</button>
             </div>
-            <h3>Active Pipeline</h3>
+            <h3>Dashboard</h3>
             <div id="submissions-list">
                 <div class="card" style="text-align:center; border: 1px dashed #1a1a1a;">
                     <p style="color: #444; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">No vehicles in staging.</p>
@@ -168,16 +168,20 @@
             </div>
             <div class="card">
                 <form id="inventory-form">
+                    
                     <div class="form-group">
-                        <label>Vehicle Name (Year Make Model)</label>
+                        <label>Vehicle Name (Year Make Model) <span style="color: #ff4d4d; font-size: 8px;">*REQUIRED</span></label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
-                    <div class="form-group">
-                        <label>Asset Source (Listing URL)</label>
-                        <input type="text" id="f-source" placeholder="Paste link here...">
-                    </div>
-                    <div class="form-group">
-                        <label>Photo Capture (Limit 10)</label>
+
+                    <div class="form-group" style="background: #050505; padding: 20px; border-radius: 12px; border: 1px solid #1a1a1a;">
+                        
+                        <label>Asset Link (Listing or Folder URL)</label>
+                        <input type="text" id="f-source" placeholder="Paste listing, Drive, or Dropbox link here...">
+                        
+                        <div style="text-align: center; margin: 20px 0; color: #444; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">— OR —</div>
+                        
+                        <label>Direct Upload (Max 10 Photos)</label>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
@@ -186,10 +190,12 @@
                         <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
+
                     <div class="form-group">
                         <label>Special Notes</label>
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
+                    
                     <button type="submit" id="submit-btn" class="btn-main">Begin Staging</button>
                 </form>
             </div>
@@ -199,7 +205,7 @@
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
             <span class="nav-icon">▤</span>
-            <span>Pipeline</span>
+            <span>Dashboard</span>
         </div>
         <div class="nav-item" id="nav-notifications" onclick="showTab('notifications')">
             <span class="nav-icon">◈</span>
@@ -298,7 +304,7 @@
                 list.innerHTML = userData.history.map(item => `
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div style="display:flex; align-items:center; gap:12px;">
-                            ${item.thumbnail ? `<img src="${item.thumbnail}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : ''}
+                            ${item.thumbnail && item.thumbnail !== "" ? `<img src="${item.thumbnail}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : ''}
                             <div>
                                 <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
                                 <span style="font-size:9px; color:#444; font-weight:700;">${item.date || 'Just Now'}</span>
@@ -350,6 +356,15 @@
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const vehicleName = document.getElementById('f-name').value.trim();
+            const assetLink = document.getElementById('f-source').value.trim();
+
+            // --- REQUIRE EITHER LINK OR FILE ---
+            if (assetLink === "" && stagedFiles.length === 0) {
+                alert("Please provide an Asset Link OR Direct Upload photos to proceed.");
+                btn.innerText = "Begin Staging";
+                btn.disabled = false;
+                return;
+            }
 
             // --- DUPLICATE VEHICLE NAME CHECK ---
             if (userData.history && userData.history.length > 0) {
@@ -359,7 +374,7 @@
                 );
                 
                 if (isDuplicate) {
-                    alert("You already have a vehicle with that exact name in your active pipeline.");
+                    alert("You already have a vehicle with that exact name in your dashboard.");
                     btn.innerText = "Begin Staging";
                     btn.disabled = false;
                     return;
@@ -374,14 +389,13 @@
             const activeID = userData.accountId || userData.accountID;
             formData.append('accountId', activeID);
             formData.append('vehicleName', vehicleName);
-            formData.append('assetSource', document.getElementById('f-source').value);
+            formData.append('assetSource', assetLink);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 
-                // --- INSTANT UI UPDATE (NO BOUNCE) ---
                 if (!userData.history) userData.history = [];
                 userData.history.unshift({
                     vehicle: vehicleName,
