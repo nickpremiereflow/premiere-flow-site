@@ -72,34 +72,13 @@
 
         /* --- RESPONSIVE DESKTOP OVERRIDES --- */
         @media (min-width: 768px) {
-            /* Move the nav bar to the top center, inside the header */
             .bottom-nav {
-                top: 0;
-                bottom: auto;
-                left: 50%;
-                transform: translateX(-50%);
-                width: auto;
-                height: 70px; /* Matches your header height */
-                background: transparent;
-                border-top: none;
-                gap: 50px; /* Space between the three buttons */
+                top: 0; bottom: auto; left: 50%; transform: translateX(-50%);
+                width: auto; height: 70px; background: transparent; border-top: none; gap: 50px;
             }
-
-            /* Put the icon and text side-by-side on desktop */
-            .nav-item {
-                flex-direction: row; 
-                gap: 8px;
-            }
-
-            .nav-icon {
-                margin-bottom: 0;
-                font-size: 16px;
-            }
-
-            /* Remove the huge bottom margin that mobile needs */
-            #app-container {
-                margin-bottom: 50px; 
-            }
+            .nav-item { flex-direction: row; gap: 8px; }
+            .nav-icon { margin-bottom: 0; font-size: 16px; }
+            #app-container { margin-bottom: 50px; }
         }
     </style>
 </head>
@@ -267,7 +246,6 @@
                 });
 
                 const rawText = await res.text();
-                console.log("Raw Response from Make:", rawText);
                 const data = JSON.parse(rawText);
                 
                 if (data.success) {
@@ -301,28 +279,6 @@
             window.location.reload(); 
         }
 
-        async function fetchMoreHistory() {
-            historyPage++;
-            const btn = document.getElementById('load-more-btn');
-            btn.innerText = "LOADING...";
-            
-            try {
-                const res = await fetch(loginWebhook, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email: localStorage.getItem('pf_email'), password: localStorage.getItem('pf_pass'), page: historyPage })
-                });
-                const data = await res.json();
-                
-                if (data.history && data.history.length > 0) {
-                    userData.history = [...userData.history, ...data.history];
-                    refreshUI();
-                    btn.innerText = "Load More";
-                } else {
-                    document.getElementById('load-more-container').style.display = 'none';
-                }
-            } catch (err) { btn.innerText = "ERROR"; }
-        }
-
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
@@ -341,19 +297,16 @@
             if(userData.history && userData.history.length > 0) {
                 list.innerHTML = userData.history.map(item => `
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <div>
-                            <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
-                            <span style="font-size:9px; color:#444; font-weight:700;">${item.date}</span>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            ${item.thumbnail ? `<img src="${item.thumbnail}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : ''}
+                            <div>
+                                <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
+                                <span style="font-size:9px; color:#444; font-weight:700;">${item.date || 'Just Now'}</span>
+                            </div>
                         </div>
                         <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>
                 `).join('');
-                
-                if (userData.history.length >= 10 && userData.history.length % 10 === 0) {
-                    document.getElementById('load-more-container').style.display = 'block';
-                } else {
-                    document.getElementById('load-more-container').style.display = 'none';
-                }
             }
         }
 
@@ -396,17 +349,57 @@
             const btn = document.getElementById('submit-btn');
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
+            const vehicleName = document.getElementById('f-name').value.trim();
+
+            // --- DUPLICATE VEHICLE NAME CHECK ---
+            if (userData.history && userData.history.length > 0) {
+                const isDuplicate = userData.history.some(item => 
+                    (item.vehicle && item.vehicle.toLowerCase() === vehicleName.toLowerCase()) || 
+                    (item.name && item.name.toLowerCase() === vehicleName.toLowerCase())
+                );
+                
+                if (isDuplicate) {
+                    alert("You already have a vehicle with that exact name in your active pipeline.");
+                    btn.innerText = "Begin Staging";
+                    btn.disabled = false;
+                    return;
+                }
+            }
+            // ------------------------------------
+
+            let tempThumbnail = null;
+            if (stagedFiles.length > 0) tempThumbnail = URL.createObjectURL(stagedFiles[0]);
+
             const formData = new FormData();
             const activeID = userData.accountId || userData.accountID;
             formData.append('accountId', activeID);
-            formData.append('vehicleName', document.getElementById('f-name').value);
+            formData.append('vehicleName', vehicleName);
             formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                window.location.reload(); 
+                
+                // --- INSTANT UI UPDATE (NO BOUNCE) ---
+                if (!userData.history) userData.history = [];
+                userData.history.unshift({
+                    vehicle: vehicleName,
+                    date: new Date().toLocaleDateString(),
+                    status: "Received",
+                    thumbnail: tempThumbnail
+                });
+                
+                document.getElementById('inventory-form').reset();
+                stagedFiles = [];
+                renderGallery();
+                
+                btn.innerText = "Begin Staging";
+                btn.disabled = false;
+                
+                refreshUI();
+                showTab('dashboard');
+
             } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; btn.innerText = "Begin Staging"; }
         });
 
