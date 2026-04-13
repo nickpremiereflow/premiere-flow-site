@@ -222,7 +222,10 @@
             const error = document.getElementById('auth-error');
             const btn = document.getElementById('login-btn');
             
+            if(!email || !pass) return;
+
             btn.innerText = "AUTHENTICATING...";
+            error.style.display = 'none';
             
             try {
                 const res = await fetch(loginWebhook, {
@@ -230,9 +233,14 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
+
+                // If Make sends a 204 OPTIONS response, fetch handles it, but we need the JSON from the 200 POST
                 const data = await res.json();
                 
                 if (data.success) {
+                    // Sync case-sensitive IDs
+                    data.accountId = data.accountId || data.accountID;
+                    
                     userData = data;
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
@@ -250,6 +258,7 @@
                     error.style.display = 'block';
                 }
             } catch (err) {
+                console.error("Auth Error:", err);
                 btn.innerText = "Unlock Dashboard";
                 error.innerText = "CONNECTION ERROR.";
                 error.style.display = 'block';
@@ -258,7 +267,7 @@
 
         function signOut() {
             localStorage.clear();
-            window.location.reload(); // Reload to show login overlay again
+            window.location.reload(); 
         }
 
         async function fetchMoreHistory() {
@@ -357,8 +366,9 @@
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const formData = new FormData();
-            // Note: Matching Make's accountId label
-            formData.append('accountId', userData.accountId);
+            // Handle both ID cases
+            const activeID = userData.accountId || userData.accountID;
+            formData.append('accountId', activeID);
             formData.append('vehicleName', document.getElementById('f-name').value);
             formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
@@ -388,8 +398,9 @@
             const file = document.getElementById('field-logoUpload').files[0];
             const btn = document.getElementById('save-logo-btn');
             const formData = new FormData();
+            const activeID = userData.accountId || userData.accountID;
             formData.append('logoFile', file);
-            formData.append('accountId', userData.accountId);
+            formData.append('accountId', activeID);
             
             btn.innerText = "SAVING...";
             try {
