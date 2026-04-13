@@ -110,6 +110,25 @@
             margin-bottom: 0;
         }
 
+        /* --- LOGIN MODAL STYLES --- */
+        #loginModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333;
+            width: 100%; max-width: 380px; text-align: center; position: relative;
+        }
+        .login-card input {
+            width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444;
+            color: #fff; border-radius: 6px; box-sizing: border-box; font-family: sans-serif;
+        }
+        .btn-login {
+            width: 100%; padding: 12px; background: #fff; color: #000; border: none;
+            border-radius: 6px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: #555; cursor: pointer; font-size: 20px; }
+
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
         
         .footer-nav { 
@@ -213,12 +232,24 @@
         </div>
     </main>
 
+    <div id="loginModal" class="modal-overlay">
+        <div class="login-card">
+            <span class="close-modal" onclick="toggleModal()">×</span>
+            <img src="../logo.png" style="width: 120px; margin-bottom: 20px;">
+            <h2 style="color: #fff; font-size: 1.2rem; margin-bottom: 20px;">Partner Login</h2>
+            <input type="email" id="log-email" placeholder="Email Address">
+            <input type="password" id="log-pass" placeholder="Password">
+            <button class="btn-login" onclick="portalAuth()">Unlock Studio</button>
+            <p id="log-msg" style="margin-top: 15px; font-size: 12px; color: #ff4d4d;"></p>
+        </div>
+    </div>
+
     <footer>
         <div class="footer-nav">
             <a href="../" class="footer-link">Home</a>
             <a href="../about/" class="footer-link">About</a>
             <a href="../sign-up/" class="footer-link">Sign Up</a>
-            <a href="../submit/" class="footer-link">Submit Portal</a>
+            <span class="footer-link" onclick="toggleModal()">Account Dashboard</span>
             <div class="contact-wrapper">
                 <span class="footer-link" id="contactTrigger" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
@@ -235,6 +266,49 @@
     </footer>
 
     <script>
+        // --- MODAL & AUTH LOGIC ---
+        function toggleModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+
+        async function portalAuth() {
+            const email = document.getElementById('log-email').value;
+            const pass = document.getElementById('log-pass').value;
+            const msg = document.getElementById('log-msg');
+
+            if (!email || !pass) { msg.innerText = "Please enter credentials."; return; }
+
+            msg.style.color = "#fff";
+            msg.innerText = "Authenticating...";
+
+            try {
+                // Ensure this matches your NEW Login Verify Webhook URL
+                const response = await fetch('YOUR_NEW_LOGIN_VERIFY_WEBHOOK_URL', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, password: pass })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('pf_email', email);
+                    localStorage.setItem('pf_pass', pass);
+                    window.location.href = "../submit"; 
+                } else {
+                    msg.style.color = "#ff4d4d";
+                    msg.innerText = data.error || "Login failed.";
+                }
+            } catch (e) {
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "Connection error.";
+            }
+        }
+
         function toggleContact(event) {
             event.stopPropagation();
             event.preventDefault();
@@ -251,11 +325,15 @@
         function closeAllPopups(event) {
             const bubble = document.getElementById("contactBubble");
             const trigger = document.getElementById("contactTrigger");
+            const modal = document.getElementById('loginModal');
             
             if (bubble && bubble.classList.contains('show')) {
                 if (!bubble.contains(event.target) && event.target !== trigger) {
                     bubble.classList.remove('show');
                 }
+            }
+            if (event.target === modal) {
+                toggleModal();
             }
         }
 
