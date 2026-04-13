@@ -434,16 +434,16 @@
                 document.getElementById('no-logo-text').style.display = 'none';
             }
 
-            // History Persistence
+            // History Persistence (UPDATED TO USE .vehicle)
             const list = document.getElementById('submissions-list');
             if(userData.history && userData.history.length > 0) {
                 list.innerHTML = userData.history.map(item => `
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div>
-                            <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.name}</p>
+                            <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
                             <span style="font-size:9px; color:#444; font-weight:700; text-transform:uppercase;">${item.date}</span>
                         </div>
-                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900; letter-spacing:1px;">${item.status.toUpperCase()}</span>
+                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900; letter-spacing:1px;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>
                 `).join('');
                 
@@ -523,7 +523,7 @@
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 
                 // Optimistic UI Update
-                userData.history.unshift({ name: vName, date: 'Just Now', status: 'In Staging' });
+                userData.history.unshift({ vehicle: vName, date: 'Just Now', status: 'In Staging' });
                 refreshUI();
                 
                 showTab('dashboard');
