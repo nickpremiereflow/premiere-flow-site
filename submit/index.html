@@ -202,10 +202,9 @@
             align-items: center;
             justify-content: center;
             margin: 15px 0;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
             background-color: #050505;
+            overflow: hidden;
+            padding: 10px;
         }
 
         /* --- LOGIN OVERLAY --- */
@@ -281,7 +280,8 @@
                 <h3>Brand Identity</h3>
                 <label>Account Logo</label>
                 <div id="logo-preview" class="logo-preview-box">
-                    <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo Found</span>
+                    <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo</span>
+                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px;">
                 </div>
                 
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
@@ -429,20 +429,23 @@
             
             // Logo Persistence
             const uploadTriggerBtn = document.getElementById('trigger-upload-btn');
+            const actualImg = document.getElementById('actual-logo-img');
+            const noLogoText = document.getElementById('no-logo-text');
             
-            // Check if Make actually sent a valid logo URL
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
-                const lp = document.getElementById('logo-preview');
-                lp.style.backgroundImage = `url('${userData.logo}')`;
-                document.getElementById('no-logo-text').style.display = 'none';
+                // Try to load physical image tag instead of CSS background
+                actualImg.src = userData.logo;
+                actualImg.style.display = 'block';
+                noLogoText.style.display = 'none';
                 uploadTriggerBtn.innerText = "Update Logo";
             } else {
+                actualImg.style.display = 'none';
+                actualImg.src = '';
+                noLogoText.style.display = 'block';
                 uploadTriggerBtn.innerText = "Upload Logo";
-                document.getElementById('no-logo-text').style.display = 'block';
-                document.getElementById('logo-preview').style.backgroundImage = 'none';
             }
 
-            // History Persistence (UPDATED TO USE .vehicle)
+            // History Persistence
             const list = document.getElementById('submissions-list');
             if(userData.history && userData.history.length > 0) {
                 list.innerHTML = userData.history.map(item => `
@@ -455,7 +458,6 @@
                     </div>
                 `).join('');
                 
-                // Show Load More if multiple of 10
                 if (userData.history.length >= 10 && userData.history.length % 10 === 0) {
                     document.getElementById('load-more-container').style.display = 'block';
                 } else {
@@ -530,7 +532,6 @@
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 
-                // Optimistic UI Update
                 userData.history.unshift({ vehicle: vName, date: 'Just Now', status: 'In Staging' });
                 refreshUI();
                 
@@ -550,9 +551,11 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    document.getElementById('logo-preview').style.backgroundImage = `url('${e.target.result}')`;
+                    const actualImg = document.getElementById('actual-logo-img');
+                    actualImg.src = e.target.result;
+                    actualImg.style.display = 'block';
                     document.getElementById('no-logo-text').style.display = 'none';
-                    document.getElementById('save-logo-btn').style.display = 'block';
+                    document.getElementById('save-logo-btn').style.display = 'block'; // Shows Save Button
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -569,10 +572,14 @@
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
+                    // Update user data with new temporary object URL
                     userData.logo = URL.createObjectURL(file);
-                    refreshUI(); // Instantly update the UI to show the new button text
+                    refreshUI(); // Re-render UI to update the Upload/Update button text
                     btn.innerText = "SUCCESS";
-                    setTimeout(() => btn.style.display = 'none', 2000);
+                    setTimeout(() => {
+                        btn.style.display = 'none';
+                        btn.innerText = "Save to Profile"; // Reset button text for next time
+                    }, 2000);
                 }
             } catch (err) { alert("UPLOAD FAILED."); }
         }
