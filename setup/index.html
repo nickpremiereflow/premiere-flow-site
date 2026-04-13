@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Setup | Premiere Flow</title>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .setup-card { background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333; width: 100%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        #msg { margin-top: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="setup-card">
+        <img src="https://premiereflow.com/logo.png" style="width: 120px; margin-bottom: 20px;">
+        <h2>Set Your Password</h2>
+        <p style="color: #888; font-size: 13px;">Create a secure password to access your studio.</p>
+        <input type="password" id="pass1" placeholder="New Password">
+        <input type="password" id="pass2" placeholder="Confirm Password">
+        <button onclick="submitSetup()">Finish Setup</button>
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        async function submitSetup() {
+            const p1 = document.getElementById('pass1').value;
+            const p2 = document.getElementById('pass2').value;
+            const msg = document.getElementById('msg');
+            const token = new URLSearchParams(window.location.search).get('token');
+
+            if (!token) { msg.innerText = "Error: Invalid or missing token."; return; }
+            if (p1 !== p2) { msg.innerText = "Passwords do not match."; return; }
+            if (p1.length < 6) { msg.innerText = "Password must be at least 6 characters."; return; }
+
+            msg.innerText = "Securing account...";
+            
+            try {
+                const response = await fetch('https://hook.us2.make.com/YOUR_NEW_SET_PASSWORD_WEBHOOK', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token, password: p1 })
+                });
+
+                if (response.ok) {
+                    msg.innerHTML = "Success! <a href='/' style='color:#fff;'>Login here</a>";
+                } else {
+                    msg.innerText = "Error: Token may be expired.";
+                }
+            } catch (err) { msg.innerText = "Connection error."; }
+        }
+    </script>
+</body>
+</html>
