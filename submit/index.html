@@ -26,21 +26,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- PERSISTENT HEADER --- */
         header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid #111;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            box-sizing: border-box;
-            z-index: 1000;
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            border-bottom: 1px solid #111; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1000;
         }
 
         .header-left img { height: 22px; border: none; }
@@ -48,180 +38,37 @@
         .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
         .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
-        /* --- MAIN APP CONTAINER --- */
-        #app-container {
-            margin-top: 90px;
-            margin-bottom: 100px;
-            padding: 0 20px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeIn 0.6s ease-out;
-        }
-
+        #app-container { margin-top: 90px; margin-bottom: 100px; padding: 0 20px; max-width: 600px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- NAVIGATION --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 75px;
-            background: #050505;
-            border-top: 1px solid #111;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #444;
-            text-decoration: none;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 800;
-        }
-
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #050505; border-top: 1px solid #111; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; text-decoration: none; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-weight: 800; }
         .nav-item.active { color: #fff; }
         .nav-icon { font-size: 22px; margin-bottom: 6px; }
 
-        /* --- UI COMPONENTS --- */
         .view-section { display: none; }
         .view-section.active { display: block; }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid #111;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: var(--transition);
-        }
-
+        .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: var(--transition); }
         h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: #555; margin-bottom: 20px; font-weight: 900; }
-
         .form-group { margin-bottom: 25px; }
         label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 10px; font-weight: 700; }
 
-        input, textarea {
-            width: 100%;
-            padding: 18px;
-            background: #000;
-            border: 1px solid #1a1a1a;
-            border-radius: 8px;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
+        input, textarea { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         input:focus { border-color: #333; outline: none; }
 
-        /* --- BUTTONS --- */
-        .btn-main {
-            width: 100%;
-            padding: 20px;
-            background: #fff;
-            color: #000;
-            border: none;
-            border-radius: 50px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
+        .btn-main { width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); }
         .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
-        .btn-main:disabled { background: #111; color: #444; cursor: not-allowed; }
-
         .btn-gold { background: var(--accent-gold); color: #000; }
+        .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; transition: 0.2s; }
         
-        .btn-split {
-            flex: 1; padding: 15px; background: #111; color: #fff; 
-            border: 1px solid #333; border-radius: 8px; cursor: pointer; 
-            font-size: 11px; text-transform: uppercase; font-weight: 800;
-            transition: 0.2s;
-        }
-        .btn-split:active { background: #222; transform: scale(0.98); }
+        #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #050505; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .remove-thumb { position: absolute; top: 2px; right: 2px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 4px; width: 18px; height: 18px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* --- STAGING GALLERY --- */
-        #staging-gallery {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .thumb-wrapper {
-            position: relative;
-            aspect-ratio: 1/1;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #222;
-            background: #050505;
-        }
-
-        .thumb-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .remove-thumb {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: rgba(255, 77, 77, 0.9);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-preview-box {
-            width: 120px;
-            height: 120px;
-            border: 1px dashed #222;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-            background-color: #050505;
-            overflow: hidden;
-            padding: 10px;
-        }
-
-        /* --- LOGIN OVERLAY --- */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center;
-        }
-
-        /* --- LOAD MORE --- */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
         #load-more-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .btn-load-more { background: none; border: 1px solid #222; color: #666; padding: 10px 20px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-
-        @media (min-width: 800px) {
-            .bottom-nav { top: 0; bottom: auto; left: 50%; transform: translateX(-50%); width: auto; background: none; border: none; height: 70px; padding: 0; }
-            .nav-item { margin: 0 25px; }
-            header { padding: 0 15%; }
-        }
     </style>
 </head>
 <body>
@@ -247,7 +94,7 @@
             <img src="https://premiereflow.com/logo.png" alt="Premiere Flow">
         </div>
         <div class="header-right">
-            <span class="user-email" id="header-email">NOT LOGGED IN</span>
+            <span class="user-email" id="header-email">---</span>
             <span class="user-credits" id="header-credits">0 CREDITS</span>
         </div>
     </header>
@@ -273,7 +120,7 @@
             <h3>Recent Activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Studio credentials verified. Welcome back.</p>
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Credentials verified. Welcome back.</p>
                     <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
                 </div>
             </div>
@@ -283,16 +130,14 @@
             <div class="card">
                 <h3>Brand Identity</h3>
                 <label>Account Logo</label>
-                <div id="logo-preview" class="logo-preview-box">
+                <div id="logo-preview" style="width: 120px; height: 120px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0; background-color: #050505; overflow: hidden; padding: 10px;">
                     <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo</span>
                     <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px;">
                 </div>
-                
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
-                
                 <div style="display: flex; gap: 10px;">
                     <button id="trigger-upload-btn" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Update Logo</button>
-                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split" style="background:var(--accent-gold); color:#000;">Save to Profile</button>
+                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save to Profile</button>
                 </div>
             </div>
             
@@ -302,11 +147,7 @@
                     <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
                     <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
-                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Status</span>
-                    <span style="font-size: 11px; font-weight: 900; color: #4ade80;">ACTIVE</span>
-                </div>
-                <button onclick="signOut()" style="width: 100%; background: transparent; border: 1px solid #222; color: #555; padding: 15px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer;">Sign Out</button>
+                <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #666; font-size: 10px; padding: 12px;">Sign Out</button>
             </div>
         </section>
 
@@ -324,37 +165,30 @@
                         <label>Asset Source (Listing URL)</label>
                         <input type="text" id="f-source" placeholder="Paste link here...">
                     </div>
-                    
-                    <div style="text-align:center; margin: 10px 0; font-size: 9px; font-weight: 900; color: #222;">- OR -</div>
-                    
                     <div class="form-group">
                         <label>Photo Capture (Limit 10)</label>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
-                        
                         <div id="staging-gallery"></div>
-
                         <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
-
-                    <div class="form-group" style="margin-top: 30px;">
-                        <label>Showroom Styles / Special Notes</label>
+                    <div class="form-group">
+                        <label>Special Notes</label>
                         <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
                     </div>
                     <button type="submit" id="submit-btn" class="btn-main">Begin Staging</button>
                 </form>
             </div>
         </section>
-
     </div>
 
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
         <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
             <span class="nav-icon">▤</span>
-            <span>Dashboard</span>
+            <span>Pipeline</span>
         </div>
         <div class="nav-item" id="nav-notifications" onclick="showTab('notifications')">
             <span class="nav-icon">◈</span>
@@ -362,7 +196,7 @@
         </div>
         <div class="nav-item" id="nav-profile" onclick="showTab('profile')">
             <span class="nav-icon">👤</span>
-            <span>Profile</span>
+            <span>Account</span>
         </div>
     </nav>
 
@@ -370,8 +204,8 @@
         let userData = { history: [] };
         let stagedFiles = [];
         let historyPage = 1;
+        const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
 
-        // AUTO-LOGIN CHECK
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             const savedPass = localStorage.getItem('pf_pass');
@@ -382,16 +216,15 @@
             }
         };
 
-        // AUTHENTICATION LOGIC (Now with Email/Pass)
         async function portalAuth() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
             const error = document.getElementById('auth-error');
             
             try {
-                // UPDATE THIS URL to your NEW [PORTAL] Login Verify Webhook
-                const res = await fetch('YOUR_NEW_LOGIN_VERIFY_WEBHOOK_URL', {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                const res = await fetch(loginWebhook, {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
                 const data = await res.json();
@@ -419,17 +252,16 @@
 
         function signOut() {
             localStorage.clear();
-            window.location.reload();
+            window.location.href = "/";
         }
 
-        // PAGINATION
         async function fetchMoreHistory() {
             historyPage++;
             const btn = document.getElementById('load-more-btn');
             btn.innerText = "LOADING...";
             
             try {
-                const res = await fetch('YOUR_NEW_LOGIN_VERIFY_WEBHOOK_URL', {
+                const res = await fetch(loginWebhook, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email: localStorage.getItem('pf_email'), password: localStorage.getItem('pf_pass'), page: historyPage })
                 });
@@ -445,13 +277,11 @@
             } catch (err) { btn.innerText = "ERROR"; }
         }
 
-        // UI REFRESH
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
-            const uploadTriggerBtn = document.getElementById('trigger-upload-btn');
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
             
@@ -459,12 +289,6 @@
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
-                uploadTriggerBtn.innerText = "Update Logo";
-            } else {
-                actualImg.style.display = 'none';
-                actualImg.src = '';
-                noLogoText.style.display = 'block';
-                uploadTriggerBtn.innerText = "Upload Logo";
             }
 
             const list = document.getElementById('submissions-list');
@@ -473,9 +297,9 @@
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div>
                             <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${item.vehicle || item.name || 'Unknown Vehicle'}</p>
-                            <span style="font-size:9px; color:#444; font-weight:700; text-transform:uppercase;">${item.date}</span>
+                            <span style="font-size:9px; color:#444; font-weight:700;">${item.date}</span>
                         </div>
-                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900; letter-spacing:1px;">${(item.status || 'Received').toUpperCase()}</span>
+                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>
                 `).join('');
                 
@@ -487,7 +311,6 @@
             }
         }
 
-        // NAVIGATION
         function showTab(t) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -502,18 +325,9 @@
             showTab('submit');
         }
 
-        // PHOTO STAGING
         function stageFiles(input) {
             const incoming = Array.from(input.files);
-            let added = 0;
-            incoming.forEach(f => {
-                if (stagedFiles.length < 10) {
-                    stagedFiles.push(f);
-                    added++;
-                }
-            });
-            if (incoming.length > added) alert("Limit 10 photos per production.");
-            input.value = '';
+            incoming.forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); });
             renderGallery();
         }
 
@@ -529,46 +343,26 @@
             });
         }
 
-        function removePhoto(i) {
-            stagedFiles.splice(i, 1);
-            renderGallery();
-        }
+        function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
-        // PRODUCTION SUBMISSION
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            const vName = document.getElementById('f-name').value;
-            
             btn.innerText = "QUEUEING..."; btn.disabled = true;
 
             const formData = new FormData();
             formData.append('accountID', userData.accountID);
-            formData.append('vehicleName', vName);
+            formData.append('vehicleName', document.getElementById('f-name').value);
             formData.append('assetSource', document.getElementById('f-source').value);
             formData.append('showroomNotes', document.getElementById('f-notes').value);
-
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
-                // Ensure this Webhook URL is correct
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                
-                userData.history.unshift({ vehicle: vName, date: 'Just Now', status: 'In Staging' });
-                refreshUI();
-                
-                showTab('dashboard');
-                stagedFiles = [];
-                renderGallery();
-                document.getElementById('inventory-form').reset();
-                btn.innerText = "Begin Staging"; btn.disabled = false;
-            } catch (err) {
-                alert("SUBMISSION FAILED.");
-                btn.innerText = "Begin Staging"; btn.disabled = false;
-            }
+                window.location.reload(); 
+            } catch (err) { alert("SUBMISSION FAILED."); btn.disabled = false; }
         });
 
-        // LOGO HANDLING
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -592,16 +386,12 @@
             
             btn.innerText = "SAVING...";
             try {
-                // Ensure this Webhook URL is correct
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
                     userData.logo = URL.createObjectURL(file);
                     refreshUI();
                     btn.innerText = "SUCCESS";
-                    setTimeout(() => {
-                        btn.style.display = 'none';
-                        btn.innerText = "Save to Profile";
-                    }, 2000);
+                    setTimeout(() => { btn.style.display = 'none'; btn.innerText = "Save to Profile"; }, 2000);
                 }
             } catch (err) { alert("UPLOAD FAILED."); }
         }
