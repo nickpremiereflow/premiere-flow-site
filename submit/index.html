@@ -29,17 +29,44 @@
             position: fixed; top: 0; width: 100%; height: 70px;
             background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
             border-bottom: 1px solid #111; display: flex; align-items: center;
-            justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 1000;
+            justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        .header-left img { height: 22px; border: none; }
-        .header-right { text-align: right; }
+        .header-left { display: flex; align-items: center; gap: 20px; z-index: 1001; }
+        .logo-img { height: 20px; border: none; }
+
+        /* CENTER NAV (DESKTOP ONLY) */
+        .header-nav { 
+            position: absolute; left: 50%; transform: translateX(-50%);
+            display: none; gap: 30px; align-items: center;
+        }
+        .nav-link { 
+            color: #666; text-decoration: none; font-size: 10px; font-weight: 800; 
+            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer;
+        }
+        .nav-link:hover { color: #fff; }
+
+        /* CONTACT BUBBLE DROPDOWN */
+        .contact-wrapper { position: relative; display: inline-block; }
+        .contact-bubble {
+            visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; 
+            padding: 15px; position: absolute; z-index: 100;
+            top: 40px; left: 50%; transform: translateX(-50%);
+            border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif;
+        }
+        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
+        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+
+        .header-right { text-align: right; display: flex; align-items: center; gap: 15px; z-index: 1001; }
         .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
         .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
         #app-container { margin-top: 90px; margin-bottom: 100px; padding: 0 20px; max-width: 600px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* MOBILE BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #050505; border-top: 1px solid #111; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; text-decoration: none; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-weight: 800; }
         .nav-item.active { color: #fff; }
@@ -55,7 +82,6 @@
         input, textarea, select { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
         input:focus, select:focus { border-color: #333; outline: none; }
         
-        /* CUSTOM DROPDOWN UI */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -64,18 +90,13 @@
             background-size: 16px;
             padding-right: 45px;
         }
-        select:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-        }
+        select:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
         .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; transition: 0.2s; }
         
-        /* MOBILE FIRST SPLIT ROW */
         .split-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
 
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
@@ -83,58 +104,30 @@
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .remove-thumb { position: absolute; top: 2px; right: 2px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 4px; width: 18px; height: 18px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* LUXURY PROGRESS BAR ANIMATION */
-        .btn-loading {
-            pointer-events: none;
-            opacity: 0.9;
-        }
+        .btn-loading { pointer-events: none; opacity: 0.9; }
         .btn-loading::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            width: 30%;
-            background: #000;
-            border-radius: 4px;
-            animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%;
+            background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s infinite;
         }
-        .btn-main:not(.btn-gold).btn-loading::after {
-            background: var(--accent-gold);
-        }
-        @keyframes loadingBarSlide {
-            0% { transform: translateX(-100%); width: 30%; }
-            50% { width: 50%; }
-            100% { transform: translateX(350%); width: 30%; }
-        }
+        .btn-main:not(.btn-gold).btn-loading::after { background: var(--accent-gold); }
+        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
 
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
         
         #transition-overlay { 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: #ffffff; 
-            z-index: 3000; 
-            display: flex; 
-            opacity: 1;
-            align-items: center; 
-            justify-content: center; 
-            transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #ffffff; z-index: 3000; display: flex; opacity: 1;
+            align-items: center; justify-content: center; transition: opacity 0.8s; 
         }
-        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
+        .pulse-logo { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
         #load-more-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .btn-load-more { background: none; border: 1px solid #222; color: #666; padding: 10px 20px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
 
         @media (min-width: 768px) {
-            .bottom-nav {
-                top: 0; bottom: auto; left: 50%; transform: translateX(-50%);
-                width: auto; height: 70px; background: transparent; border-top: none; gap: 50px;
-            }
-            .nav-item { flex-direction: row; gap: 8px; }
-            .nav-icon { margin-bottom: 0; font-size: 16px; }
+            .header-nav { display: flex; }
+            .bottom-nav { display: none !important; }
             #app-container { margin-bottom: 50px; }
             #btn-camera-upload { display: none !important; }
             .split-row { flex-direction: row; }
@@ -165,11 +158,28 @@
 
     <header id="main-header" style="display: none;">
         <div class="header-left">
-            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" style="border: none;"></a>
+            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a>
         </div>
+
+        <nav class="header-nav">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/about/" class="nav-link">About</a>
+            <a href="/sign-up/" class="nav-link">Sign Up</a>
+            <div class="contact-wrapper">
+                <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
+                <div id="contactBubble" class="contact-bubble">
+                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Support</span>
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                </div>
+            </div>
+        </nav>
+
         <div class="header-right">
-            <span class="user-email" id="header-email">---</span>
-            <span class="user-credits" id="header-credits">0 CREDITS</span>
+            <div>
+                <span class="user-email" id="header-email">---</span>
+                <span class="user-credits" id="header-credits">0 CREDITS</span>
+            </div>
         </div>
     </header>
 
@@ -190,7 +200,7 @@
             <h3>Recent Activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Credentials verified. Welcome back.</p>
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Dashboard operational. Ready for staging.</p>
                     <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
                 </div>
             </div>
@@ -228,17 +238,15 @@
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name (Year Make Model) <span style="color: #ff4d4d; font-size: 8px;">*REQUIRED</span></label>
+                        <label>Vehicle Name <span style="color: #ff4d4d; font-size: 8px;">*REQUIRED</span></label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
 
                     <div class="form-group" style="background: #050505; padding: 20px; border-radius: 12px; border: 1px solid #1a1a1a;">
-                        <label>Asset Link (Listing or Folder URL)</label>
-                        <input type="text" id="f-source" placeholder="Paste listing, Drive, or Dropbox link here...">
-                        
+                        <label>Asset Link</label>
+                        <input type="text" id="f-source" placeholder="Paste listing or folder link here...">
                         <div style="text-align: center; margin: 20px 0; color: #444; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">— OR —</div>
-                        
-                        <label>Direct Upload (Max 10 Photos)</label>
+                        <label>Direct Upload (Max 10)</label>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <button type="button" id="btn-camera-upload" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
@@ -251,9 +259,8 @@
                     <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Color</label>
-                            <input type="text" id="f-color" placeholder="Leave blank for Default White...">
+                            <input type="text" id="f-color" placeholder="Default: White">
                         </div>
-                        
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label id="logo-label-text">Logo Placement</label>
                             <select id="f-logo">
@@ -266,7 +273,6 @@
                             </select>
                         </div>
                     </div>
-                    
                     <button type="submit" id="submit-btn" class="btn-main btn-gold">Begin Staging</button>
                 </form>
             </div>
@@ -274,10 +280,6 @@
     </div>
 
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
-        <a href="/" class="nav-item" style="text-decoration: none;">
-            <span class="nav-icon">⌂</span>
-            <span>Home</span>
-        </a>
         <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
             <span class="nav-icon">▤</span>
             <span>Dashboard</span>
@@ -319,7 +321,6 @@
             const error = document.getElementById('auth-error');
             const btn = document.getElementById('login-btn');
             const transitionOverlay = document.getElementById('transition-overlay');
-            
             if(!email || !pass) return;
 
             transitionOverlay.style.display = 'flex';
@@ -332,24 +333,18 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email: email, password: pass, page: 1 })
                 });
-
                 const data = await res.json();
-                
                 if (data.success) {
                     userData = data;
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
-                    
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('bottom-nav').style.display = 'flex';
-                    
                     refreshUI();
-
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 800);
-
                 } else {
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 300);
@@ -365,20 +360,31 @@
         }
 
         function signOut() {
-            localStorage.clear();
+            localStorage.removeItem('pf_email');
+            localStorage.removeItem('pf_pass');
             window.location.reload(); 
+        }
+
+        function toggleContact(event) {
+            event.stopPropagation();
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+
+        function copyEmail() {
+            navigator.clipboard.writeText("info@premiereflow.com");
+            const btn = document.querySelector(".copy-btn");
+            btn.innerText = "DONE";
+            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
-            
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
             const logoSelect = document.getElementById('f-logo');
             const logoLabel = document.getElementById('logo-label-text');
-            
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
@@ -390,60 +396,24 @@
                 logoSelect.disabled = true;
                 logoLabel.innerHTML = 'Logo Placement <span style="color: #ff4d4d; font-size: 8px;">*ADD IN PROFILE</span>';
             }
-
             const list = document.getElementById('submissions-list');
-            
-            const validHistory = (userData.history || []).filter(item => {
-                if (!item) return false;
-                const vName = item.vehicle || item.name || item.vehicleName || item['Vehicle Name'] || item['Vehicle'] || "";
-                const cleanName = String(vName).trim().toLowerCase();
-                if (cleanName === "" || cleanName === "unknown vehicle" || cleanName === "null" || cleanName === "undefined") {
-                    return false;
-                }
-                return true;
-            });
-            
+            const validHistory = (userData.history || []).filter(item => item && (item.vehicle || item.name || item.vehicleName));
             if(validHistory.length > 0) {
                 list.innerHTML = validHistory.map(item => {
-                    const thumb = item.thumbnail && item.thumbnail !== "" ? item.thumbnail : '';
-                    const displayName = item.vehicle || item.name || item.vehicleName || item['Vehicle Name'] || item['Vehicle'] || 'Unknown Vehicle';
-                    
+                    const thumb = item.thumbnail || '';
+                    const displayName = item.vehicle || item.name || item.vehicleName || 'Unknown Vehicle';
                     return `
                     <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             ${thumb ? `<img src="${thumb}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid #222;">` : `<div style="width:40px; height:40px; background:#000; border:1px solid #222; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#333;">PF</div>`}
-                            <div>
-                                <p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${displayName}</p>
-                                <span style="font-size:9px; color:#444; font-weight:700;">${item.date || item.Date || 'Just Now'}</span>
-                            </div>
+                            <div><p style="margin:0; font-weight:800; font-size:13px; color:#fff;">${displayName}</p><span style="font-size:9px; color:#444; font-weight:700;">${item.date || 'Just Now'}</span></div>
                         </div>
-                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || item.Status || 'Received').toUpperCase()}</span>
-                    </div>
-                `}).join('');
+                        <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
+                    </div>`;
+                }).join('');
             } else {
-                list.innerHTML = `
-                    <div class="card" style="text-align:center; padding: 60px 20px; border: 1px dashed #1a1a1a; background: #050505;">
-                        <div style="font-size: 30px; margin-bottom: 20px; opacity: 0.3;">🏎️</div>
-                        <p style="color: #fff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Your Showroom is Empty</p>
-                        <p style="color: #444; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; line-height: 1.6;">
-                            Start your first staging to see your inventory here.<br>
-                            Click <span style="color: var(--accent-gold);">"NEW PRODUCTION"</span> to begin.
-                        </p>
-                    </div>
-                `;
+                list.innerHTML = `<div class="card" style="text-align:center; padding: 60px 20px; border: 1px dashed #1a1a1a; background: #050505;"><p style="color: #fff; font-size: 13px; font-weight: 800; text-transform: uppercase;">Your Showroom is Empty</p></div>`;
             }
-        }
-
-        function addAlert(msg) {
-            const list = document.getElementById('notif-list');
-            const alert = document.createElement('div');
-            alert.className = 'card';
-            alert.style.borderLeft = '3px solid var(--accent-gold)';
-            alert.innerHTML = `
-                <p style="font-size: 12px; margin: 0; line-height: 1.5;">${msg}</p>
-                <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
-            `;
-            list.prepend(alert);
         }
 
         function showTab(t) {
@@ -471,10 +441,7 @@
             cont.innerHTML = '';
             stagedFiles.forEach((f, i) => {
                 const url = URL.createObjectURL(f);
-                const wrap = document.createElement('div');
-                wrap.className = 'thumb-wrapper';
-                wrap.innerHTML = `<img src="${url}"><button type="button" class="remove-thumb" onclick="removePhoto(${i})">✕</button>`;
-                cont.appendChild(wrap);
+                cont.innerHTML += `<div class="thumb-wrapper"><img src="${url}"><button type="button" class="remove-thumb" onclick="removePhoto(${i})">✕</button></div>`;
             });
         }
 
@@ -486,56 +453,32 @@
             btn.classList.add('btn-loading');
             btn.innerText = 'UPLOADING ASSETS...'; 
             btn.disabled = true;
-
             const vehicleName = document.getElementById('f-name').value.trim();
             const assetLink = document.getElementById('f-source').value.trim();
-
             if (assetLink === "" && stagedFiles.length === 0) {
-                alert("Please provide an Asset Link OR Direct Upload photos.");
+                alert("Assets required.");
                 btn.classList.remove('btn-loading');
                 btn.innerText = "Begin Staging";
                 btn.disabled = false;
                 return;
             }
-
-            let tempThumbnail = null;
-            if (stagedFiles.length > 0) tempThumbnail = URL.createObjectURL(stagedFiles[0]);
-
             const formData = new FormData();
-            const activeID = userData.accountId || userData.accountID;
-            formData.append('accountId', activeID);
+            formData.append('accountId', userData.accountId || userData.accountID);
             formData.append('vehicleName', vehicleName);
             formData.append('assetSource', assetLink);
-            const colorInput = document.getElementById('f-color').value.trim();
-            const finalColor = colorInput === "" ? "White" : colorInput;
-            formData.append('showroomColor', finalColor);
+            formData.append('showroomColor', document.getElementById('f-color').value || "White");
             formData.append('logoPlacement', document.getElementById('f-logo').value);
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
-
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                if (!userData.history) userData.history = [];
-                userData.history.unshift({
-                    vehicle: vehicleName,
-                    date: new Date().toLocaleDateString(),
-                    status: "Received",
-                    thumbnail: tempThumbnail
-                });
-                addAlert(`<b>Staging:</b> ${vehicleName} has been queued for production.`);
                 document.getElementById('inventory-form').reset();
                 stagedFiles = [];
                 renderGallery();
                 btn.classList.remove('btn-loading');
-                btn.innerText = "Begin Staging";
                 btn.disabled = false;
                 refreshUI();
                 showTab('dashboard');
-            } catch (err) { 
-                alert("SUBMISSION FAILED."); 
-                btn.classList.remove('btn-loading');
-                btn.disabled = false; 
-                btn.innerText = "Begin Staging"; 
-            }
+            } catch (err) { alert("FAILED."); btn.classList.remove('btn-loading'); btn.disabled = false; }
         });
 
         function handleLogoSelect(input) {
@@ -556,24 +499,24 @@
             const file = document.getElementById('field-logoUpload').files[0];
             const btn = document.getElementById('save-logo-btn');
             const formData = new FormData();
-            const activeID = userData.accountId || userData.accountID;
             formData.append('logoFile', file);
-            formData.append('accountId', activeID);
+            formData.append('accountId', userData.accountId || userData.accountID);
             btn.classList.add('btn-loading');
-            btn.innerText = 'SAVING...';
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
                     userData.logo = URL.createObjectURL(file);
                     refreshUI();
                     btn.classList.remove('btn-loading');
-                    btn.innerText = "SUCCESS";
-                    setTimeout(() => { btn.style.display = 'none'; btn.innerText = "Save to Profile"; }, 2000);
+                    setTimeout(() => { btn.style.display = 'none'; }, 2000);
                 }
-            } catch (err) { 
-                alert("UPLOAD FAILED.");
-                btn.classList.remove('btn-loading');
-                btn.innerText = "Save to Profile";
+            } catch (err) { btn.classList.remove('btn-loading'); }
+        }
+
+        window.onclick = function(event) {
+            const bubble = document.getElementById("contactBubble");
+            if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target) && event.target !== document.getElementById("contactBtn")) {
+                bubble.classList.remove('show');
             }
         }
     </script>
