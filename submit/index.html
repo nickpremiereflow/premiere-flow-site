@@ -309,6 +309,8 @@
             }
 
             const list = document.getElementById('submissions-list');
+            
+            // Check if history exists and has items
             if(userData.history && userData.history.length > 0) {
                 list.innerHTML = userData.history.map(item => {
                     const thumb = item.thumbnail && item.thumbnail !== "" ? item.thumbnail : '';
@@ -324,6 +326,18 @@
                         <span style="font-size:10px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>
                 `}).join('');
+            } else {
+                // LUXURY EMPTY STATE LOGIC
+                list.innerHTML = `
+                    <div class="card" style="text-align:center; padding: 60px 20px; border: 1px dashed #1a1a1a; background: #050505;">
+                        <div style="font-size: 30px; margin-bottom: 20px; opacity: 0.3;">🏎️</div>
+                        <p style="color: #fff; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;">Your Showroom is Empty</p>
+                        <p style="color: #444; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; line-height: 1.6;">
+                            Start your first staging to see your inventory here.<br>
+                            Click <span style="color: var(--accent-gold);">"NEW PRODUCTION"</span> to begin.
+                        </p>
+                    </div>
+                `;
             }
         }
 
