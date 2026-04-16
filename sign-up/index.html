@@ -24,7 +24,7 @@
 
         body { 
             margin: 0; 
-            padding: 0 20px; 
+            padding: 0; 
             background-color: var(--bg-black); 
             color: var(--accent-white); 
             font-family: 'Inter', sans-serif; 
@@ -98,12 +98,12 @@
         .user-meta { display: none; text-align: right; }
 
         /* SIGNUP PAGE CONTENT */
-        .instructions-container { width: 100%; max-width: 800px; margin-top: 130px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left; }
+        .instructions-container { width: 100%; max-width: 800px; margin-top: 130px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left; padding: 0 20px; box-sizing: border-box; }
         .step { border-left: 1px solid #222; padding-left: 15px; }
         .step-num { display: block; font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
         .step-text { font-size: 12px; line-height: 1.5; color: #888; }
 
-        .signup-form { width: 100%; max-width: 800px; margin-top: 40px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
+        .signup-form { width: 90%; max-width: 800px; margin-top: 40px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
         .section-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 25px; text-align: center; }
 
         .pkg-card { background: #000; border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; margin-bottom: 20px; text-align: left; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
@@ -263,7 +263,6 @@
     </footer>
 
     <script>
-        // --- SMART STATE CHECK ON LOAD ---
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             if (savedEmail) {
