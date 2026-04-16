@@ -96,7 +96,6 @@
             border-radius: 4px;
             animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-        /* Make the bar gold if the button is white */
         .btn-main:not(.btn-gold).btn-loading::after {
             background: var(--accent-gold);
         }
@@ -118,6 +117,9 @@
             .nav-item { flex-direction: row; gap: 8px; }
             .nav-icon { margin-bottom: 0; font-size: 16px; }
             #app-container { margin-bottom: 50px; }
+            
+            /* DESKTOP HIDE CAMERA BUTTON */
+            #btn-camera-upload { display: none !important; }
         }
     </style>
 </head>
@@ -217,7 +219,7 @@
                         
                         <label>Direct Upload (Max 10 Photos)</label>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                            <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
+                            <button type="button" id="btn-camera-upload" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
                         <div id="staging-gallery"></div>
@@ -452,7 +454,6 @@
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             
-            // ACTIVATE NEW PROGRESS BAR
             btn.classList.add('btn-loading');
             btn.innerText = 'UPLOADING ASSETS...'; 
             btn.disabled = true;
@@ -502,7 +503,6 @@
                 stagedFiles = [];
                 renderGallery();
                 
-                // RESET PROGRESS BAR
                 btn.classList.remove('btn-loading');
                 btn.innerText = "Begin Staging";
                 btn.disabled = false;
@@ -540,7 +540,6 @@
             formData.append('logoFile', file);
             formData.append('accountId', activeID);
             
-            // ACTIVATE NEW PROGRESS BAR ON LOGO UPLOAD
             btn.classList.add('btn-loading');
             btn.innerText = 'SAVING...';
             try {
