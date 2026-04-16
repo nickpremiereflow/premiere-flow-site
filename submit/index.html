@@ -25,28 +25,31 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* HEADER ARCHITECTURE */
         header {
-            position: fixed; top: 0; width: 100%; height: 70px;
+            position: fixed; top: 0; width: 100%; height: 75px;
             background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
             border-bottom: 1px solid #111; display: flex; align-items: center;
             justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        .header-left { display: flex; align-items: center; gap: 20px; z-index: 1001; }
-        .logo-img { height: 20px; border: none; }
+        /* 1. TOP LEFT LOGO */
+        .header-left { display: flex; align-items: center; z-index: 1001; }
+        .logo-img { height: 20px; border: none; transition: 0.3s; }
+        .logo-img:hover { opacity: 0.7; }
 
-        /* CENTER NAV (DESKTOP ONLY) */
+        /* 2. CENTERED NAV (DESKTOP) */
         .header-nav { 
-            position: absolute; left: 50%; transform: translateX(-50%);
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: none; gap: 30px; align-items: center;
         }
         .nav-link { 
-            color: #666; text-decoration: none; font-size: 10px; font-weight: 800; 
+            color: #444; text-decoration: none; font-size: 9px; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer;
         }
         .nav-link:hover { color: #fff; }
 
-        /* CONTACT BUBBLE DROPDOWN */
+        /* CONTACT POPUP */
         .contact-wrapper { position: relative; display: inline-block; }
         .contact-bubble {
             visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; 
@@ -56,17 +59,18 @@
             width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif;
         }
         .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
-        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 11px; font-weight: 600; margin-right: 10px; }
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 8px; font-weight: 800; text-transform: uppercase; }
 
+        /* 3. TOP RIGHT USER INFO */
         .header-right { text-align: right; display: flex; align-items: center; gap: 15px; z-index: 1001; }
-        .user-email { font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
-        .user-credits { font-size: 11px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 3px; letter-spacing: 0.5px; }
+        .user-email { font-size: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .user-credits { font-size: 10px; color: var(--accent-gold); font-weight: 900; display: block; margin-top: 2px; }
 
-        #app-container { margin-top: 90px; margin-bottom: 100px; padding: 0 20px; max-width: 600px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; }
+        #app-container { margin-top: 100px; margin-bottom: 100px; padding: 0 20px; max-width: 600px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MOBILE BOTTOM NAV */
+        /* BOTTOM NAV (MOBILE) */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #050505; border-top: 1px solid #111; display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #444; text-decoration: none; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: var(--transition); font-weight: 800; }
         .nav-item.active { color: #fff; }
@@ -74,62 +78,37 @@
 
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); transition: var(--transition); }
+        .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: #555; margin-bottom: 20px; font-weight: 900; }
+        
         .form-group { margin-bottom: 25px; }
         label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 10px; font-weight: 700; }
-
-        input, textarea, select { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
-        input:focus, select:focus { border-color: #333; outline: none; }
+        input, textarea, select { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; font-size: 14px; box-sizing: border-box; }
         
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 18px center;
-            background-size: 16px;
-            padding-right: 45px;
-        }
-        select:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
-        .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
         .btn-gold { background: var(--accent-gold); color: #000; }
-        .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; transition: 0.2s; }
+        .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; }
         
         .split-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
 
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #050505; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .remove-thumb { position: absolute; top: 2px; right: 2px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 4px; width: 18px; height: 18px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .remove-thumb { position: absolute; top: 2px; right: 2px; background: rgba(255, 77, 77, 0.9); color: white; border: none; border-radius: 4px; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .btn-loading { pointer-events: none; opacity: 0.9; }
-        .btn-loading::after {
-            content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%;
-            background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s infinite;
-        }
+        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; animation: loadingBarSlide 1.5s infinite; }
         .btn-main:not(.btn-gold).btn-loading::after { background: var(--accent-gold); }
         @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
 
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        
-        #transition-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #ffffff; z-index: 3000; display: flex; opacity: 1;
-            align-items: center; justify-content: center; transition: opacity 0.8s; 
-        }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s; }
         .pulse-logo { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
-
-        #load-more-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
-        .btn-load-more { background: none; border: 1px solid #222; color: #666; padding: 10px 20px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
 
         @media (min-width: 768px) {
             .header-nav { display: flex; }
             .bottom-nav { display: none !important; }
-            #app-container { margin-bottom: 50px; }
-            #btn-camera-upload { display: none !important; }
             .split-row { flex-direction: row; }
         }
     </style>
@@ -168,11 +147,12 @@
             <div class="contact-wrapper">
                 <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Support</span>
+                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span>
                     <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
                     <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
             </div>
+            <a href="/terms/" class="nav-link">Terms</a>
         </nav>
 
         <div class="header-right">
@@ -191,17 +171,14 @@
             </div>
             <h3>Dashboard</h3>
             <div id="submissions-list"></div>
-            <div id="load-more-container" style="display:none;">
-                <button class="btn-load-more" id="load-more-btn" onclick="fetchMoreHistory()">Load More</button>
-            </div>
         </section>
 
         <section id="view-notifications" class="view-section">
             <h3>Recent Activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 3px solid var(--accent-gold);">
-                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Dashboard operational. Ready for staging.</p>
-                    <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800; text-transform: uppercase;">Just Now</span>
+                    <p style="font-size: 12px; margin: 0; line-height: 1.5;"><b>System:</b> Secure session established. Ready for staging.</p>
+                    <span style="font-size: 9px; color: #444; display: block; margin-top: 10px; font-weight: 800;">Just Now</span>
                 </div>
             </div>
         </section>
@@ -211,23 +188,23 @@
                 <h3>Brand Identity</h3>
                 <label>Account Logo</label>
                 <div id="logo-preview" style="width: 120px; height: 120px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0; background-color: #050505; overflow: hidden; padding: 10px;">
-                    <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">No Logo</span>
-                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px;">
+                    <span id="no-logo-text" style="font-size: 9px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo</span>
+                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
                 </div>
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
                 <div style="display: flex; gap: 10px;">
-                    <button id="trigger-upload-btn" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Update Logo</button>
-                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save to Profile</button>
+                    <button onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Update Logo</button>
+                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save</button>
                 </div>
             </div>
             
             <div class="card">
                 <h3>Account Details</h3>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <span style="font-size: 11px; color: #555; text-transform: uppercase; font-weight: 800;">Tier</span>
+                    <span style="font-size: 11px; color: #555; text-transform: uppercase;">Tier</span>
                     <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
-                <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #666; font-size: 10px; padding: 12px;">Sign Out</button>
+                <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #666; font-size: 10px;">Sign Out</button>
             </div>
         </section>
 
@@ -238,15 +215,14 @@
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name <span style="color: #ff4d4d; font-size: 8px;">*REQUIRED</span></label>
+                        <label>Vehicle Name (Year Make Model)</label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
-
                     <div class="form-group" style="background: #050505; padding: 20px; border-radius: 12px; border: 1px solid #1a1a1a;">
                         <label>Asset Link</label>
-                        <input type="text" id="f-source" placeholder="Paste listing or folder link here...">
-                        <div style="text-align: center; margin: 20px 0; color: #444; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">— OR —</div>
-                        <label>Direct Upload (Max 10)</label>
+                        <input type="text" id="f-source" placeholder="Listing or Folder URL">
+                        <div style="text-align: center; margin: 15px 0; color: #333; font-size: 9px; font-weight: 900;">OR</div>
+                        <label>Direct Photo Upload (Max 10)</label>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <button type="button" id="btn-camera-upload" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
@@ -255,7 +231,6 @@
                         <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
-
                     <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Color</label>
@@ -297,7 +272,6 @@
     <script>
         let userData = { history: [] };
         let stagedFiles = [];
-        let historyPage = 1;
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
 
         window.onload = function() {
@@ -311,7 +285,6 @@
                 portalAuth();
             } else {
                 transitionOverlay.style.display = 'none';
-                transitionOverlay.style.opacity = '0';
             }
         };
 
@@ -324,7 +297,6 @@
             if(!email || !pass) return;
 
             transitionOverlay.style.display = 'flex';
-            setTimeout(() => { transitionOverlay.style.opacity = '1'; }, 10);
             error.style.display = 'none';
             
             try {
@@ -348,7 +320,7 @@
                 } else {
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 300);
-                    error.innerText = data.error || "INVALID CREDENTIALS.";
+                    error.innerText = "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
@@ -365,26 +337,15 @@
             window.location.reload(); 
         }
 
-        function toggleContact(event) {
-            event.stopPropagation();
-            document.getElementById("contactBubble").classList.toggle("show");
-        }
-
-        function copyEmail() {
-            navigator.clipboard.writeText("info@premiereflow.com");
-            const btn = document.querySelector(".copy-btn");
-            btn.innerText = "DONE";
-            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-        }
-
         function refreshUI() {
-            document.getElementById('header-email').innerText = (userData.email || 'Authorized Dealer').toUpperCase();
+            document.getElementById('header-email').innerText = (userData.email || 'Authorized').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
             const logoSelect = document.getElementById('f-logo');
             const logoLabel = document.getElementById('logo-label-text');
+
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
@@ -396,6 +357,7 @@
                 logoSelect.disabled = true;
                 logoLabel.innerHTML = 'Logo Placement <span style="color: #ff4d4d; font-size: 8px;">*ADD IN PROFILE</span>';
             }
+
             const list = document.getElementById('submissions-list');
             const validHistory = (userData.history || []).filter(item => item && (item.vehicle || item.name || item.vehicleName));
             if(validHistory.length > 0) {
@@ -412,8 +374,20 @@
                     </div>`;
                 }).join('');
             } else {
-                list.innerHTML = `<div class="card" style="text-align:center; padding: 60px 20px; border: 1px dashed #1a1a1a; background: #050505;"><p style="color: #fff; font-size: 13px; font-weight: 800; text-transform: uppercase;">Your Showroom is Empty</p></div>`;
+                list.innerHTML = `<div class="card" style="text-align:center; padding: 40px 20px; border: 1px dashed #1a1a1a; background: #050505;"><p style="color: #444; font-size: 10px; text-transform: uppercase;">No Staged Inventory</p></div>`;
             }
+        }
+
+        function toggleContact(event) {
+            event.stopPropagation();
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+
+        function copyEmail() {
+            navigator.clipboard.writeText("info@premiereflow.com");
+            const btn = document.querySelector(".copy-btn");
+            btn.innerText = "DONE";
+            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
         }
 
         function showTab(t) {
@@ -451,34 +425,21 @@
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
             btn.classList.add('btn-loading');
-            btn.innerText = 'UPLOADING ASSETS...'; 
-            btn.disabled = true;
-            const vehicleName = document.getElementById('f-name').value.trim();
-            const assetLink = document.getElementById('f-source').value.trim();
-            if (assetLink === "" && stagedFiles.length === 0) {
-                alert("Assets required.");
-                btn.classList.remove('btn-loading');
-                btn.innerText = "Begin Staging";
-                btn.disabled = false;
-                return;
-            }
             const formData = new FormData();
             formData.append('accountId', userData.accountId || userData.accountID);
-            formData.append('vehicleName', vehicleName);
-            formData.append('assetSource', assetLink);
+            formData.append('vehicleName', document.getElementById('f-name').value.trim());
+            formData.append('assetSource', document.getElementById('f-source').value.trim());
             formData.append('showroomColor', document.getElementById('f-color').value || "White");
             formData.append('logoPlacement', document.getElementById('f-logo').value);
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 document.getElementById('inventory-form').reset();
-                stagedFiles = [];
-                renderGallery();
+                stagedFiles = []; renderGallery();
                 btn.classList.remove('btn-loading');
-                btn.disabled = false;
-                refreshUI();
                 showTab('dashboard');
-            } catch (err) { alert("FAILED."); btn.classList.remove('btn-loading'); btn.disabled = false; }
+                refreshUI();
+            } catch (err) { btn.classList.remove('btn-loading'); }
         });
 
         function handleLogoSelect(input) {
@@ -506,8 +467,7 @@
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
                     userData.logo = URL.createObjectURL(file);
-                    refreshUI();
-                    btn.classList.remove('btn-loading');
+                    refreshUI(); btn.classList.remove('btn-loading');
                     setTimeout(() => { btn.style.display = 'none'; }, 2000);
                 }
             } catch (err) { btn.classList.remove('btn-loading'); }
