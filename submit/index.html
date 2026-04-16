@@ -75,6 +75,9 @@
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 15px; background: #111; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: 800; transition: 0.2s; }
         
+        /* MOBILE FIRST SPLIT ROW */
+        .split-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #050505; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
@@ -114,7 +117,8 @@
             width: 100%; height: 100%; 
             background: #ffffff; 
             z-index: 3000; 
-            display: flex; 
+            display: none; 
+            opacity: 0;
             align-items: center; 
             justify-content: center; 
             transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); 
@@ -136,18 +140,21 @@
             
             /* DESKTOP HIDE CAMERA BUTTON */
             #btn-camera-upload { display: none !important; }
+            
+            /* DESKTOP ROW LAYOUT FOR SPLIT ROW */
+            .split-row { flex-direction: row; }
         }
     </style>
 </head>
 <body>
 
-    <div id="transition-overlay" style="display: none;">
+    <div id="transition-overlay">
         <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
     </div>
 
     <div id="login-overlay">
         <div style="width: 100%; max-width: 380px; padding: 30px; text-align: center;">
-            <img src="https://premiereflow.com/logo.png" style="width: 160px; margin-bottom: 50px;">
+            <a href="/"><img src="https://premiereflow.com/logo.png" style="width: 160px; margin-bottom: 50px; border: none;"></a>
             <div style="text-align: left; margin-bottom: 15px;">
                 <label>Email Address</label>
                 <input type="email" id="login-email" placeholder="name@company.com">
@@ -163,7 +170,7 @@
 
     <header id="main-header" style="display: none;">
         <div class="header-left">
-            <img src="https://premiereflow.com/logo.png" alt="Premiere Flow">
+            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" style="border: none;"></a>
         </div>
         <div class="header-right">
             <span class="user-email" id="header-email">---</span>
@@ -247,7 +254,7 @@
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
 
-                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                    <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Color</label>
                             <input type="text" id="f-color" placeholder="Leave blank for Default White...">
