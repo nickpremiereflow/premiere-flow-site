@@ -52,8 +52,9 @@
         .form-group { margin-bottom: 25px; }
         label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; margin-bottom: 10px; font-weight: 700; }
 
-        input, textarea { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
-        input:focus { border-color: #333; outline: none; }
+        input, textarea, select { width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; box-sizing: border-box; font-size: 14px; transition: border-color 0.3s; }
+        input:focus, select:focus { border-color: #333; outline: none; }
+        select:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-main { width: 100%; padding: 20px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
         .btn-main:hover { transform: scale(1.02); background: #f0f0f0; }
@@ -198,9 +199,23 @@
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
 
-                    <div class="form-group">
-                        <label>Special Notes</label>
-                        <textarea id="f-notes" rows="3" placeholder="Notes for the studio team..."></textarea>
+                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>Showroom Color</label>
+                            <input type="text" id="f-color" placeholder="Leave blank for Default White...">
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label id="logo-label-text">Logo Placement</label>
+                            <select id="f-logo" style="width: 100%; padding: 18px; background: #000; border: 1px solid #1a1a1a; border-radius: 8px; color: #fff; font-size: 14px; appearance: none; cursor: pointer;">
+                                <option value="Bottom Left" selected>Bottom Left</option>
+                                <option value="Bottom Right">Bottom Right</option>
+                                <option value="Top Right">Top Right</option>
+                                <option value="Top Left">Top Left</option>
+                                <option value="Showroom Wall">Showroom Wall</option>
+                                <option value="No Logo">No Logo</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <button type="submit" id="submit-btn" class="btn-main btn-gold">Begin Staging</button>
@@ -298,11 +313,21 @@
             
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
+            const logoSelect = document.getElementById('f-logo');
+            const logoLabel = document.getElementById('logo-label-text');
             
+            // LOGO PLACEMENT UI LOCK LOGIC
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
+                
+                logoSelect.disabled = false;
+                logoLabel.innerHTML = 'Logo Placement';
+            } else {
+                logoSelect.value = 'No Logo';
+                logoSelect.disabled = true;
+                logoLabel.innerHTML = 'Logo Placement <span style="color: #ff4d4d; font-size: 8px;">*ADD IN PROFILE</span>';
             }
 
             const list = document.getElementById('submissions-list');
@@ -310,12 +335,9 @@
             // --- THE ULTIMATE GHOST ROW KILLER ---
             const validHistory = (userData.history || []).filter(item => {
                 if (!item) return false;
-                
-                // Check all possible ways Make.com might spell the vehicle name
                 const vName = item.vehicle || item.name || item.vehicleName || item['Vehicle Name'] || item['Vehicle'] || "";
                 const cleanName = String(vName).trim().toLowerCase();
                 
-                // If the name is blank, or exactly matches Make.com fallbacks, it's a ghost row. Kill it.
                 if (cleanName === "" || cleanName === "unknown vehicle" || cleanName === "null" || cleanName === "undefined") {
                     return false;
                 }
@@ -326,7 +348,6 @@
             if(validHistory.length > 0) {
                 list.innerHTML = validHistory.map(item => {
                     const thumb = item.thumbnail && item.thumbnail !== "" ? item.thumbnail : '';
-                    // Get the correct vehicle name to display
                     const displayName = item.vehicle || item.name || item.vehicleName || item['Vehicle Name'] || item['Vehicle'] || 'Unknown Vehicle';
                     
                     return `
@@ -426,7 +447,14 @@
             formData.append('accountId', activeID);
             formData.append('vehicleName', vehicleName);
             formData.append('assetSource', assetLink);
-            formData.append('showroomNotes', document.getElementById('f-notes').value);
+            
+            // FALLBACK LOGIC ADDED HERE
+            const colorInput = document.getElementById('f-color').value.trim();
+            const finalColor = colorInput === "" ? "White" : colorInput;
+            formData.append('showroomColor', finalColor);
+            
+            formData.append('logoPlacement', document.getElementById('f-logo').value);
+            
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
