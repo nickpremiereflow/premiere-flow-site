@@ -18,7 +18,11 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* NEW DYNAMIC HEADER STYLES */
+        :root {
+            --accent-gold: #c5a059;
+        }
+
+        /* INTEGRATED NAV HEADER */
         .main-top-header {
             position: fixed; top: 0; left: 0; width: 100%; height: 70px;
             background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
@@ -27,8 +31,18 @@
             border-bottom: 1px solid #111;
         }
 
-        .header-container { margin-top: 40px; text-align: center; width: 100%; }
-        .logo-img { height: 22px; border: none; vertical-align: middle; }
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .logo-img { height: 20px; border: none; vertical-align: middle; }
+
+        /* CENTER NAV MENU */
+        .header-nav { display: flex; gap: 20px; }
+        .nav-link { 
+            color: #666; text-decoration: none; font-size: 10px; font-weight: 800; 
+            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { color: #fff; }
+
+        .header-right { display: flex; align-items: center; gap: 15px; }
         
         .header-btn {
             background: transparent; border: 1px solid #333; color: #fff;
@@ -36,7 +50,7 @@
             font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s;
         }
         .header-btn:hover { background: #fff; color: #000; }
-        .gold-btn { background: #c5a059; color: #000; border: none; text-decoration: none; display: inline-block; }
+        .gold-btn { background: var(--accent-gold); color: #000; border: none; text-decoration: none; display: inline-block; }
         .gold-btn:hover { background: #fff; }
         
         .header-email { 
@@ -46,11 +60,9 @@
         
         .user-meta { display: none; text-align: right; }
 
-        nav { padding: 0; }
-        
-        main { padding-top: 90px; } /* account for fixed header */
+        main { padding-top: 100px; } 
 
-        .hero-section { margin-top: 40px; padding-top: 0; text-align: center; }
+        .hero-section { text-align: center; }
         .hero-section h1 { margin-bottom: 18px; }
 
         .subtitle { 
@@ -83,10 +95,9 @@
         .bullet-highlight { color: #fff; font-weight: 800; margin-right: 4px; }
         .dropdown-content li::before { content: "◆"; color: #fff; font-size: 8px; margin-right: 8px; opacity: 0.7; flex-shrink: 0; }
 
-        /* --- LOGIN MODAL STYLES --- */
         #loginModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;
         }
         .login-card {
             background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333;
@@ -103,7 +114,6 @@
             border-radius: 6px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase;
         }
 
-        /* PROGRESS BAR ANIMATION */
         .btn-loading { pointer-events: none; opacity: 0.9; }
         .btn-loading::after {
             content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%;
@@ -115,7 +125,6 @@
             100% { transform: translateX(350%); width: 30%; }
         }
 
-        /* WHITE TRANSITION OVERLAY */
         #transition-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #ffffff; z-index: 3000; display: none; opacity: 0;
@@ -134,7 +143,6 @@
         }
         .footer-link:hover { color: #fff; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-home { color: #fff !important; pointer-events: none; }
 
         .contact-wrapper { display: inline-flex; align-items: center; position: relative; }
         .contact-bubble {
@@ -150,6 +158,7 @@
             .user-meta { display: block; }
         }
         @media (max-width: 600px) {
+            .header-nav { display: none; } /* Hide center nav on mobile to prevent crowding login */
             .footer-nav { flex-direction: column; gap: 25px; }
             .footer-link { font-size: 12px; }
             .contact-bubble { bottom: auto; top: 120%; }
@@ -171,6 +180,14 @@
         <div class="header-left">
             <a href="/"><img src="logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
         </div>
+
+        <nav class="header-nav">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="./about/" class="nav-link">About</a>
+            <a href="./sign-up/" class="nav-link">Sign Up</a>
+            <a href="./terms/" class="nav-link">Terms</a>
+        </nav>
+
         <div class="header-right">
             <button id="btn-header-login" class="header-btn" onclick="toggleModal()">Partner Login</button>
             <div id="header-logged-in" style="display: none; align-items: center; gap: 15px;">
@@ -292,7 +309,7 @@
 
     <footer>
         <div class="footer-nav">
-            <a href="/" class="footer-link nav-home">Home</a>
+            <a href="/" class="footer-link">Home</a>
             <a href="./about/" class="footer-link">About</a>
             <a href="./sign-up/" class="footer-link">Sign Up</a>
             <a id="footer-dash-link" class="footer-link" onclick="toggleModal()">Partner Login</a>
