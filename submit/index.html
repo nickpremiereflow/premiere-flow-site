@@ -110,7 +110,6 @@
 
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
         
-        /* DEFAULT STATE IS NOW VISIBLE TO PREVENT FLASHING */
         #transition-overlay { 
             position: fixed; 
             top: 0; left: 0; 
@@ -137,11 +136,7 @@
             .nav-item { flex-direction: row; gap: 8px; }
             .nav-icon { margin-bottom: 0; font-size: 16px; }
             #app-container { margin-bottom: 50px; }
-            
-            /* DESKTOP HIDE CAMERA BUTTON */
             #btn-camera-upload { display: none !important; }
-            
-            /* DESKTOP ROW LAYOUT FOR SPLIT ROW */
             .split-row { flex-direction: row; }
         }
     </style>
@@ -185,8 +180,7 @@
                 <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Production</button>
             </div>
             <h3>Dashboard</h3>
-            <div id="submissions-list">
-                </div>
+            <div id="submissions-list"></div>
             <div id="load-more-container" style="display:none;">
                 <button class="btn-load-more" id="load-more-btn" onclick="fetchMoreHistory()">Load More</button>
             </div>
@@ -280,6 +274,10 @@
     </div>
 
     <nav class="bottom-nav" id="bottom-nav" style="display: none;">
+        <a href="/" class="nav-item" style="text-decoration: none;">
+            <span class="nav-icon">⌂</span>
+            <span>Home</span>
+        </a>
         <div class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')">
             <span class="nav-icon">▤</span>
             <span>Dashboard</span>
@@ -308,10 +306,8 @@
             if (savedEmail && savedPass) {
                 document.getElementById('login-email').value = savedEmail;
                 document.getElementById('login-password').value = savedPass;
-                // Transition overlay is already visible from CSS, just run auth
                 portalAuth();
             } else {
-                // Not logged in. Hide the white screen immediately to show the login form.
                 transitionOverlay.style.display = 'none';
                 transitionOverlay.style.opacity = '0';
             }
@@ -326,7 +322,6 @@
             
             if(!email || !pass) return;
 
-            // Trigger the luxury white transition instantly (if logging in manually)
             transitionOverlay.style.display = 'flex';
             setTimeout(() => { transitionOverlay.style.opacity = '1'; }, 10);
             error.style.display = 'none';
@@ -352,19 +347,16 @@
                     
                     refreshUI();
 
-                    // Smoothly fade out the white transition screen
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 800);
 
                 } else {
-                    // Auth failed, drop transition and show error
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 300);
                     error.innerText = data.error || "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
-                // Connection failed
                 transitionOverlay.style.opacity = '0';
                 setTimeout(() => { transitionOverlay.style.display = 'none'; }, 300);
                 error.innerText = "CONNECTION ERROR.";
@@ -391,7 +383,6 @@
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
-                
                 logoSelect.disabled = false;
                 logoLabel.innerHTML = 'Logo Placement';
             } else {
@@ -406,7 +397,6 @@
                 if (!item) return false;
                 const vName = item.vehicle || item.name || item.vehicleName || item['Vehicle Name'] || item['Vehicle'] || "";
                 const cleanName = String(vName).trim().toLowerCase();
-                
                 if (cleanName === "" || cleanName === "unknown vehicle" || cleanName === "null" || cleanName === "undefined") {
                     return false;
                 }
@@ -493,7 +483,6 @@
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            
             btn.classList.add('btn-loading');
             btn.innerText = 'UPLOADING ASSETS...'; 
             btn.disabled = true;
@@ -517,18 +506,14 @@
             formData.append('accountId', activeID);
             formData.append('vehicleName', vehicleName);
             formData.append('assetSource', assetLink);
-            
             const colorInput = document.getElementById('f-color').value.trim();
             const finalColor = colorInput === "" ? "White" : colorInput;
             formData.append('showroomColor', finalColor);
-            
             formData.append('logoPlacement', document.getElementById('f-logo').value);
-            
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
 
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                
                 if (!userData.history) userData.history = [];
                 userData.history.unshift({
                     vehicle: vehicleName,
@@ -536,20 +521,15 @@
                     status: "Received",
                     thumbnail: tempThumbnail
                 });
-                
                 addAlert(`<b>Staging:</b> ${vehicleName} has been queued for production.`);
-                
                 document.getElementById('inventory-form').reset();
                 stagedFiles = [];
                 renderGallery();
-                
                 btn.classList.remove('btn-loading');
                 btn.innerText = "Begin Staging";
                 btn.disabled = false;
-                
                 refreshUI();
                 showTab('dashboard');
-
             } catch (err) { 
                 alert("SUBMISSION FAILED."); 
                 btn.classList.remove('btn-loading');
@@ -579,7 +559,6 @@
             const activeID = userData.accountId || userData.accountID;
             formData.append('logoFile', file);
             formData.append('accountId', activeID);
-            
             btn.classList.add('btn-loading');
             btn.innerText = 'SAVING...';
             try {
