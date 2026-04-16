@@ -23,36 +23,66 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            font-size: 16px;
+            font-size: 16px; /* Global size increase */
         }
 
-        /* --- GLOBAL HEADER (75px) --- */
+        /* --- GLOBAL HEADER (LOCKED AT 75px) --- */
         header {
-            position: fixed; top: 0; width: 100%; height: 75px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 75px;
             background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
             border-bottom: 1px solid #111; display: flex; align-items: center;
             justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        .header-left { display: flex; align-items: center; height: 100%; z-index: 1001; }
+        /* 1. LOGO: TOP LEFT, VERTICALLY CENTERED */
+        .header-left { 
+            display: flex; 
+            align-items: center; 
+            height: 100%; 
+            z-index: 1001; 
+        }
         .logo-img { height: 22px; border: none; transition: 0.3s; }
         .logo-img:hover { opacity: 0.7; }
 
+        /* 2. NAV: MATHEMATICALLY CENTERED */
         .header-nav { 
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: none; gap: 35px; align-items: center;
         }
         .nav-link { 
-            color: #777; text-decoration: none; font-size: 12px; font-weight: 800; 
-            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer;
+            color: #777; text-decoration: none; font-size: 11px; font-weight: 800; 
+            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; 
+            cursor: pointer; line-height: 1; /* Ensures horizontal baseline alignment */
         }
-        .nav-link:hover { color: #fff; }
+        .nav-link:hover, .nav-link.active { color: #fff; }
 
-        .header-right { text-align: right; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 3px; z-index: 1001; }
-        .user-email { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-        .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; letter-spacing: 0.5px; }
+        /* CONTACT ALIGNMENT FIX */
+        .contact-wrapper { 
+            display: inline-flex; 
+            align-items: center; 
+            position: relative; 
+        }
 
-        /* --- DASHBOARD TAB MENU --- */
+        .contact-bubble {
+            visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 10px; 
+            padding: 20px; position: absolute; z-index: 100;
+            top: 40px; left: 50%; transform: translateX(-50%);
+            border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif;
+        }
+        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
+        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 13px; font-weight: 600; margin-right: 12px; }
+        .copy-btn { background: none; border: none; color: #666; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        /* 3. AUTH: TOP RIGHT */
+        .header-right { 
+            text-align: right; display: flex; flex-direction: column; 
+            justify-content: center; height: 100%; gap: 3px; z-index: 1001; 
+        }
+        .user-email { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; }
+
+        /* --- DASHBOARD TAB MENU (BELOW HEADER) --- */
         .dash-menu {
             display: flex; justify-content: center; gap: 45px;
             margin-bottom: 45px; border-bottom: 1px solid #111;
@@ -75,11 +105,9 @@
         
         .form-group { margin-bottom: 30px; }
         label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
-        input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; transition: border 0.3s; }
-        input:focus { border-color: #333; outline: none; }
+        input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; }
         
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .btn-main:hover { transform: scale(1.02); }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; }
         
@@ -99,19 +127,6 @@
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s; }
         .pulse-logo { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
-
-        /* CONTACT BUBBLE */
-        .contact-wrapper { position: relative; display: inline-block; }
-        .contact-bubble {
-            visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 10px; 
-            padding: 20px; position: absolute; z-index: 100;
-            top: 40px; left: 50%; transform: translateX(-50%);
-            border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif;
-        }
-        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
-        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 13px; font-weight: 600; margin-right: 12px; }
-        .copy-btn { background: none; border: none; color: #666; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 
         @media (min-width: 768px) {
             .header-nav { display: flex; }
@@ -152,7 +167,7 @@
             <div class="contact-wrapper">
                 <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Support Hub</span>
+                    <span style="font-size: 9px; display: block; margin-bottom: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span>
                     <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
                     <button class="copy-btn" onclick="copyEmail()">COPY</button>
                 </div>
@@ -183,10 +198,10 @@
         </section>
 
         <section id="view-notifications" class="view-section">
-            <h3>Recent Activity</h3>
+            <h3>Recent activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 4px solid var(--accent-gold);">
-                    <p style="font-size: 14px; margin: 0; line-height: 1.6;"><b>System:</b> Connection secure. Listings feed synchronized.</p>
+                    <p style="font-size: 14px; margin: 0; line-height: 1.6;"><b>System:</b> Dashboard operational. Ready for staging.</p>
                     <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800;">Just Now</span>
                 </div>
             </div>
@@ -208,7 +223,7 @@
             </div>
             
             <div class="card">
-                <h3>Account Tiers</h3>
+                <h3>Account Details</h3>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <span style="font-size: 13px; color: #666; text-transform: uppercase; font-weight: 800;">Active Plan</span>
                     <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
@@ -219,21 +234,21 @@
 
         <section id="view-submit" class="view-section">
             <div style="margin-bottom: 30px;">
-                <button onclick="showTab('dashboard')" style="background:none; border:none; color:#ff4d4d; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Submission</button>
+                <button onclick="showTab('dashboard')" style="background:none; border:none; color:#ff4d4d; font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Production</button>
             </div>
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Title (Year Make Model)</label>
+                        <label>Vehicle Name (Year Make Model)</label>
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
                     </div>
                     <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a;">
                         <label>Asset URL</label>
                         <input type="text" id="f-source" placeholder="Listing or Folder link">
                         <div style="text-align: center; margin: 20px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
-                        <label>Direct Upload (Max 10)</label>
+                        <label>Direct Photo Upload (Max 10)</label>
                         <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-                            <button type="button" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
+                            <button type="button" id="btn-camera-upload" class="btn-split" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
                         <div id="staging-gallery"></div>
@@ -309,12 +324,12 @@
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 800);
                 } else {
                     transitionOverlay.style.display = 'none';
-                    error.innerText = "AUTHENTICATION FAILED.";
+                    error.innerText = "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
                 transitionOverlay.style.display = 'none';
-                error.innerText = "NETWORK ERROR.";
+                error.innerText = "CONNECTION ERROR.";
                 error.style.display = 'block';
             }
         }
@@ -326,7 +341,7 @@
         }
 
         function refreshUI() {
-            document.getElementById('header-email').innerText = (userData.email || 'Dealer').toUpperCase();
+            document.getElementById('header-email').innerText = (userData.email || 'Authorized').toUpperCase();
             document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             const actualImg = document.getElementById('actual-logo-img');
@@ -351,12 +366,11 @@
             if(validHistory.length > 0) {
                 list.innerHTML = validHistory.map(item => {
                     const thumb = item.thumbnail || '';
-                    const name = item.vehicle || item.name || item.vehicleName || 'Listing';
                     return `
                     <div class="card" style="padding:20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <div style="display:flex; align-items:center; gap:15px;">
-                            ${thumb ? `<img src="${thumb}" style="width:45px; height:45px; object-fit:cover; border-radius:8px; border:1px solid #222;">` : `<div style="width:45px; height:45px; background:#000; border:1px solid #222; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:11px; color:#333; font-weight:900;">PF</div>`}
-                            <div><p style="margin:0; font-weight:800; font-size:15px; color:#fff;">${name}</p><span style="font-size:10px; color:#555; font-weight:700;">${item.date || 'Active'}</span></div>
+                            ${thumb ? `<img src="${thumb}" style="width:45px; height:45px; object-fit:cover; border-radius:8px; border:1px solid #222;">` : `<div style="width:45px; height:45px; background:#000; border:1px solid #222; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:11px; color:#333;">PF</div>`}
+                            <div><p style="margin:0; font-weight:800; font-size:15px; color:#fff;">${item.vehicle || item.name || item.vehicleName || 'Listing'}</p><span style="font-size:10px; color:#555; font-weight:700;">${item.date || 'Active'}</span></div>
                         </div>
                         <span style="font-size:11px; color:var(--accent-gold); font-weight:900;">${(item.status || 'Received').toUpperCase()}</span>
                     </div>`;
