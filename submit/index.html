@@ -41,8 +41,11 @@
         .header-left { 
             display: flex; 
             align-items: center; 
-            height: 100%; 
             z-index: 1001; 
+        }
+        .header-left a {
+            display: flex;
+            align-items: center;
         }
         .logo-img { height: 22px; border: none; transition: 0.3s; }
         .logo-img:hover { opacity: 0.7; }
@@ -79,10 +82,12 @@
 
         /* 3. AUTH: TOP RIGHT */
         .header-right { 
-            display: flex; flex-direction: column; align-items: flex-end; 
-            justify-content: center; height: 100%; z-index: 1001; 
+            display: flex; align-items: center; gap: 15px; height: 100%; z-index: 1001; 
         }
-        .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; margin-bottom: 3px; line-height: 1; }
+        .user-info-stack {
+            display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px;
+        }
+        .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; }
         .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; }
 
         /* --- DASHBOARD TAB MENU (BELOW HEADER) --- */
@@ -131,8 +136,41 @@
         .pulse-logo { animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
+        /* --- MOBILE MENU STYLES --- */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 0 0 15px;
+            line-height: 1;
+        }
+
         @media (max-width: 768px) {
             header { padding: 0 20px; }
+            .hamburger { display: block; }
+            
+            .header-nav { 
+                display: none !important; /* Hidden by default on mobile */
+                position: fixed; 
+                top: 75px; 
+                left: 0; 
+                width: 100%; 
+                background: rgba(0,0,0,0.98); 
+                backdrop-filter: blur(15px);
+                flex-direction: column; 
+                padding: 30px 0; 
+                gap: 25px; 
+                border-bottom: 1px solid #111;
+                z-index: 999;
+                transform: none; 
+            }
+            
+            .header-nav.mobile-active {
+                display: flex !important;
+            }
         }
 
         @media (min-width: 768px) {
@@ -183,8 +221,11 @@
         </nav>
 
         <div class="header-right">
-            <span class="user-email" id="header-email">---</span>
-            <span class="user-credits" id="header-credits">0 CREDITS</span>
+            <div class="user-info-stack">
+                <span class="user-email" id="header-email">---</span>
+                <span class="user-credits" id="header-credits">0 CREDITS</span>
+            </div>
+            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
         </div>
     </header>
 
@@ -345,6 +386,11 @@
             localStorage.removeItem('pf_email');
             localStorage.removeItem('pf_pass');
             window.location.reload(); 
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.querySelector('.header-nav');
+            nav.classList.toggle('mobile-active');
         }
 
         function refreshUI() {
