@@ -530,12 +530,12 @@
                             </div>
                         </div>
                         <div class="listing-accordion-row">
-                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Uploaded Photos ▾</button>
+                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Images ▾</button>
                             <button class="accordion-btn ${accClass}" onclick="${isComplete ? `toggleAccordion('upgraded-${idx}')` : ''}">Upgraded Images ▾</button>
                         </div>
                         
                         <div id="uploaded-${idx}" style="display: none; padding: 20px; background: #050505; border-top: 1px solid #111;">
-                            <p style="font-size: 11px; color: #666; margin: 0; text-align: center;">Uploaded photos will render here.</p>
+                            <p style="font-size: 11px; color: #666; margin: 0; text-align: center;">Original images will render here.</p>
                         </div>
                         <div id="upgraded-${idx}" style="display: none; padding: 20px; background: #050505; border-top: 1px solid #111;">
                             <p style="font-size: 11px; color: var(--accent-gold); margin: 0; text-align: center;">Final upgraded images will render here.</p>
