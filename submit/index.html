@@ -237,6 +237,8 @@
         @media (min-width: 768px) {
             .header-nav { display: flex; }
             .split-row { flex-direction: row; }
+            /* Dash menu flex wrap for smaller desktop widths to prevent squishing */
+            .dash-menu { flex-wrap: wrap; gap: 30px; }
         }
     </style>
 </head>
@@ -296,6 +298,7 @@
             <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span>
             <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')">Alerts</span>
             <span class="tab-link" id="tab-profile" onclick="showTab('profile')">Account</span>
+            <span class="tab-link" id="tab-support" onclick="showTab('support')">Support</span>
         </nav>
 
         <section id="view-dashboard" class="view-section active">
@@ -337,6 +340,30 @@
                     <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
+            </div>
+        </section>
+
+        <section id="view-support" class="view-section">
+            <div class="card">
+                <div id="support-form-container">
+                    <h3>Contact Support</h3>
+                    <form id="support-form">
+                        <div class="form-group">
+                            <label>Subject (INPUT)</label>
+                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my recent listing">
+                        </div>
+                        <div class="form-group">
+                            <label>Inquiry (INPUT)</label>
+                            <textarea id="sup-inquiry" required placeholder="How can we help you today?" style="min-height: 120px; resize: vertical;"></textarea>
+                        </div>
+                        <button type="submit" id="support-submit-btn" class="btn-main btn-gold">Send Message</button>
+                    </form>
+                </div>
+                <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3>
+                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible regarding your inquiry.</p>
+                    <button class="btn-split" onclick="resetSupportTab()" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
+                </div>
             </div>
         </section>
 
@@ -394,7 +421,7 @@
         let userData = { history: [] };
         let stagedFiles = [];
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
-
+        
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             const savedPass = localStorage.getItem('pf_pass');
@@ -572,6 +599,13 @@
             window.scrollTo(0,0);
         }
 
+        function resetSupportTab() {
+            showTab('dashboard');
+            document.getElementById('support-confirmation').style.display='none'; 
+            document.getElementById('support-form-container').style.display='block'; 
+            document.getElementById('support-form').reset();
+        }
+
         function openSubmit() {
             // Check to ensure they either have unlimited or credits > 0
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
@@ -619,6 +653,36 @@
                 // You may want to fetch updated userData here to update credits count
                 refreshUI();
             } catch (err) { btn.classList.remove('btn-loading'); }
+        });
+
+        // --- NEW SUPPORT FORM SUBMISSION LOGIC ---
+        document.getElementById('support-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('support-submit-btn');
+            btn.classList.add('btn-loading');
+
+            const payload = {
+                accountId: userData.accountId || userData.accountID,
+                email: userData.email,
+                subject: document.getElementById('sup-subject').value.trim(),
+                inquiry: document.getElementById('sup-inquiry').value.trim()
+            };
+
+            try {
+                // REPLACE THIS URL with your new Support Webhook from Make.com
+                await fetch('https://hook.us2.make.com/YOUR_NEW_SUPPORT_WEBHOOK_HERE', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                
+                btn.classList.remove('btn-loading');
+                document.getElementById('support-form-container').style.display = 'none';
+                document.getElementById('support-confirmation').style.display = 'block';
+            } catch (err) {
+                btn.classList.remove('btn-loading');
+                alert("Connection error. Please try again.");
+            }
         });
 
         function handleLogoSelect(input) {
