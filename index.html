@@ -40,14 +40,21 @@
             border-bottom: 1px solid #111;
         }
 
+        /* 1. LOGO: TOP LEFT, VERTICALLY CENTERED */
         .header-left { 
             display: flex; 
             align-items: center; 
             height: 100%; 
             z-index: 1001; 
         }
+        .header-left a {
+            display: flex;
+            align-items: center;
+        }
+        .logo-img { height: 22px; border: none; transition: 0.3s; }
+        .logo-img:hover { opacity: 0.7; }
 
-        /* NAV: MATHEMATICALLY CENTERED */
+        /* 2. NAV: MATHEMATICALLY CENTERED */
         .header-nav { 
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: flex; gap: 30px; align-items: center;
@@ -55,7 +62,7 @@
         .nav-link { 
             color: #666; text-decoration: none; font-size: 11px; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; 
-            cursor: pointer; line-height: 1;
+            cursor: pointer; line-height: 1; /* Fixed vertical baseline */
         }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
@@ -77,7 +84,7 @@
         .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
         .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-        /* AUTH: TOP RIGHT */
+        /* 3. AUTH: TOP RIGHT */
         .header-right { display: flex; align-items: center; gap: 15px; z-index: 1001; }
         .header-btn {
             background: transparent; border: 1px solid #333; color: #fff;
@@ -87,7 +94,10 @@
         .header-btn:hover { background: #fff; color: #000; }
         .gold-btn { background: var(--accent-gold); color: #000; border: none; text-decoration: none; display: inline-block; }
         
-        .header-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; margin-bottom: 3px; }
+        /* AUTH META STACK STYLES */
+        .user-meta-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; }
+        .user-email-text { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; }
+        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; line-height: 1; margin: 0; padding: 0; }
         .user-meta { display: none; text-align: right; }
 
         /* --- HOME PAGE STYLES --- */
@@ -312,7 +322,8 @@
 
     <header class="main-top-header">
         <div class="header-left">
-            </div>
+            <a href="/"><img src="logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
+        </div>
 
         <nav class="header-nav">
             <a href="/" class="nav-link active">Home</a>
@@ -331,10 +342,10 @@
 
         <div class="header-right">
             <button id="btn-header-login" class="header-btn" onclick="toggleModal()">Partner Login</button>
-            <div id="header-logged-in" style="display: none; align-items: center; gap: 15px;">
-                <div class="user-meta">
-                    <span id="header-email-display" class="header-email"></span>
-                    <span onclick="signOut()" style="font-size: 8px; color: #ff4d4d; text-transform: uppercase; cursor: pointer; font-weight: 800;">Log Out ✕</span>
+            <div id="header-logged-in" style="display: none; align-items: center; gap: 10px;">
+                <div class="user-meta-stack">
+                    <span id="header-email-display" class="user-email-text"></span>
+                    <span onclick="signOut()" class="log-out-text">Log Out</span>
                 </div>
                 <a href="./submit/" class="header-btn gold-btn">Dashboard</a>
             </div>
