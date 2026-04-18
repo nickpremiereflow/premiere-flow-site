@@ -255,10 +255,44 @@
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; }
         .footer-copyright { color: #222; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* --- MOBILE MENU STYLES --- */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 0 0 15px;
+            line-height: 1;
+        }
+
         @media (min-width: 600px) { .user-meta { display: block; } }
         
         @media (max-width: 768px) {
-            .header-nav { display: none; }
+            .hamburger { display: block; }
+            
+            .header-nav { 
+                display: none !important; /* Hidden by default on mobile */
+                position: fixed; 
+                top: 75px; 
+                left: 0; 
+                width: 100%; 
+                background: rgba(0,0,0,0.98); 
+                backdrop-filter: blur(15px);
+                flex-direction: column; 
+                padding: 30px 0; 
+                gap: 25px; 
+                border-bottom: 1px solid #111;
+                z-index: 999;
+                transform: none; 
+            }
+            
+            .header-nav.mobile-active {
+                display: flex !important;
+            }
+
+            .header-right { gap: 10px; }
             .main-top-header { padding: 0 20px; }
         }
 
@@ -304,6 +338,7 @@
                 </div>
                 <a href="./submit/" class="header-btn gold-btn">Dashboard</a>
             </div>
+            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
         </div>
     </header>
 
@@ -448,6 +483,11 @@
             } else {
                 modal.style.display = 'flex';
             }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.querySelector('.header-nav');
+            nav.classList.toggle('mobile-active');
         }
 
         async function portalAuth() {
