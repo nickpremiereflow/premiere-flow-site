@@ -14,6 +14,7 @@
     <meta property="og:image" content="https://premiereflow.com/premiereflowiconlogo.png?v=2">
 
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <style>
         :root { 
@@ -91,7 +92,10 @@
         .header-btn:hover { background: #fff; color: #000; }
         .gold-btn { background: var(--accent-gold); color: #000; border: none; text-decoration: none; display: inline-block; }
         
-        .header-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; margin-bottom: 3px; }
+        /* AUTH META STACK STYLES */
+        .user-meta-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; }
+        .user-email-text { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; }
+        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; line-height: 1; margin: 0; padding: 0; }
         .user-meta { display: none; text-align: right; }
 
         /* TERMS CONTENT STYLING */
@@ -250,10 +254,10 @@
 
         <div class="header-right">
             <button id="btn-header-login" class="header-btn" onclick="toggleModal()">Partner Login</button>
-            <div id="header-logged-in" style="display: none; align-items: center; gap: 15px;">
-                <div class="user-meta">
-                    <span id="header-email-display" class="header-email"></span>
-                    <span onclick="signOut()" style="font-size: 8px; color: #ff4d4d; text-transform: uppercase; cursor: pointer; font-weight: 800;">Log Out ✕</span>
+            <div id="header-logged-in" style="display: none; align-items: center; gap: 10px;">
+                <div class="user-meta-stack">
+                    <span id="header-email-display" class="user-email-text"></span>
+                    <span onclick="signOut()" class="log-out-text">Log Out</span>
                 </div>
                 <a href="../submit/" class="header-btn gold-btn">Dashboard</a>
             </div>
