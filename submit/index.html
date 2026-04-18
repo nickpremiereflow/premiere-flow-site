@@ -292,8 +292,7 @@
 
         <section id="view-profile" class="view-section">
             <div class="card">
-                <h3>Brand Identity</h3>
-                <label>Dealer Logo</label>
+                <h3>Account Logo</h3>
                 <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0; background-color: #050505; overflow: hidden; padding: 15px;">
                     <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
                     <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
@@ -340,11 +339,11 @@
                     </div>
                     <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label>Showroom Wall Color</label>
-                            <input type="text" id="f-color" placeholder="Default: White">
+                            <label>Showroom Wall Color (INPUT)</label>
+                            <input type="text" id="f-color" placeholder="e.g. White (Default)">
                         </div>
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label id="logo-label-text">Logo Placement</label>
+                            <label id="logo-label-text">Logo Placement (SELECT)</label>
                             <select id="f-logo">
                                 <option value="Bottom Left" selected>Bottom Left</option>
                                 <option value="Bottom Right">Bottom Right</option>
@@ -448,12 +447,12 @@
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
                 logoSelect.disabled = false;
-                logoLabel.innerHTML = 'Logo Placement';
+                logoLabel.innerHTML = 'Logo Placement (SELECT)';
                 selectLogoBtn.innerText = 'Update Logo';
             } else {
                 logoSelect.value = 'No Logo';
                 logoSelect.disabled = true;
-                logoLabel.innerHTML = 'Logo Placement <span style="color: #ff4d4d; font-size: 8px;">*SET IN PROFILE</span>';
+                logoLabel.innerHTML = 'Logo Placement (SELECT) <span style="color: #ff4d4d; font-size: 8px;">*SET IN PROFILE</span>';
                 selectLogoBtn.innerText = 'Upload Logo';
             }
 
