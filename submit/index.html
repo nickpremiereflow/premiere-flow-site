@@ -258,7 +258,7 @@
         <div class="header-right">
             <div class="user-info-stack">
                 <span class="user-email" id="header-email">---</span>
-                <span class="user-credits" id="header-credits">0 CREDITS</span>
+                <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span>
             </div>
             <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
         </div>
@@ -434,7 +434,14 @@
 
         function refreshUI() {
             document.getElementById('header-email').innerText = (userData.email || 'Authorized').toUpperCase();
-            document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' CREDITS';
+            
+            // Dynamic logic for Unlimited vs Numeric Listings Remaining
+            if ((userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED') {
+                document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
+            } else {
+                document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' LISTINGS REMAINING';
+            }
+
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
@@ -485,7 +492,12 @@
         }
 
         function openSubmit() {
-            if(userData.credits <= 0) { alert("INSUFFICIENT CREDITS."); return; }
+            // Check to ensure they either have unlimited or credits > 0
+            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
+            if(!isUnlimited && (isNaN(userData.credits) || userData.credits <= 0)) { 
+                alert("INSUFFICIENT LISTINGS REMAINING."); 
+                return; 
+            }
             showTab('submit');
         }
 
@@ -523,6 +535,7 @@
                 stagedFiles = []; renderGallery();
                 btn.classList.remove('btn-loading');
                 showTab('dashboard');
+                // You may want to fetch updated userData here to update credits count
                 refreshUI();
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
