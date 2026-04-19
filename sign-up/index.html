@@ -108,7 +108,11 @@
         .user-meta { display: none; text-align: right; }
 
         /* SIGNUP PAGE CONTENT */
-        .instructions-container { width: 100%; max-width: 800px; margin-top: 130px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left; padding: 0 20px; box-sizing: border-box; }
+        .signup-hero { width: 100%; max-width: 800px; margin-top: 130px; text-align: center; padding: 0 20px; box-sizing: border-box; }
+        .signup-hero h1 { font-size: clamp(2.2rem, 9vw, 4rem); margin-bottom: 40px; line-height: 1.1; letter-spacing: -1px; margin-top: 0; }
+        .sub-label { color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; font-size: 10px; margin-bottom: 10px; display: block; }
+
+        .instructions-container { width: 100%; max-width: 800px; margin-top: 0px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: left; padding: 0 20px; box-sizing: border-box; }
         .step { border-left: 1px solid #222; padding-left: 15px; }
         .step-num { display: block; font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
         .step-text { font-size: 12px; line-height: 1.5; color: #888; }
@@ -243,6 +247,11 @@
         </div>
     </header>
 
+    <section class="signup-hero">
+        <span class="sub-label">Get Started</span>
+        <h1>THE PROCESS:</h1>
+    </section>
+
     <div class="instructions-container">
         <div class="step"><span class="step-num">Step 01</span><span class="step-text">Select a package and complete our secure checkout process.</span></div>
         <div class="step"><span class="step-num">Step 02</span><span class="step-text">Receive a secure link via email to create your studio password.</span></div>
@@ -342,7 +351,11 @@
 
         function toggleModal() {
             const modal = document.getElementById('loginModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
         }
 
         function toggleMobileMenu() {
@@ -354,23 +367,57 @@
             const email = document.getElementById('log-email').value;
             const pass = document.getElementById('log-pass').value;
             const msg = document.getElementById('log-msg');
-            if (!email || !pass) { msg.innerText = "Credentials required."; return; }
+            const btn = document.querySelector('.btn-login');
+            const transitionOverlay = document.getElementById('transition-overlay');
+
+            if (!email || !pass) { 
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "Please enter credentials."; 
+                return; 
+            }
+
+            msg.style.display = "none";
+            btn.classList.add('btn-loading');
+            btn.innerText = "AUTHENTICATING...";
+            btn.disabled = true;
+
             try {
                 const response = await fetch('https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email, password: pass })
                 });
+                
                 const data = await response.json();
+                
                 if (data.success) {
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
-                    window.location.href = "../submit/"; 
+                    
+                    if (transitionOverlay) {
+                        transitionOverlay.style.display = 'flex';
+                        setTimeout(() => { transitionOverlay.style.opacity = '1'; }, 10);
+                        setTimeout(() => { window.location.href = "../submit/"; }, 800);
+                    } else {
+                        window.location.href = "../submit/"; 
+                    }
+                    
                 } else {
+                    btn.classList.remove('btn-loading');
+                    btn.innerText = "Unlock Studio";
+                    btn.disabled = false;
                     msg.style.color = "#ff4d4d";
                     msg.innerText = data.error || "Login failed.";
+                    msg.style.display = "block";
                 }
-            } catch (e) { msg.innerText = "Connection error."; }
+            } catch (e) {
+                btn.classList.remove('btn-loading');
+                btn.innerText = "Unlock Studio";
+                btn.disabled = false;
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "Connection error. Check your Make scenario.";
+                msg.style.display = "block";
+            }
         }
 
         function handleSelection(plan) {
@@ -396,10 +443,14 @@
         window.onclick = function(event) {
             const bubble = document.getElementById("contactBubble");
             const contactBtn = document.getElementById("contactBtn");
+            const modal = document.getElementById('loginModal');
+            
             if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target) && event.target !== contactBtn) {
                 bubble.classList.remove('show');
             }
-            if (event.target === document.getElementById('loginModal')) toggleModal();
+            if (event.target === modal) {
+                toggleModal();
+            }
         }
     </script>
 </body>
