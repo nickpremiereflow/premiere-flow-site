@@ -40,12 +40,13 @@
             border-bottom: 1px solid #111;
         }
 
-        /* 1. LOGO: TOP LEFT, VERTICALLY CENTERED */
+        /* 1. LOGO AREA: TOP LEFT, VERTICALLY CENTERED (Logo removed, space preserved for alignment) */
         .header-left { 
             display: flex; 
             align-items: center; 
             height: 100%; 
             z-index: 1001; 
+            min-width: 50px;
         }
         .header-left a {
             display: flex;
@@ -103,7 +104,8 @@
         /* --- HOME PAGE STYLES --- */
         .hero-section { margin-top: calc(var(--header-height) + 40px); padding-top: 0; text-align: center; }
         
-        .hero-logo { height: 40px; border: none; margin-bottom: 30px; }
+        /* Prominent Hero Logo */
+        .hero-logo { height: 90px; max-width: 90%; object-fit: contain; border: none; margin-bottom: 35px; }
 
         .hero-section h1 {
             margin-bottom: 18px; 
@@ -338,8 +340,7 @@
 
     <header class="main-top-header">
         <div class="header-left">
-            <a href="/"><img src="logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
-        </div>
+            </div>
 
         <nav class="header-nav">
             <a href="/" class="nav-link active">Home</a>
