@@ -391,7 +391,6 @@
         let userData = { listings: [], history: [] };
         let stagedFiles = [];
         
-        // --- WEBHOOK CONFIGURATION ---
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
@@ -434,7 +433,6 @@
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('dashboard-footer').style.display = 'block';
                     
-                    // Call second webhook to fetch the "heavy" data
                     fetchDashboardData(email);
                     
                     transitionOverlay.style.opacity = '0';
@@ -459,8 +457,6 @@
                     body: JSON.stringify({ email: email })
                 });
                 const data = await res.json();
-                
-                // Merge data (logo, credits, tier, listings) into the global userData object
                 userData = { ...userData, ...data }; 
                 refreshUI();
             } catch (err) {
@@ -472,7 +468,6 @@
             const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
             document.getElementById('header-email').innerText = currentEmail.toUpperCase();
             
-            // Credits UI Logic
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
             if (isUnlimited) {
                 document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
@@ -482,7 +477,6 @@
 
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
-            // Logo Preview Logic
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
             const selectLogoBtn = document.getElementById('btn-select-logo');
@@ -493,7 +487,6 @@
                 selectLogoBtn.innerText = 'Update Logo';
             }
 
-            // LISTING RENDER LOGIC
             const list = document.getElementById('submissions-list');
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
             
@@ -502,7 +495,18 @@
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // NEW: Improved Gallery Grid Logic for Dropdowns
+                    // --- IMAGE LOGIC FIX ---
+                    const fixGoogleLink = (url) => {
+                        if (!url) return '';
+                        let trimmed = url.trim();
+                        // If it's a standard Google Drive link, convert to LH3 direct preview
+                        if (trimmed.includes('drive.google.com')) {
+                            const id = trimmed.split('id=')[1] || trimmed.split('/d/')[1]?.split('/')[0];
+                            return `https://lh3.googleusercontent.com/d/${id}`;
+                        }
+                        return trimmed;
+                    };
+
                     let originalGallery = '<p style="color:#222; font-size:10px; padding:10px;">No images available</p>';
                     if (item.originals) {
                         const urls = item.originals.split(',').filter(u => u.trim() !== "");
@@ -511,7 +515,7 @@
                                 ${urls.map(url => `
                                     <div class="gallery-item">
                                         <a href="${url.trim()}" target="_blank">
-                                            <img src="${url.trim()}" loading="lazy">
+                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy">
                                         </a>
                                     </div>
                                 `).join('')}
@@ -526,19 +530,18 @@
                                 ${urls.map(url => `
                                     <div class="gallery-item">
                                         <a href="${url.trim()}" target="_blank">
-                                            <img src="${url.trim()}" loading="lazy">
+                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy">
                                         </a>
                                     </div>
                                 `).join('')}
                             </div>`;
                     }
 
-                    // THUMBNAIL LOGIC FIX:
-                    // If the thumbnail field is empty, but we have originals, use the first original as the thumb.
                     let thumbSource = item.thumbnail;
                     if (!thumbSource && item.originals) {
                         thumbSource = item.originals.split(',')[0].trim();
                     }
+                    thumbSource = fixGoogleLink(thumbSource);
 
                     return `
                     <div class="listing-card">
@@ -546,7 +549,7 @@
                             <div class="listing-info-left">
                                 ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
-                                    <p class="listing-title">${item.vehicle || item.name || 'Listing'}</p>
+                                    <p class="listing-title">${(item.vehicle || item.name || 'Listing').toUpperCase()}</p>
                                     <span class="listing-date">Submitted: ${item.date || '---'}</span>
                                 </div>
                             </div>
@@ -572,7 +575,6 @@
             }
         }
 
-        // --- CORE FUNCTIONALITY ---
         function toggleAccordion(id) {
             const panel = document.getElementById(id);
             panel.style.display = (panel.style.display === "none") ? "block" : "none";
@@ -616,7 +618,6 @@
 
         function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
-        // --- FORM SUBMISSIONS ---
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
@@ -634,7 +635,6 @@
                 stagedFiles = []; renderGallery();
                 btn.classList.remove('btn-loading');
                 showTab('dashboard');
-                // Refresh data to update credits
                 fetchDashboardData(localStorage.getItem('pf_email'));
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
@@ -661,7 +661,6 @@
             } catch (err) { btn.classList.remove('btn-loading'); alert("Connection error."); }
         });
 
-        // --- PROFILE LOGO UPLOAD ---
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -693,7 +692,6 @@
             } catch (err) { btn.classList.remove('btn-loading'); }
         }
 
-        // --- FOOTER/CONTACT HELPERS ---
         function toggleContact(event) {
             event.stopPropagation();
             document.getElementById("contactBubble").classList.toggle("show");
