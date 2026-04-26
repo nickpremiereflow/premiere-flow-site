@@ -502,7 +502,7 @@
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // --- IMAGE LOGIC FIX (WITH CORRECT TEMPLATE LITERAL) ---
+                    // --- UPDATED DIRECT DRIVE LINK LOGIC ---
                     const fixGoogleLink = (url) => {
                         if (!url) return '';
                         let trimmed = url.trim();
@@ -510,7 +510,7 @@
                         if (trimmed.includes('drive.google.com')) {
                             const id = trimmed.split('id=')[1] || trimmed.split('/d/')[1]?.split('/')[0];
                             if (id) {
-                                return `https://lh3.googleusercontent.com/d/${id}=s1000`;
+                                return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
                             }
                         }
                         return trimmed;
