@@ -502,7 +502,7 @@
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // NEW: Gallery Grid Logic for Dropdowns
+                    // NEW: Improved Gallery Grid Logic for Dropdowns
                     let originalGallery = '<p style="color:#222; font-size:10px; padding:10px;">No images available</p>';
                     if (item.originals) {
                         const urls = item.originals.split(',').filter(u => u.trim() !== "");
@@ -533,11 +533,18 @@
                             </div>`;
                     }
 
+                    // THUMBNAIL LOGIC FIX:
+                    // If the thumbnail field is empty, but we have originals, use the first original as the thumb.
+                    let thumbSource = item.thumbnail;
+                    if (!thumbSource && item.originals) {
+                        thumbSource = item.originals.split(',')[0].trim();
+                    }
+
                     return `
                     <div class="listing-card">
                         <div class="listing-main-row">
                             <div class="listing-info-left">
-                                ${item.thumbnail ? `<img src="${item.thumbnail}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
+                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
                                     <p class="listing-title">${item.vehicle || item.name || 'Listing'}</p>
                                     <span class="listing-date">Submitted: ${item.date || '---'}</span>
