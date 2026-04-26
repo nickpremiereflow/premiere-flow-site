@@ -36,7 +36,6 @@
             justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        /* 1. LOGO: TOP LEFT, VERTICALLY CENTERED */
         .header-left { 
             display: flex; 
             align-items: center; 
@@ -49,7 +48,6 @@
         .logo-img { height: 22px; border: none; transition: 0.3s; }
         .logo-img:hover { opacity: 0.7; }
 
-        /* 2. NAV: MATHEMATICALLY CENTERED */
         .header-nav { 
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
             display: none; gap: 30px; align-items: center;
@@ -61,7 +59,6 @@
         }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
-        /* CONTACT ALIGNMENT FIX */
         .contact-wrapper { 
             display: flex; 
             align-items: center; 
@@ -79,7 +76,6 @@
         .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
         .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-        /* 3. AUTH: TOP RIGHT */
         .header-right { 
             display: flex; align-items: center; gap: 15px; height: 100%; z-index: 1001; 
         }
@@ -89,7 +85,7 @@
         .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; }
         .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; }
 
-        /* --- DASHBOARD TAB MENU (BELOW HEADER) --- */
+        /* --- DASHBOARD TAB MENU --- */
         .dash-menu {
             display: flex; justify-content: center; gap: 45px;
             margin-bottom: 45px; border-bottom: 1px solid #111;
@@ -104,7 +100,6 @@
         #app-container { margin-top: 120px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* DASHBOARD COMPONENTS */
         .view-section { display: none; }
         .view-section.active { display: block; }
         .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
@@ -117,7 +112,6 @@
             width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; 
         }
         
-        /* Forces dropdown to exact size of adjacent input */
         select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -166,16 +160,15 @@
         .remove-thumb { position: absolute; top: 4px; right: 4px; background: rgba(255, 77, 77, 0.95); color: white; border: none; border-radius: 5px; width: 22px; height: 22px; font-size: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .btn-loading { pointer-events: none; opacity: 0.9; }
-        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; animation: loadingBarSlide 1.5s infinite; }
-        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(350%); width: 30%; } }
 
         /* OVERLAYS */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s; }
-        .pulse-logo { animation: pulse 2s infinite; }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
-        /* --- VISIBLE FOOTER --- */
         footer { 
             margin-top: 40px; 
             padding: 40px 20px; 
@@ -194,16 +187,8 @@
             margin: 0;
         }
 
-        /* --- MOBILE MENU STYLES --- */
         .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 0 0 15px;
-            line-height: 1;
+            display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1;
         }
 
         @media (max-width: 768px) {
@@ -212,32 +197,13 @@
             .mobile-only-btn { display: block; flex: 1; }
             .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
             .listing-status-right { width: 100%; justify-content: space-between; }
-            
-            .header-nav { 
-                display: none !important; /* Hidden by default on mobile */
-                position: fixed; 
-                top: 75px; 
-                left: 0; 
-                width: 100%; 
-                background: rgba(0,0,0,0.98); 
-                backdrop-filter: blur(15px);
-                flex-direction: column; 
-                padding: 30px 0; 
-                gap: 25px; 
-                border-bottom: 1px solid #111;
-                z-index: 999;
-                transform: none; 
-            }
-            
-            .header-nav.mobile-active {
-                display: flex !important;
-            }
+            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; }
+            .header-nav.mobile-active { display: flex !important; }
         }
 
         @media (min-width: 768px) {
             .header-nav { display: flex; }
             .split-row { flex-direction: row; }
-            /* Dash menu flex wrap for smaller desktop widths to prevent squishing */
             .dash-menu { flex-wrap: wrap; gap: 30px; }
         }
     </style>
@@ -349,19 +315,19 @@
                     <h3>Contact Support</h3>
                     <form id="support-form">
                         <div class="form-group">
-                            <label>Subject (INPUT)</label>
-                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my recent listing">
+                            <label>Subject</label>
+                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my listing">
                         </div>
                         <div class="form-group">
-                            <label>Inquiry (INPUT)</label>
-                            <textarea id="sup-inquiry" required placeholder="How can we help you today?" style="min-height: 120px; resize: vertical;"></textarea>
+                            <label>Inquiry</label>
+                            <textarea id="sup-inquiry" required placeholder="How can we help you?" style="min-height: 120px; resize: vertical;"></textarea>
                         </div>
                         <button type="submit" id="support-submit-btn" class="btn-main btn-gold">Send Message</button>
                     </form>
                 </div>
                 <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;">
                     <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3>
-                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible regarding your inquiry.</p>
+                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible.</p>
                     <button class="btn-split" onclick="resetSupportTab()" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
                 </div>
             </div>
@@ -383,20 +349,18 @@
                         <div style="text-align: center; margin: 20px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
                         <label>Direct Photo Upload (Max 10)</label>
                         <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-                            <button type="button" id="btn-camera-upload" class="btn-split mobile-only-btn" onclick="document.getElementById('f-camera').click()">📷 Camera</button>
                             <button type="button" class="btn-split" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
                         </div>
                         <div id="staging-gallery"></div>
-                        <input type="file" id="f-camera" accept="image/*" capture="environment" style="display: none;" onchange="stageFiles(this)">
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
                     <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label>Showroom Wall Color (INPUT)</label>
+                            <label>Showroom Wall Color</label>
                             <input type="text" id="f-color" placeholder="e.g. White (Default)">
                         </div>
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label id="logo-label-text">Logo Placement (SELECT)</label>
+                            <label id="logo-label-text">Logo Placement</label>
                             <select id="f-logo">
                                 <option value="Bottom Left" selected>Bottom Left</option>
                                 <option value="Bottom Right">Bottom Right</option>
@@ -418,10 +382,13 @@
     </footer>
 
     <script>
-        let userData = { history: [] };
+        let userData = { listings: [], history: [] };
         let stagedFiles = [];
-        const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
         
+        // --- WEBHOOK CONFIGURATION ---
+        const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
+        const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
+
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             const savedPass = localStorage.getItem('pf_pass');
@@ -448,18 +415,22 @@
                 const res = await fetch(loginWebhook, {
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email: email, password: pass, page: 1 })
+                    body: JSON.stringify({ email: email, password: pass })
                 });
                 const data = await res.json();
+                
                 if (data.success) {
-                    userData = data;
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
+                    
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('main-header').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'block';
                     document.getElementById('dashboard-footer').style.display = 'block';
-                    refreshUI();
+                    
+                    // Call second webhook to fetch the "heavy" data
+                    fetchDashboardData(email);
+                    
                     transitionOverlay.style.opacity = '0';
                     setTimeout(() => { transitionOverlay.style.display = 'none'; }, 800);
                 } else {
@@ -474,98 +445,90 @@
             }
         }
 
-        function signOut() {
-            localStorage.removeItem('pf_email');
-            localStorage.removeItem('pf_pass');
-            window.location.reload(); 
-        }
-
-        function toggleMobileMenu() {
-            const nav = document.querySelector('.header-nav');
-            nav.classList.toggle('mobile-active');
+        async function fetchDashboardData(email) {
+            try {
+                const res = await fetch(dataFetchWebhook, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                
+                // Merge data (logo, credits, tier, listings) into the global userData object
+                userData = { ...userData, ...data }; 
+                refreshUI();
+            } catch (err) {
+                console.error("Dashboard data load failed", err);
+            }
         }
 
         function refreshUI() {
-            document.getElementById('header-email').innerText = (userData.email || 'Authorized').toUpperCase();
+            const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
+            document.getElementById('header-email').innerText = currentEmail.toUpperCase();
             
-            // Dynamic logic for Unlimited vs Numeric Listings Remaining
-            if ((userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED') {
+            // Credits UI Logic
+            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
+            if (isUnlimited) {
                 document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
             } else {
                 document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' LISTINGS REMAINING';
             }
 
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
+            
+            // Logo Preview Logic
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
-            const logoSelect = document.getElementById('f-logo');
-            const logoLabel = document.getElementById('logo-label-text');
             const selectLogoBtn = document.getElementById('btn-select-logo');
-
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
-                logoSelect.disabled = false;
-                logoLabel.innerHTML = 'Logo Placement (SELECT)';
                 selectLogoBtn.innerText = 'Update Logo';
-            } else {
-                logoSelect.value = 'No Logo';
-                logoSelect.disabled = true;
-                logoLabel.innerHTML = 'Logo Placement (SELECT) <span style="color: #ff4d4d; font-size: 8px;">*SET IN PROFILE</span>';
-                selectLogoBtn.innerText = 'Upload Logo';
             }
 
-            // DYNAMIC LISTING RENDER LOGIC
+            // LISTING RENDER LOGIC
             const list = document.getElementById('submissions-list');
-            const validHistory = (userData.history || []).filter(item => item && (item.vehicle || item.name || item.vehicleName));
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
             
             if(validHistory.length > 0) {
                 list.innerHTML = validHistory.map((item, idx) => {
-                    const thumb = item.thumbnail || '';
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // Logic to format display badge
-                    let badgeClass = 'status-progress';
-                    let badgeText = 'IN PROGRESS';
-                    let btnClass = 'disabled';
-                    let btnText = 'PROCESSING';
-                    let accClass = 'disabled';
-
-                    if (isComplete) {
-                        badgeClass = 'status-completed';
-                        badgeText = 'COMPLETED';
-                        btnClass = 'active';
-                        btnText = 'DOWNLOAD ASSETS';
-                        accClass = '';
+                    // Image Links in Dropdown
+                    let originalLinks = '<li>No images available</li>';
+                    if (item.originals) {
+                        const urls = item.originals.split(',');
+                        originalLinks = urls.map((url, i) => 
+                            `<li style="margin-bottom:8px;"><a href="${url.trim()}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:11px; font-weight:700;">PHOTO ${i+1} ↗</a></li>`
+                        ).join('');
                     }
 
                     return `
                     <div class="listing-card">
                         <div class="listing-main-row">
                             <div class="listing-info-left">
-                                ${thumb ? `<img src="${thumb}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
+                                ${item.thumbnail ? `<img src="${item.thumbnail}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
-                                    <p class="listing-title">${item.vehicle || item.name || item.vehicleName || 'Listing'}</p>
-                                    <span class="listing-date">Submitted: ${item.date || 'Active'}</span>
+                                    <p class="listing-title">${item.vehicle || item.name || 'Listing'}</p>
+                                    <span class="listing-date">Submitted: ${item.date || '---'}</span>
                                 </div>
                             </div>
                             <div class="listing-status-right">
-                                <span class="status-badge ${badgeClass}">${badgeText}</span>
-                                <button class="btn-download ${btnClass}" onclick="${isComplete ? `downloadListing('${item.id || idx}')` : ''}">${btnText}</button>
+                                <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span>
+                                <button class="btn-download ${isComplete ? 'active' : 'disabled'}">${isComplete ? 'DOWNLOAD' : 'PROCESSING'}</button>
                             </div>
                         </div>
                         <div class="listing-accordion-row">
-                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Images ▾</button>
-                            <button class="accordion-btn ${accClass}" onclick="${isComplete ? `toggleAccordion('upgraded-${idx}')` : ''}">Upgraded Images ▾</button>
+                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Assets ▾</button>
+                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged Assets ▾</button>
                         </div>
-                        
-                        <div id="uploaded-${idx}" style="display: none; padding: 20px; background: #050505; border-top: 1px solid #111;">
-                            <p style="font-size: 11px; color: #666; margin: 0; text-align: center;">Original images will render here.</p>
+                        <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
+                             <ul style="list-style:none; padding:0; margin:0;">${originalLinks}</ul>
                         </div>
-                        <div id="upgraded-${idx}" style="display: none; padding: 20px; background: #050505; border-top: 1px solid #111;">
-                            <p style="font-size: 11px; color: var(--accent-gold); margin: 0; text-align: center;">Final upgraded images will render here.</p>
+                        <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
+                            <p style="font-size: 11px; color: var(--accent-gold); text-align: center;">Final staged assets will appear here.</p>
                         </div>
                     </div>`;
                 }).join('');
@@ -574,20 +537,16 @@
             }
         }
 
-        // Accordion Toggle Logic
+        // --- CORE FUNCTIONALITY ---
         function toggleAccordion(id) {
             const panel = document.getElementById(id);
-            if (panel.style.display === "none") {
-                panel.style.display = "block";
-            } else {
-                panel.style.display = "none";
-            }
+            panel.style.display = (panel.style.display === "none") ? "block" : "none";
         }
 
-        // Download Action Logic Placeholder
-        function downloadListing(id) {
-            alert("Triggering download for listing ID: " + id);
-            // Add your specific file download or zip generation logic here based on your Make.com return payload
+        function signOut() {
+            localStorage.removeItem('pf_email');
+            localStorage.removeItem('pf_pass');
+            window.location.reload(); 
         }
 
         function showTab(t) {
@@ -599,22 +558,11 @@
             window.scrollTo(0,0);
         }
 
-        function resetSupportTab() {
-            showTab('dashboard');
-            document.getElementById('support-confirmation').style.display='none'; 
-            document.getElementById('support-form-container').style.display='block'; 
-            document.getElementById('support-form').reset();
+        function toggleMobileMenu() {
+            document.querySelector('.header-nav').classList.toggle('mobile-active');
         }
 
-        function openSubmit() {
-            // Check to ensure they either have unlimited or credits > 0
-            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
-            if(!isUnlimited && (isNaN(userData.credits) || userData.credits <= 0)) { 
-                alert("INSUFFICIENT LISTINGS REMAINING."); 
-                return; 
-            }
-            showTab('submit');
-        }
+        function openSubmit() { showTab('submit'); }
 
         function stageFiles(input) {
             const incoming = Array.from(input.files);
@@ -633,6 +581,7 @@
 
         function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
+        // --- FORM SUBMISSIONS ---
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
@@ -650,41 +599,34 @@
                 stagedFiles = []; renderGallery();
                 btn.classList.remove('btn-loading');
                 showTab('dashboard');
-                // You may want to fetch updated userData here to update credits count
-                refreshUI();
+                // Refresh data to update credits
+                fetchDashboardData(localStorage.getItem('pf_email'));
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
 
-        // --- NEW SUPPORT FORM SUBMISSION LOGIC ---
         document.getElementById('support-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('support-submit-btn');
             btn.classList.add('btn-loading');
-
             const payload = {
                 accountId: userData.accountId || userData.accountID,
-                email: userData.email,
+                email: localStorage.getItem('pf_email'),
                 subject: document.getElementById('sup-subject').value.trim(),
                 inquiry: document.getElementById('sup-inquiry').value.trim()
             };
-
             try {
-                // REPLACE THIS URL with your new Support Webhook from Make.com
                 await fetch('https://hook.us2.make.com/nywbhvlk1rnd96ff77g6oqyifiugbbch', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
-                
                 btn.classList.remove('btn-loading');
                 document.getElementById('support-form-container').style.display = 'none';
                 document.getElementById('support-confirmation').style.display = 'block';
-            } catch (err) {
-                btn.classList.remove('btn-loading');
-                alert("Connection error. Please try again.");
-            }
+            } catch (err) { btn.classList.remove('btn-loading'); alert("Connection error."); }
         });
 
+        // --- PROFILE LOGO UPLOAD ---
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -716,6 +658,7 @@
             } catch (err) { btn.classList.remove('btn-loading'); }
         }
 
+        // --- FOOTER/CONTACT HELPERS ---
         function toggleContact(event) {
             event.stopPropagation();
             document.getElementById("contactBubble").classList.toggle("show");
