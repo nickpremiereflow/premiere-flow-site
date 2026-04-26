@@ -495,7 +495,7 @@
 
             // LISTING RENDER LOGIC
             const list = document.getElementById('submissions-list');
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
             
             if(validHistory.length > 0) {
                 list.innerHTML = validHistory.map((item, idx) => {
