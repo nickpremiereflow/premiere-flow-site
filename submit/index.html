@@ -154,6 +154,12 @@
         .accordion-btn:first-child { border-right: 1px solid #111; }
         .accordion-btn.disabled { opacity: 0.3; pointer-events: none; }
 
+        /* GALLERY GRID STYLES */
+        .listing-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
+        .gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #000; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
+        .gallery-item img:hover { opacity: 0.7; }
+
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
@@ -496,13 +502,35 @@
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // Image Links in Dropdown
-                    let originalLinks = '<li>No images available</li>';
+                    // NEW: Gallery Grid Logic for Dropdowns
+                    let originalGallery = '<p style="color:#222; font-size:10px; padding:10px;">No images available</p>';
                     if (item.originals) {
-                        const urls = item.originals.split(',');
-                        originalLinks = urls.map((url, i) => 
-                            `<li style="margin-bottom:8px;"><a href="${url.trim()}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:11px; font-weight:700;">PHOTO ${i+1} ↗</a></li>`
-                        ).join('');
+                        const urls = item.originals.split(',').filter(u => u.trim() !== "");
+                        originalGallery = `
+                            <div class="listing-gallery">
+                                ${urls.map(url => `
+                                    <div class="gallery-item">
+                                        <a href="${url.trim()}" target="_blank">
+                                            <img src="${url.trim()}" loading="lazy">
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>`;
+                    }
+
+                    let stagedGallery = '<p style="font-size: 11px; color: #333; text-align: center;">Final staged assets will appear here once processing is complete.</p>';
+                    if (item.staged && isComplete) {
+                        const urls = item.staged.split(',').filter(u => u.trim() !== "");
+                        stagedGallery = `
+                            <div class="listing-gallery">
+                                ${urls.map(url => `
+                                    <div class="gallery-item">
+                                        <a href="${url.trim()}" target="_blank">
+                                            <img src="${url.trim()}" loading="lazy">
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>`;
                     }
 
                     return `
@@ -525,10 +553,10 @@
                             <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged Assets ▾</button>
                         </div>
                         <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                             <ul style="list-style:none; padding:0; margin:0;">${originalLinks}</ul>
+                             ${originalGallery}
                         </div>
                         <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            <p style="font-size: 11px; color: var(--accent-gold); text-align: center;">Final staged assets will appear here.</p>
+                            ${stagedGallery}
                         </div>
                     </div>`;
                 }).join('');
