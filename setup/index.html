@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Setup | Premiere Flow</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* PASSWORD METER STYLES */
+        .pwd-meter-container { width: 100%; height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 15px; overflow: hidden; }
+        .pwd-meter-fill { height: 100%; width: 0%; background: #ff4d4d; transition: width 0.3s ease, background-color 0.3s ease; }
+        .pwd-criteria { font-size: 9px; color: #666; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        .crit-item { transition: color 0.3s; }
+        .crit-pass { color: #c5a059; font-weight: 900; }
+        .crit-fail { color: #555; }
+        
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
 </head>
 <body class="login-body">
     <div class="setup-container" style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #000;">
@@ -13,40 +24,79 @@
             <h2 style="color: #fff; margin-bottom: 10px; font-family: sans-serif;">Set Your Password</h2>
             <p style="color: #888; font-size: 13px; margin-bottom: 25px; font-family: sans-serif;">Secure your studio access below.</p>
             
-            <input type="password" id="pass1" placeholder="New Password" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="pass1" placeholder="New Password" onkeyup="checkPasswordStrength(this.value)" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            
+            <div class="pwd-meter-container">
+                <div class="pwd-meter-fill" id="pwd-fill"></div>
+            </div>
+            <div class="pwd-criteria" style="margin-bottom: 15px;">
+                <span class="crit-item crit-fail" id="crit-len">8+ Chars</span>
+                <span class="crit-item crit-fail" id="crit-up">1 Upper</span>
+                <span class="crit-item crit-fail" id="crit-num">1 Num/Sym</span>
+            </div>
+
             <input type="password" id="pass2" placeholder="Confirm Password" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
             
-            <button class="btn-main" onclick="submitSetup()" style="width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px; font-family: sans-serif;">Finish Setup</button>
+            <button class="btn-main" id="submit-btn" onclick="submitSetup()" style="width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px; font-family: sans-serif;">Finish Setup</button>
             
-            <p id="msg" style="margin-top: 20px; font-size: 14px; color: #fff; font-family: sans-serif;"></p>
+            <p id="msg" style="margin-top: 20px; font-size: 12px; font-weight: 700; color: #fff; font-family: sans-serif; text-transform: uppercase;"></p>
         </div>
     </div>
 
     <script>
+        let isPassStrong = false;
+
+        function checkPasswordStrength(val) {
+            const lenPass = val.length >= 8;
+            const upPass = /[A-Z]/.test(val);
+            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(val);
+
+            document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
+            document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
+            document.getElementById('crit-num').className = `crit-item ${numSymPass ? 'crit-pass' : 'crit-fail'}`;
+
+            let score = 0;
+            if(lenPass) score++;
+            if(upPass) score++;
+            if(numSymPass) score++;
+
+            isPassStrong = (score === 3);
+            const fill = document.getElementById('pwd-fill');
+            
+            fill.style.width = (score / 3 * 100) + '%';
+            if (score === 0) fill.style.width = '0%';
+            else if (score === 1) fill.style.backgroundColor = '#ff4d4d'; // Red
+            else if (score === 2) fill.style.backgroundColor = '#ffa64d'; // Orange
+            else if (score === 3) fill.style.backgroundColor = '#c5a059'; // Gold
+        }
+
         async function submitSetup() {
             const p1 = document.getElementById('pass1').value;
             const p2 = document.getElementById('pass2').value;
             const msg = document.getElementById('msg');
+            const btn = document.getElementById('submit-btn');
             const token = new URLSearchParams(window.location.search).get('token');
 
             if (!token) { 
                 msg.style.color = "#ff4d4d";
-                msg.innerText = "Error: Invalid or missing token."; 
+                msg.innerText = "ERROR: INVALID OR MISSING TOKEN."; 
+                return; 
+            }
+            if (!isPassStrong) { 
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "PLEASE MEET ALL PASSWORD REQUIREMENTS."; 
                 return; 
             }
             if (p1 !== p2) { 
                 msg.style.color = "#ff4d4d";
-                msg.innerText = "Passwords do not match."; 
-                return; 
-            }
-            if (p1.length < 6) { 
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "Password must be at least 6 characters."; 
+                msg.innerText = "PASSWORDS DO NOT MATCH."; 
                 return; 
             }
 
-            msg.style.color = "#fff";
-            msg.innerText = "Securing account...";
+            msg.style.color = "#888";
+            msg.innerText = "SECURING ACCOUNT...";
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
             
             try {
                 const response = await fetch('https://hook.us2.make.com/8pvhkw9cjs4bf1ruvo0ftr3xapf020u4', {
@@ -59,17 +109,21 @@
                 });
 
                 if (response.ok) {
-                    msg.innerHTML = "<span style='color: #4bb543;'>Success! Redirecting to login...</span>";
+                    msg.innerHTML = "<span style='color: #c5a059;'>SUCCESS! REDIRECTING TO LOGIN...</span>";
                     setTimeout(() => {
                         window.location.href = "https://premiereflow.com";
                     }, 3000);
                 } else {
+                    btn.disabled = false;
+                    btn.innerText = "Finish Setup";
                     msg.style.color = "#ff4d4d";
-                    msg.innerText = "Error: Link expired or invalid.";
+                    msg.innerText = "ERROR: LINK EXPIRED OR INVALID.";
                 }
             } catch (err) { 
+                btn.disabled = false;
+                btn.innerText = "Finish Setup";
                 msg.style.color = "#ff4d4d";
-                msg.innerText = "Connection error. Please try again."; 
+                msg.innerText = "CONNECTION ERROR. PLEASE TRY AGAIN."; 
             }
         }
     </script>
