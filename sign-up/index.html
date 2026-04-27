@@ -149,6 +149,45 @@
         .btn-login { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #555; cursor: pointer; font-size: 20px; }
 
+        /* LUXURY PROGRESS BAR ANIMATION */
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.9;
+            color: transparent !important;
+        }
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 30%;
+            background: #000;
+            border-radius: 4px;
+            animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes loadingBarSlide {
+            0% { transform: translateX(-100%); width: 30%; }
+            50% { width: 50%; }
+            100% { transform: translateX(350%); width: 30%; }
+        }
+
+        /* NEW WHITE TRANSITION OVERLAY */
+        #transition-overlay { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: #ffffff; 
+            z-index: 3000; 
+            display: none; 
+            opacity: 0;
+            align-items: center; 
+            justify-content: center; 
+            transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); 
+        }
+        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
+
         /* --- VISIBLE FOOTER --- */
         footer { 
             margin-top: 40px; 
@@ -214,6 +253,10 @@
     </style>
 </head>
 <body>
+
+    <div id="transition-overlay">
+        <img src="../logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
+    </div>
 
     <header class="main-top-header">
         <div class="header-left">
@@ -321,11 +364,16 @@
     <div id="loginModal" class="modal-overlay">
         <div class="login-card">
             <span class="close-modal" onclick="toggleModal()">×</span>
-            <img src="../logo.png" style="width: 120px; margin-bottom: 20px;">
+            <img src="https://premiereflow.com/logo.png" style="width: 120px; margin-bottom: 20px;">
             <h2 style="color: #fff; font-size: 1.2rem; margin-bottom: 20px;">Partner Login</h2>
             <input type="email" id="log-email" placeholder="Email Address">
             <input type="password" id="log-pass" placeholder="Password">
             <button class="btn-login" onclick="portalAuth()">Unlock Studio</button>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/submit/" onclick="localStorage.clear();" style="color: #c5a059; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: 0.3s;">Forgot Password?</a>
+            </div>
+
             <p id="log-msg" style="margin-top: 15px; font-size: 12px; color: #ff4d4d;"></p>
         </div>
     </div>
@@ -395,6 +443,7 @@
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
                     
+                    // Trigger the white fade out before redirecting
                     if (transitionOverlay) {
                         transitionOverlay.style.display = 'flex';
                         setTimeout(() => { transitionOverlay.style.opacity = '1'; }, 10);
