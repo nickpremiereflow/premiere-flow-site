@@ -45,7 +45,7 @@
         @keyframes loadingBarSlide { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(350%); width: 30%; } }
 
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 0; visibility: hidden; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
 
@@ -94,7 +94,7 @@
             </div>
 
             <div id="ui-reset" style="display: none;">
-                <p style="font-size: 12px; color: var(--accent-gold); margin-bottom: 25px; line-height: 1.5; font-weight: 900;">Code sent! Check your inbox.</p>
+                <p id="reset-status-msg" style="font-size: 12px; color: var(--accent-gold); margin-bottom: 25px; line-height: 1.5; font-weight: 900;">Code sent! Check your inbox.</p>
                 <div class="form-group">
                     <label>6-Digit Code</label>
                     <input type="text" id="reset-code" placeholder="_ _ _ _ _ _" maxlength="6" oninput="validateResetForm()" style="text-align: center; letter-spacing: 5px; font-size: 20px; font-weight: 900;">
@@ -115,7 +115,7 @@
                     <input type="password" id="confirm-password" placeholder="Confirm new password" oninput="validateResetForm()">
                 </div>
                 <button class="btn-main btn-gold" id="btn-verify-reset" disabled onclick="submitNewPassword()">Update Password</button>
-                <button class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">Cancel</button>
+                <button id="cancel-reset-link" class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">Cancel</button>
             </div>
 
             <p id="auth-error" style="color: #ff4d4d; font-size: 12px; margin-top: 25px; display: none; font-weight: 700;"></p>
@@ -125,7 +125,6 @@
     <script>
         let isPassStrong = false;
         
-        // --- WEBHOOK CONFIGURATION ---
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
         const resetRequestWebhook = 'https://hook.us2.make.com/3gh3awd4o6wsajv1vuso8ue765l8bzs3';
         const resetVerifyWebhook = 'https://hook.us2.make.com/0qqm7s3zsceqatg9sbyato6luir0s7rk';
@@ -136,16 +135,10 @@
             const urlParams = new URLSearchParams(window.location.search);
             const hash = window.location.hash;
 
-            // Check if they are supposed to see the forgot tab
             if (urlParams.get('view') === 'forgot' || hash === '#forgot') {
                 toggleAuthUI('forgot');
-                document.getElementById('transition-overlay').style.display = 'none';
-            } 
-            // If they are already logged in locally, route them straight to dashboard
-            else if (savedEmail && savedPass) {
+            } else if (savedEmail && savedPass) {
                 window.location.href = '/dashboard/';
-            } else {
-                document.getElementById('transition-overlay').style.display = 'none';
             }
         };
 
@@ -230,6 +223,8 @@
             const confirmPass = document.getElementById('confirm-password').value;
             const error = document.getElementById('auth-error');
             const btn = document.getElementById('btn-verify-reset');
+            const statusMsg = document.getElementById('reset-status-msg');
+            const cancelBtn = document.getElementById('cancel-reset-link');
 
             if(!code || !isPassStrong || newPass !== confirmPass) {
                 error.innerText = "PLEASE MEET ALL PASSWORD REQUIREMENTS.";
@@ -246,14 +241,27 @@
                     body: JSON.stringify({ email: email, code: code, newPassword: newPass, confirmPassword: confirmPass })
                 });
                 const data = await res.json();
-                btn.classList.remove('btn-loading');
-
+                
                 if(data.success) {
-                    document.getElementById('login-email').value = email;
-                    document.getElementById('login-password').value = newPass;
-                    toggleAuthUI('login');
-                    portalAuth();
+                    // Update visual state immediately
+                    statusMsg.innerText = "PASSWORD UPDATED. REDIRECTING...";
+                    statusMsg.style.color = "var(--accent-gold)";
+                    btn.style.display = "none";
+                    cancelBtn.style.display = "none";
+                    
+                    localStorage.setItem('pf_email', email);
+                    localStorage.setItem('pf_pass', newPass);
+
+                    // Show the transition overlay
+                    const overlay = document.getElementById('transition-overlay');
+                    overlay.style.visibility = 'visible';
+                    overlay.style.display = 'flex';
+                    setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+                    
+                    // Final move to dashboard
+                    setTimeout(() => { window.location.href = '/dashboard/'; }, 800);
                 } else {
+                    btn.classList.remove('btn-loading');
                     error.innerText = "INVALID OR EXPIRED CODE.";
                     error.style.display = 'block';
                 }
@@ -271,7 +279,8 @@
             const transitionOverlay = document.getElementById('transition-overlay');
             if(!email || !pass) return;
 
-            transitionOverlay.style.display = 'flex';
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.classList.add('btn-loading');
             error.style.display = 'none';
             
             try {
@@ -286,19 +295,18 @@
                     localStorage.setItem('pf_email', email);
                     localStorage.setItem('pf_pass', pass);
                     
-                    transitionOverlay.style.opacity = '1';
+                    transitionOverlay.style.visibility = 'visible';
+                    transitionOverlay.style.display = 'flex';
+                    setTimeout(() => { transitionOverlay.style.opacity = '1'; }, 10);
                     
-                    // Redirect to the new dashboard page
-                    setTimeout(() => { 
-                        window.location.href = '/dashboard/'; 
-                    }, 500);
+                    setTimeout(() => { window.location.href = '/dashboard/'; }, 800);
                 } else {
-                    transitionOverlay.style.display = 'none';
+                    loginBtn.classList.remove('btn-loading');
                     error.innerText = "INVALID CREDENTIALS.";
                     error.style.display = 'block';
                 }
             } catch (err) {
-                transitionOverlay.style.display = 'none';
+                loginBtn.classList.remove('btn-loading');
                 error.innerText = "CONNECTION ERROR.";
                 error.style.display = 'block';
             }
