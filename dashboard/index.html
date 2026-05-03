@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Account Dashboard | Premiere Flow</title>
     
+    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <style>
@@ -125,6 +126,10 @@
         .footer-copyright { color: #ffffff; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
 
         .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; }
+
+        /* NEW THREE-DOT MENU STYLES */
+        .listing-menu-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; }
+        .listing-menu-btn:hover { color: var(--accent-gold); }
 
         @media (max-width: 768px) {
             header { padding: 0 20px; }
@@ -255,8 +260,8 @@
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
-                        <label>Vehicle Name (Year Make Model)</label>
-                        <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4">
+                        <label>Vehicle Name (Year Make Model) or VIN</label>
+                        <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4 or KNDM24AH6P7XXXXXX">
                     </div>
                     <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a;">
                         <label>Asset URL</label>
@@ -299,25 +304,14 @@
     <script>
         let userData = { listings: [], history: [] };
         let stagedFiles = [];
-        
-        // --- WEBHOOK CONFIGURATION ---
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             const savedPass = localStorage.getItem('pf_pass');
-            
-            // SECURITY CHECK: If no credentials exist, boot them to login immediately
-            if (!savedEmail || !savedPass) {
-                window.location.href = '/login/';
-                return;
-            }
-
-            // If verified, show the body and fetch data
+            if (!savedEmail || !savedPass) { window.location.href = '/login/'; return; }
             document.body.style.display = 'block';
             fetchDashboardData(savedEmail);
-            
-            // Fade out transition overlay
             setTimeout(() => { 
                 document.getElementById('transition-overlay').style.opacity = '0';
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
@@ -332,12 +326,9 @@
                     body: JSON.stringify({ email: email })
                 });
                 const data = await res.json();
-                
                 userData = { ...userData, ...data }; 
                 refreshUI();
-            } catch (err) {
-                console.error("Dashboard data load failed", err);
-            }
+            } catch (err) { console.error("Dashboard data load failed", err); }
         }
 
         function refreshUI() {
@@ -363,6 +354,10 @@
                 selectLogoBtn.innerText = 'Update Logo';
             }
 
+            renderSubmissions();
+        }
+
+        function renderSubmissions() {
             const list = document.getElementById('submissions-list');
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
             
@@ -376,9 +371,7 @@
                         let trimmed = url.trim();
                         if (trimmed.includes('drive.google.com')) {
                             const id = trimmed.split('id=')[1] || trimmed.split('/d/')[1]?.split('/')[0];
-                            if (id) {
-                                return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
-                            }
+                            if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
                         }
                         return trimmed;
                     };
@@ -386,38 +379,18 @@
                     let originalGallery = '<p style="color:#222; font-size:10px; padding:10px;">No images available</p>';
                     if (item.originals) {
                         const urls = item.originals.split(',').filter(u => u.trim() !== "");
-                        originalGallery = `
-                            <div class="listing-gallery">
-                                ${urls.map(url => `
-                                    <div class="gallery-item">
-                                        <a href="${url.trim()}" target="_blank">
-                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </a>
-                                    </div>
-                                `).join('')}
-                            </div>`;
+                        originalGallery = `<div class="listing-gallery">${urls.map(url => `
+                            <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
                     }
 
                     let stagedGallery = '<p style="font-size: 11px; color: #333; text-align: center;">Final staged assets will appear here once processing is complete.</p>';
                     if (item.staged && isComplete) {
                         const urls = item.staged.split(',').filter(u => u.trim() !== "");
-                        stagedGallery = `
-                            <div class="listing-gallery">
-                                ${urls.map(url => `
-                                    <div class="gallery-item">
-                                        <a href="${url.trim()}" target="_blank">
-                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </a>
-                                    </div>
-                                `).join('')}
-                            </div>`;
+                        stagedGallery = `<div class="listing-gallery">${urls.map(url => `
+                            <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
                     }
 
-                    let thumbSource = item.thumbnail;
-                    if (!thumbSource && item.originals) {
-                        thumbSource = item.originals.split(',')[0].trim();
-                    }
-                    thumbSource = fixGoogleLink(thumbSource);
+                    let thumbSource = fixGoogleLink(item.thumbnail || (item.originals ? item.originals.split(',')[0].trim() : ''));
 
                     return `
                     <div class="listing-card">
@@ -425,29 +398,47 @@
                             <div class="listing-info-left">
                                 ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
-                                    <p class="listing-title">${item.vehicle || item.name || 'Listing'}</p>
+                                    <p class="listing-title" id="name-text-${idx}">${item.vehicle || item.name || 'Listing'}</p>
                                     <span class="listing-date">Submitted: ${item.date || '---'}</span>
                                 </div>
                             </div>
                             <div class="listing-status-right">
                                 <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span>
-                                <button class="btn-download ${isComplete ? 'active' : 'disabled'}">${isComplete ? 'DOWNLOAD' : 'PROCESSING'}</button>
+                                <button class="listing-menu-btn" onclick="editListingName(${idx}, '${item.rowId || item.id}')">⋮</button>
                             </div>
                         </div>
                         <div class="listing-accordion-row">
                             <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Assets ▾</button>
                             <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged Assets ▾</button>
                         </div>
-                        <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                             ${originalGallery}
-                        </div>
-                        <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            ${stagedGallery}
-                        </div>
+                        <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${originalGallery}</div>
+                        <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${stagedGallery}</div>
                     </div>`;
                 }).join('');
             } else {
                 list.innerHTML = `<div class="card" style="text-align:center; padding: 50px 20px;"><p style="color: #444; font-size: 11px; text-transform: uppercase; font-weight:800;">No Listings Found</p></div>`;
+            }
+        }
+
+        async function editListingName(index, rowId) {
+            const nameEl = document.getElementById(`name-text-${index}`);
+            const currentName = nameEl.innerText;
+            const newName = prompt("Edit Vehicle Name or VIN:", currentName);
+
+            if (newName && newName !== currentName) {
+                nameEl.innerText = newName.toUpperCase();
+                try {
+                    await fetch(dataFetchWebhook, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'rename_listing',
+                            rowId: rowId,
+                            newName: newName,
+                            email: localStorage.getItem('pf_email')
+                        })
+                    });
+                } catch (err) { console.error("Rename failed", err); }
             }
         }
 
@@ -459,7 +450,6 @@
         function signOut() {
             localStorage.removeItem('pf_email');
             localStorage.removeItem('pf_pass');
-            // Instead of reloading, push them to the login page
             window.location.href = '/login/'; 
         }
 
@@ -472,17 +462,9 @@
             window.scrollTo(0,0);
         }
 
-        function toggleMobileMenu() {
-            document.querySelector('.header-nav').classList.toggle('mobile-active');
-        }
-
+        function toggleMobileMenu() { document.querySelector('.header-nav').classList.toggle('mobile-active'); }
         function openSubmit() { showTab('submit'); }
-
-        function stageFiles(input) {
-            const incoming = Array.from(input.files);
-            incoming.forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); });
-            renderGallery();
-        }
+        function stageFiles(input) { Array.from(input.files).forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); }); renderGallery(); }
 
         function renderGallery() {
             const cont = document.getElementById('staging-gallery');
@@ -516,28 +498,6 @@
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
 
-        document.getElementById('support-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('support-submit-btn');
-            btn.classList.add('btn-loading');
-            const payload = {
-                accountId: userData.accountId || userData.accountID,
-                email: localStorage.getItem('pf_email'),
-                subject: document.getElementById('sup-subject').value.trim(),
-                inquiry: document.getElementById('sup-inquiry').value.trim()
-            };
-            try {
-                await fetch('https://hook.us2.make.com/nywbhvlk1rnd96ff77g6oqyifiugbbch', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                btn.classList.remove('btn-loading');
-                document.getElementById('support-form-container').style.display = 'none';
-                document.getElementById('support-confirmation').style.display = 'block';
-            } catch (err) { btn.classList.remove('btn-loading'); alert("Connection error."); }
-        });
-
         function handleLogoSelect(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -569,24 +529,8 @@
             } catch (err) { btn.classList.remove('btn-loading'); }
         }
 
-        function toggleContact(event) {
-            event.stopPropagation();
-            document.getElementById("contactBubble").classList.toggle("show");
-        }
-
-        function copyEmail() {
-            navigator.clipboard.writeText("info@premiereflow.com");
-            const btn = document.querySelector(".copy-btn");
-            btn.innerText = "DONE";
-            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-        }
-
-        window.onclick = function(event) {
-            const bubble = document.getElementById("contactBubble");
-            if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target)) {
-                bubble.classList.remove('show');
-            }
-        }
+        function toggleContact(event) { event.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); }
+        function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); }
     </script>
 </body>
 </html>
