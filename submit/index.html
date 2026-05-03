@@ -28,6 +28,10 @@
             font-size: 16px; 
         }
 
+        /* PLACEHOLDER STYLES (High-End Ghosting) */
+        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
+        input:focus::placeholder, textarea:focus::placeholder { opacity: 0.1; }
+
         /* --- GLOBAL HEADER (LOCKED AT 75px) --- */
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: 75px;
@@ -123,6 +127,7 @@
         }
 
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; }
         
@@ -221,11 +226,11 @@
             <div id="ui-login">
                 <div class="form-group">
                     <label>Dealer Email</label>
-                    <input type="email" id="login-email" placeholder="name@dealership.com">
+                    <input type="email" id="login-email" placeholder="Enter dealer email">
                 </div>
                 <div class="form-group">
                     <label>Security Key</label>
-                    <input type="password" id="login-password" placeholder="••••••••">
+                    <input type="password" id="login-password" placeholder="Enter security key">
                 </div>
                 <button class="btn-main" id="login-btn" onclick="portalAuth()">Unlock Dashboard</button>
                 <button class="auth-switch-link" onclick="toggleAuthUI('forgot')">Forgot Password?</button>
@@ -235,7 +240,7 @@
                 <p style="font-size: 12px; color: #888; margin-bottom: 25px; line-height: 1.5; font-weight: 700;">Enter your email to receive a 6-digit reset code.</p>
                 <div class="form-group">
                     <label>Account Email</label>
-                    <input type="email" id="reset-email" placeholder="name@dealership.com">
+                    <input type="email" id="reset-email" placeholder="Enter account email">
                 </div>
                 <button class="btn-main btn-gold" id="btn-req-code" onclick="requestCode()">Send Reset Code</button>
                 <button class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">← Back to Login</button>
@@ -245,22 +250,24 @@
                 <p style="font-size: 12px; color: var(--accent-gold); margin-bottom: 25px; line-height: 1.5; font-weight: 900;">Code sent! Check your inbox.</p>
                 <div class="form-group">
                     <label>6-Digit Code</label>
-                    <input type="text" id="reset-code" placeholder="123456" maxlength="6" style="text-align: center; letter-spacing: 5px; font-size: 20px; font-weight: 900;">
+                    <input type="text" id="reset-code" placeholder="_ _ _ _ _ _" maxlength="6" oninput="validateResetForm()" style="text-align: center; letter-spacing: 5px; font-size: 20px; font-weight: 900;">
                 </div>
                 <div class="form-group">
                     <label>New Password</label>
-                    <input type="password" id="new-password" placeholder="••••••••" onkeyup="checkPasswordStrength(this.value)">
+                    <input type="password" id="new-password" placeholder="Enter new password" oninput="validateResetForm()" style="margin-bottom: 10px;">
                     
                     <div class="pwd-meter-container">
                         <div class="pwd-meter-fill" id="pwd-fill"></div>
                     </div>
-                    <div class="pwd-criteria">
+                    <div class="pwd-criteria" style="margin-bottom: 15px;">
                         <span class="crit-item crit-fail" id="crit-len">8+ Chars</span>
                         <span class="crit-item crit-fail" id="crit-up">1 Upper</span>
                         <span class="crit-item crit-fail" id="crit-num">1 Num/Sym</span>
                     </div>
+
+                    <input type="password" id="confirm-password" placeholder="Confirm new password" oninput="validateResetForm()">
                 </div>
-                <button class="btn-main btn-gold" id="btn-verify-reset" onclick="submitNewPassword()">Update Password</button>
+                <button class="btn-main btn-gold" id="btn-verify-reset" disabled onclick="submitNewPassword()">Update Password</button>
                 <button class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">Cancel</button>
             </div>
 
@@ -383,7 +390,7 @@
                     </div>
                     <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a;">
                         <label>Asset URL</label>
-                        <input type="text" id="f-source" placeholder="Listing or File Folder Link">
+                        <input type="text" id="f-source" placeholder="Listing or file folder link">
                         <div style="text-align: center; margin: 20px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
                         <label>Direct Photo Upload (Max 10)</label>
                         <div style="display: flex; gap: 12px; margin-bottom: 15px;">
@@ -425,7 +432,6 @@
         let isPassStrong = false;
         
         // --- WEBHOOK CONFIGURATION ---
-        // Your [PORTAL] Login webhook
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
         
@@ -483,10 +489,17 @@
             }
         }
 
-        function checkPasswordStrength(val) {
-            const lenPass = val.length >= 8;
-            const upPass = /[A-Z]/.test(val);
-            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(val);
+        // Unified validation function checking both strength and matching for the Reset Form
+        function validateResetForm() {
+            const p1 = document.getElementById('new-password').value;
+            const p2 = document.getElementById('confirm-password').value;
+            const code = document.getElementById('reset-code').value;
+            const btn = document.getElementById('btn-verify-reset');
+
+            // 1. Check Strength
+            const lenPass = p1.length >= 8;
+            const upPass = /[A-Z]/.test(p1);
+            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(p1);
 
             document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
             document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
@@ -505,16 +518,26 @@
             else if (score === 1) fill.style.backgroundColor = '#ff4d4d';
             else if (score === 2) fill.style.backgroundColor = '#ffa64d';
             else if (score === 3) fill.style.backgroundColor = 'var(--accent-gold)';
+
+            // 2. Check Match, Code presence, & Enable Button
+            if (isPassStrong && p1 === p2 && p1 !== "" && code.length > 0) {
+                btn.disabled = false;
+                document.getElementById('auth-error').style.display = 'none';
+            } else {
+                btn.disabled = true;
+            }
         }
 
         async function submitNewPassword() {
             const email = document.getElementById('reset-email').value;
             const code = document.getElementById('reset-code').value;
             const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
             const error = document.getElementById('auth-error');
             const btn = document.getElementById('btn-verify-reset');
 
-            if(!code || !isPassStrong) {
+            // Final double check just in case disabled status is bypassed
+            if(!code || !isPassStrong || newPass !== confirmPass) {
                 error.innerText = "PLEASE MEET ALL PASSWORD REQUIREMENTS.";
                 error.style.display = 'block';
                 return;
@@ -526,7 +549,12 @@
             try {
                 const res = await fetch(resetVerifyWebhook, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email: email, code: code, newPassword: newPass })
+                    body: JSON.stringify({ 
+                        email: email, 
+                        code: code, 
+                        newPassword: newPass,
+                        confirmPassword: confirmPass // Sent to Make.com for safety Router check
+                    })
                 });
                 const data = await res.json();
                 btn.classList.remove('btn-loading');
@@ -559,7 +587,6 @@
             error.style.display = 'none';
             
             try {
-                // Your loginWebhook now correctly checks the Salt and Hash in the Sheet
                 const res = await fetch(loginWebhook, {
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'},
