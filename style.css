@@ -32,7 +32,7 @@ body {
 }
 
 /* ========================================
-2. UNIVERSAL HEADER SYSTEM
+2. UNIVERSAL HEADER SYSTEM (Managed by header.js)
 ========================================
 */
 .main-top-header {
@@ -130,7 +130,7 @@ body {
     display: inline-block; 
 }
 
-/* AUTH META STACK */
+/* AUTH META STACK (LOGGED IN STATE) */
 .user-meta-stack { 
     display: flex; 
     flex-direction: column; 
@@ -213,15 +213,26 @@ body {
 ========================================
 */
 .hero-section { 
-    padding: 4rem 1rem 1rem; 
+    margin-top: 140px; /* Specific offset for fixed header */
+    padding: 0 20px; 
     max-width: 1200px; 
-    margin: 0 auto; 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.hero-logo { 
+    height: 110px !important; /* Forces correct size regardless of logo asset size */
+    width: auto;
+    max-width: 90%;
+    object-fit: contain;
+    margin-bottom: 40px;
 }
 
 h1 { 
-    font-size: clamp(1.8rem, 6vw, 3.8rem); 
+    font-size: clamp(2.2rem, 8vw, 4.2rem); 
     font-weight: 900; 
-    letter-spacing: -2px;
+    letter-spacing: -1.5px;
     background: linear-gradient(to left, #fff 0%, #4d4d4d 50%, #fff 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -229,7 +240,6 @@ h1 {
     animation: shine 5s linear infinite;
     line-height: 1.1;
     text-transform: uppercase;
-    white-space: nowrap;
 }
 
 @keyframes shine {
@@ -243,11 +253,32 @@ h1 {
 }
 
 .subtitle { 
-    color: var(--text-muted); 
-    margin-top: 1rem; 
-    font-size: 1.1rem; 
+    color: #fff; 
+    margin: 1.5rem auto 0;
+    max-width: 850px; 
+    font-size: 1.15rem; 
     font-weight: 400; 
-    letter-spacing: 1px; 
+    letter-spacing: 0.5px; 
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.subtitle-focus {
+    display: block;
+    margin-top: 20px; 
+    color: #888; 
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 0.95rem; 
+    font-style: normal;
+    text-transform: uppercase;
+}
+
+.highlight-no {
+    font-size: 1.2rem; 
+    font-weight: 900;
+    color: #fff; 
+    margin-right: 4px;
 }
 
 /* ========================================
