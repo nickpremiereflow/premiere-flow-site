@@ -14,115 +14,79 @@
     <meta property="og:image" content="https://premiereflow.com/premiereflowiconlogo.png?v=2">
 
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <style>
-        :root { 
-            --bg-black: #000; 
-            --card-bg: #080808; 
-            --border-color: #1a1a1a; 
-            --accent-white: #ffffff; 
-            --accent-gold: #c5a059; 
-            --header-height: 75px;
+        /* PAGE-SPECIFIC CONTENT ARCHITECTURE */
+        .signup-hero { 
+            width: 100%; 
+            max-width: 800px; 
+            margin: 160px auto 0; /* Offset for fixed global header */
+            text-align: center; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
         }
-
-        body { 
-            margin: 0; 
-            padding: 0; 
-            background-color: var(--bg-black); 
-            color: var(--accent-white); 
-            font-family: 'Inter', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            overflow-x: hidden;
-        }
-
-        /* --- GLOBAL HEADER SYNC (75px) --- */
-        .main-top-header {
-            position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height);
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 40px; box-sizing: border-box; z-index: 1000;
-            border-bottom: 1px solid #111;
-        }
-
-        /* 1. LOGO: TOP LEFT, VERTICALLY CENTERED */
-        .header-left { 
-            display: flex; 
-            align-items: center; 
-            z-index: 1001; 
-        }
-        .header-left a {
-            display: flex;
-            align-items: center;
-        }
-        .logo-img { height: 22px; border: none; transition: 0.3s; }
-        .logo-img:hover { opacity: 0.7; }
-
-        /* 2. NAV: MATHEMATICALLY CENTERED */
-        .header-nav { 
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            display: flex; gap: 30px; align-items: center;
-        }
-        .nav-link { 
-            color: #666; text-decoration: none; font-size: 11px; font-weight: 800; 
-            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; 
-            cursor: pointer; line-height: 1;
-        }
-        .nav-link:hover, .nav-link.active { color: #fff; }
-
-        /* CONTACT ALIGNMENT FIX */
-        .contact-wrapper { 
-            display: flex; 
-            align-items: center; 
-            position: relative; 
-        }
-
-        .contact-bubble {
-            visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; 
-            padding: 15px; position: absolute; z-index: 100;
-            top: 40px; left: 50%; transform: translateX(-50%);
-            border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif;
-        }
-        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
-        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-
-        /* 3. AUTH: TOP RIGHT */
-        .header-right { display: flex; align-items: center; gap: 15px; z-index: 1001; }
-        .header-btn {
-            background: transparent; border: 1px solid #333; color: #fff;
-            padding: 10px 18px; border-radius: 6px; font-size: 9px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s;
-        }
-        .header-btn:hover { background: #fff; color: #000; }
-        .gold-btn { background: var(--accent-gold); color: #000; border: none; text-decoration: none; display: inline-block; }
         
-        /* AUTH META STACK STYLES */
-        .user-meta-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; }
-        .user-email-text { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; }
-        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; line-height: 1; margin: 0; padding: 0; }
-        .user-meta { display: none; text-align: right; }
+        .signup-hero h1 { 
+            font-size: clamp(2.2rem, 9vw, 4rem); 
+            margin-bottom: 40px; 
+            line-height: 1.1; 
+            letter-spacing: -1px; 
+            font-weight: 900;
+            text-transform: uppercase;
+        }
 
-        /* SIGNUP PAGE CONTENT */
-        .signup-hero { width: 100%; max-width: 800px; margin-top: 130px; text-align: center; padding: 0 20px; box-sizing: border-box; }
-        .signup-hero h1 { font-size: clamp(2.2rem, 9vw, 4rem); margin-bottom: 40px; line-height: 1.1; letter-spacing: -1px; margin-top: 0; }
-        .sub-label { color: #d4af37; text-transform: uppercase; letter-spacing: 2px; font-size: 10px; margin-bottom: 10px; display: block; }
-
-        .instructions-container { width: 100%; max-width: 800px; margin-top: 0px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: left; padding: 0 20px; box-sizing: border-box; }
+        .instructions-container { 
+            width: 100%; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            text-align: left; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+        }
+        
         .step { border-left: 1px solid #222; padding-left: 15px; }
         .step-num { display: block; font-size: 10px; font-weight: 900; color: #444; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
         .step-text { font-size: 12px; line-height: 1.5; color: #888; }
 
-        .signup-form { width: 90%; max-width: 800px; margin-top: 40px; background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border-color); box-sizing: border-box; }
-        .section-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: #555; margin-bottom: 25px; text-align: center; }
-
-        .pkg-card { background: #000; border: 1px solid var(--border-color); padding: 30px; border-radius: 20px; margin-bottom: 20px; text-align: left; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
-        .pkg-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
+        .signup-form-container { 
+            width: 90%; 
+            max-width: 800px; 
+            margin: 40px auto; 
+            background: #080808; 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid #1a1a1a; 
+            box-sizing: border-box; 
+        }
         
+        .section-label { 
+            display: block; 
+            font-size: 11px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            color: #555; 
+            margin-bottom: 25px; 
+            text-align: center; 
+        }
+
+        .pkg-card { 
+            background: #000; 
+            border: 1px solid #1a1a1a; 
+            padding: 30px; 
+            border-radius: 20px; 
+            margin-bottom: 20px; 
+            text-align: left; 
+            transition: 0.3s; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .pkg-header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 20px; }
         .pkg-title-area { flex: 1; }
         .pkg-title { display: block; font-weight: 900; font-size: 1.4rem; margin-bottom: 6px; }
         .pkg-period { font-size: 1rem; color: #555; font-weight: 700; }
@@ -137,152 +101,30 @@
         
         .bullet-highlight { color: #fff; font-weight: 800; margin-right: 4px; }
         .shimmer { background: linear-gradient(to right, #777 0%, #fff 50%, #777 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; }
-        @keyframes shine { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
         
-        .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .addon-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #1a1a1a; }
         .addon-label { font-size: 11px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* LUXURY PROGRESS BAR ANIMATION (Kept in case of checkout redirect styling) */
-        .btn-loading {
-            pointer-events: none;
-            opacity: 0.9;
-            color: transparent !important;
-        }
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            width: 30%;
-            background: #000;
-            border-radius: 4px;
-            animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes loadingBarSlide {
-            0% { transform: translateX(-100%); width: 30%; }
-            50% { width: 50%; }
-            100% { transform: translateX(350%); width: 30%; }
-        }
-
-        /* NEW WHITE TRANSITION OVERLAY */
-        #transition-overlay { 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: #ffffff; 
-            z-index: 3000; 
-            display: none; 
-            opacity: 0;
-            align-items: center; 
-            justify-content: center; 
-            transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); 
-        }
+        /* TRANSITION OVERLAY */
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: none; opacity: 0; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
 
-        /* --- VISIBLE FOOTER --- */
-        footer { 
-            margin-top: 40px; 
-            padding: 40px 20px; 
-            border-top: 1px solid #1a1a1a; 
-            text-align: center; 
-            position: relative; 
-            width: 100%; 
-            box-sizing: border-box;
-        }
-        .footer-copyright { 
-            color: #ffffff; 
-            opacity: 0.6;
-            font-size: 11px; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            margin: 0;
-        }
-
-        /* --- MOBILE MENU STYLES --- */
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 0 0 15px;
-            line-height: 1;
-        }
-
-        @media (min-width: 600px) { .user-meta { display: block; } }
-        
         @media (max-width: 768px) {
-            .hamburger { display: block; }
-            
-            .header-nav { 
-                display: none !important; /* Hidden by default on mobile */
-                position: fixed; 
-                top: 75px; 
-                left: 0; 
-                width: 100%; 
-                background: rgba(0,0,0,0.98); 
-                backdrop-filter: blur(15px);
-                flex-direction: column; 
-                padding: 30px 0; 
-                gap: 25px; 
-                border-bottom: 1px solid #111;
-                z-index: 999;
-                transform: none; 
-            }
-            
-            .header-nav.mobile-active {
-                display: flex !important;
-            }
-
-            .header-right { gap: 10px; }
-            .main-top-header { padding: 0 20px; }
             .pkg-header-row { flex-direction: column; gap: 15px; }
             .select-btn { width: 100%; }
             .instructions-container { grid-template-columns: 1fr; gap: 30px; }
+            .signup-hero { margin-top: 120px; }
         }
     </style>
 </head>
 <body>
 
+    <script src="/header.js"></script>
+
     <div id="transition-overlay">
         <img src="../logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
     </div>
-
-    <header class="main-top-header">
-        <div class="header-left">
-            <a href="../"><img src="../logo.png" alt="Premiere Flow Logo" class="logo-img"></a>
-        </div>
-
-        <nav class="header-nav">
-            <a href="../" class="nav-link">Home</a>
-            <a href="../about/" class="nav-link">About</a>
-            <a href="./" class="nav-link active">Sign Up</a>
-            <div class="contact-wrapper">
-                <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
-                <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span>
-                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
-                </div>
-            </div>
-            <a href="../terms/" class="nav-link">Terms</a>
-        </nav>
-
-        <div class="header-right">
-            <button id="btn-header-login" class="header-btn" onclick="window.location.href='/login/'">Partner Login</button>
-            <div id="header-logged-in" style="display: none; align-items: center; gap: 10px;">
-                <div class="user-meta-stack">
-                    <span id="header-email-display" class="user-email-text"></span>
-                    <span onclick="signOut()" class="log-out-text">Log Out</span>
-                </div>
-                <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
-            </div>
-            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
-        </div>
-    </header>
 
     <section class="signup-hero">
         <span class="sub-label">Get Started</span>
@@ -296,7 +138,7 @@
         <div class="step"><span class="step-num">Step 04</span><span class="step-text">Download your upgraded showroom photos within 24 hours.</span></div>
     </div>
 
-    <div class="signup-form">
+    <div class="signup-form-container">
         <span class="section-label">Select Plan to Secure Staging</span>
         
         <div class="pkg-card">
@@ -359,58 +201,12 @@
     </footer>
 
     <script>
-        // --- AUTH & HEADER STATE LOGIC ---
-        window.onload = function() {
-            const savedEmail = localStorage.getItem('pf_email');
-            if (savedEmail) {
-                const btnHeaderLogin = document.getElementById('btn-header-login');
-                const headerLoggedIn = document.getElementById('header-logged-in');
-                const emailDisplay = document.getElementById('header-email-display');
-                
-                if (btnHeaderLogin) btnHeaderLogin.style.display = 'none';
-                if (headerLoggedIn) headerLoggedIn.style.display = 'flex';
-                if (emailDisplay) emailDisplay.innerText = savedEmail;
-            }
-        };
-
-        function signOut() {
-            localStorage.removeItem('pf_email');
-            localStorage.removeItem('pf_pass');
-            window.location.href = '/login/'; 
-        }
-
-        function toggleMobileMenu() {
-            const nav = document.querySelector('.header-nav');
-            nav.classList.toggle('mobile-active');
-        }
-
         function handleSelection(plan) {
             const brandingCheck = document.getElementById('branding-check');
             const brandingChecked = brandingCheck ? brandingCheck.checked : false;
             let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS (W/ CUSTOMIZATION)" : (plan === 'unlimited' ? "THE UNLIMITED PACK" : plan.toUpperCase());
             let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
             alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
-        }
-
-        function toggleContact(event) {
-            event.stopPropagation();
-            document.getElementById("contactBubble").classList.toggle("show");
-        }
-
-        function copyEmail() {
-            navigator.clipboard.writeText("info@premiereflow.com");
-            const btn = document.querySelector(".copy-btn");
-            btn.innerText = "DONE";
-            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-        }
-
-        window.onclick = function(event) {
-            const bubble = document.getElementById("contactBubble");
-            const contactBtn = document.getElementById("contactBtn");
-            
-            if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target) && event.target !== contactBtn) {
-                bubble.classList.remove('show');
-            }
         }
     </script>
 </body>
