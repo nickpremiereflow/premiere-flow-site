@@ -327,7 +327,6 @@
                 });
                 const data = await res.json();
                 
-                // MAP ROW NUMBERS FROM SHEETS SO RENAME WORKS
                 if (data.listings) {
                     data.listings = data.listings.map(item => ({
                         ...item,
@@ -492,25 +491,54 @@
 
         function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
+        // UPDATED SUBMISSION HANDLER
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'INITIALIZING...';
             btn.classList.add('btn-loading');
+            
             const formData = new FormData();
-            formData.append('accountId', userData.accountId || userData.accountID);
+            formData.append('email', localStorage.getItem('pf_email')); // Explicitly sending email
+            formData.append('accountId', userData.accountId || userData.accountID || '');
             formData.append('vehicleName', document.getElementById('f-name').value.trim());
             formData.append('assetSource', document.getElementById('f-source').value.trim());
             formData.append('showroomColor', document.getElementById('f-color').value || "White");
             formData.append('logoPlacement', document.getElementById('f-logo').value);
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
+            
             try {
-                await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                document.getElementById('inventory-form').reset();
-                stagedFiles = []; renderGallery();
-                btn.classList.remove('btn-loading');
-                showTab('dashboard');
-                fetchDashboardData(localStorage.getItem('pf_email'));
-            } catch (err) { btn.classList.remove('btn-loading'); }
+                const res = await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
+                
+                if (res.ok) {
+                    btn.innerText = 'SUCCESS. REDIRECTING...';
+                    btn.style.backgroundColor = '#c5a059'; 
+                    btn.style.color = '#000';
+                    
+                    setTimeout(() => {
+                        document.getElementById('inventory-form').reset();
+                        stagedFiles = []; renderGallery();
+                        btn.classList.remove('btn-loading');
+                        btn.innerText = originalText;
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                        showTab('dashboard');
+                        fetchDashboardData(localStorage.getItem('pf_email'));
+                    }, 1500);
+                } else {
+                    throw new Error("Bad response");
+                }
+            } catch (err) { 
+                btn.classList.remove('btn-loading'); 
+                btn.innerText = 'ERROR. TRY AGAIN.';
+                btn.style.backgroundColor = '#ff4d4d';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '';
+                }, 3000);
+            }
         });
 
         function handleLogoSelect(input) {
