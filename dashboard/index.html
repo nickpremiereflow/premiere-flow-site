@@ -9,17 +9,8 @@
     <link rel="stylesheet" href="../style.css">
     
     <style>
-        /* --- DASHBOARD SPECIFIC OVERRIDES & LAYOUT --- */
-        #app-container { 
-            margin-top: 140px; 
-            margin-bottom: 60px; 
-            padding: 0 20px; 
-            max-width: 650px; 
-            margin-left: auto; 
-            margin-right: auto; 
-            animation: fadeIn 0.6s ease-out; 
-            min-height: 60vh; 
-        }
+        /* DASHBOARD-SPECIFIC UI ARCHITECTURE */
+        #app-container { margin-top: 140px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .dash-menu { display: flex; justify-content: center; gap: 45px; margin-bottom: 45px; border-bottom: 1px solid #111; padding-bottom: 20px; }
@@ -28,7 +19,6 @@
 
         .view-section { display: none; }
         .view-section.active { display: block; }
-        
         .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
         h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 2.5px; color: #666; margin-bottom: 25px; font-weight: 900; }
         
@@ -36,13 +26,12 @@
         label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
         
         input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        select { -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
-        .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-main { width: 100%; padding: 22px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; border: none; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; }
-        .split-row { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; }
 
-        /* LISTING CARDS */
         .listing-card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; overflow: hidden; margin-bottom: 25px; display: flex; flex-direction: column; }
         .listing-main-row { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
         .listing-info-left { display: flex; align-items: center; gap: 15px; flex: 1; text-align: left; }
@@ -54,7 +43,7 @@
         .status-progress { color: #888; background: #111; border: 1px solid #222; }
         .status-completed { color: #000; background: var(--accent-gold); }
 
-        .btn-download { padding: 10px 18px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-download { padding: 10px 18px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border: none; }
         .btn-download.active { background: var(--accent-gold); color: #000; }
         .btn-download.disabled { background: #111; color: #444; pointer-events: none; border: 1px solid #222; }
 
@@ -71,18 +60,16 @@
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .remove-thumb { position: absolute; top: 4px; right: 4px; background: #ff4d4d; color: #fff; border: none; border-radius: 5px; width: 22px; height: 22px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .btn-loading { pointer-events: none; opacity: 0.5; position: relative; }
-        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s infinite; }
+        .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; position: relative; }
+        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #fff; border-radius: 4px; animation: loadingBarSlide 1.5s infinite; }
         @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
 
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; align-items: center; justify-content: center; transition: 0.8s; pointer-events: none; }
         .pulse-logo { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
 
         @media (max-width: 768px) {
             .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
             .listing-status-right { width: 100%; justify-content: space-between; }
-            .split-row { flex-direction: column; }
         }
     </style>
 </head>
@@ -104,7 +91,7 @@
 
         <section id="view-dashboard" class="view-section active">
             <div style="margin-bottom: 40px;">
-                <button class="btn-main btn-gold" onclick="showTab('submit')">New Listing</button>
+                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Listing</button>
             </div>
             <h3>Active Listings</h3>
             <div id="submissions-list"></div>
@@ -113,7 +100,7 @@
         <section id="view-notifications" class="view-section">
             <h3>Recent activity</h3>
             <div class="card" style="border-left: 4px solid var(--accent-gold);">
-                <p style="font-size: 14px; margin: 0; line-height: 1.6; text-align: left;"><b>System:</b> Dashboard operational. Ready for staging.</p>
+                <p style="font-size: 14px; margin: 0; line-height: 1.6; text-align: left;"><b>System:</b> Dashboard operational.</p>
                 <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800; text-align: left;">Just Now</span>
             </div>
         </section>
@@ -136,7 +123,7 @@
                 <h3>Account Details</h3>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                     <span style="font-size: 13px; color: #666; font-weight: 800;">Active Plan</span>
-                    <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">LOADING...</span>
+                    <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
             </div>
@@ -177,19 +164,19 @@
                     </div>
                     <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a;">
                         <label>Asset URL</label>
-                        <input type="text" id="f-source" placeholder="Link to photos">
+                        <input type="text" id="f-source" placeholder="Listing or file folder link">
                         <div style="text-align: center; margin: 20px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
                         <label>Direct Photo Upload (Max 10)</label>
-                        <button type="button" class="btn-split" style="width:100%;" onclick="document.getElementById('f-gallery').click()">📁 Gallery</button>
+                        <button type="button" class="btn-split" style="width:100%;" onclick="document.getElementById('f-gallery').click()">📁 Select Gallery</button>
                         <div id="staging-gallery"></div>
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
-                    <div class="split-row">
-                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <div class="split-row" style="display:flex; gap:20px;">
+                        <div class="form-group" style="flex: 1;">
                             <label>Showroom Wall Color</label>
                             <input type="text" id="f-color" placeholder="White (Default)">
                         </div>
-                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <div class="form-group" style="flex: 1;">
                             <label>Logo Placement</label>
                             <select id="f-logo">
                                 <option value="Bottom Left" selected>Bottom Left</option>
@@ -201,36 +188,47 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" id="submit-btn" class="btn-main btn-gold" style="margin-top:30px;">Initialize Staging</button>
+                    <button type="submit" id="submit-btn" class="btn-main btn-gold">Initialize Staging</button>
                 </form>
             </div>
         </section>
     </div>
-
-    <footer><p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p></footer>
 
     <script>
         let userData = { listings: [], history: [] };
         let stagedFiles = [];
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
+        function hideOverlay() {
+            const overlay = document.getElementById('transition-overlay');
+            if(overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 800);
+            }
+        }
+
         window.onload = function() {
             const email = localStorage.getItem('pf_email');
             if (!email) { window.location.href = '/login/'; return; }
             fetchDashboardData(email);
-            setTimeout(() => { 
-                const overlay = document.getElementById('transition-overlay');
-                if(overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 800); }
-            }, 1200);
+            setTimeout(hideOverlay, 3000); 
         };
 
         async function fetchDashboardData(email) {
             try {
                 const res = await fetch(dataFetchWebhook, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: email }) });
-                userData = await res.json();
-                document.getElementById('profile-tier').innerText = (userData.tier || 'N/A').toUpperCase();
-                renderListings();
-            } catch (err) { console.error("Load failed", err); }
+                if (res.ok) {
+                    userData = await res.json();
+                    document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
+                    if(userData.logo && userData.logo !== "undefined") {
+                        document.getElementById('actual-logo-img').src = userData.logo;
+                        document.getElementById('actual-logo-img').style.display = 'block';
+                        document.getElementById('no-logo-text').style.display = 'none';
+                    }
+                    renderListings();
+                    hideOverlay();
+                } else { hideOverlay(); }
+            } catch (err) { console.error("Load failed", err); hideOverlay(); }
         }
 
         function renderListings() {
@@ -288,7 +286,10 @@
             document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
             document.getElementById('view-' + t).classList.add('active');
             document.getElementById('tab-' + t)?.classList.add('active');
+            window.scrollTo(0,0);
         }
+
+        function openSubmit() { showTab('submit'); }
 
         function stageFiles(input) {
             Array.from(input.files).forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); });
@@ -320,6 +321,31 @@
                 fetchDashboardData(localStorage.getItem('pf_email'));
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
+
+        function handleLogoSelect(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('actual-logo-img').src = e.target.result;
+                    document.getElementById('actual-logo-img').style.display = 'block';
+                    document.getElementById('no-logo-text').style.display = 'none';
+                    document.getElementById('save-logo-btn').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function uploadNewLogo() {
+            const btn = document.getElementById('save-logo-btn');
+            const formData = new FormData();
+            formData.append('logoFile', document.getElementById('field-logoUpload').files[0]);
+            formData.append('accountId', userData.accountId || userData.accountID);
+            btn.classList.add('btn-loading');
+            try {
+                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
+                if (res.ok) { btn.classList.remove('btn-loading'); btn.style.display = 'none'; }
+            } catch (err) { btn.classList.remove('btn-loading'); }
+        }
 
         function signOut() { localStorage.clear(); window.location.href = '/login/'; }
     </script>
