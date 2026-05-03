@@ -1,1 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Partner Login | Premiere Flow</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
+    
+    <style>
+        :root {
+            --primary-black: #000000;
+            --accent-gold: #c5a059;
+            --bg-dark: #000000;
+            --text-white: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
 
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            font-size: 16px; 
+        }
+
+        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
+        input:focus::placeholder { opacity: 0.1; }
+
+        .form-group { margin-bottom: 30px; text-align: left; }
+        label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
+        
+        input { 
+            width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; 
+        }
+
+        .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-gold { background: var(--accent-gold); color: #000; }
+
+        .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; }
+        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(350%); width: 30%; } }
+
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
+
+        .pwd-meter-container { width: 100%; height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 15px; overflow: hidden; }
+        .pwd-meter-fill { height: 100%; width: 0%; background: #ff4d4d; transition: width 0.3s ease, background-color 0.3s ease; }
+        .pwd-criteria { font-size: 9px; color: #666; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        .crit-item { transition: color 0.3s; }
+        .crit-pass { color: var(--accent-gold); font-weight: 900; }
+        .crit-fail { color: #555; }
+
+        .auth-switch-link { color: var(--accent-gold); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: inline-block; margin-top: 20px; transition: 0.3s; border: none; background: none; }
+        .auth-switch-link:hover { opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div id="transition-overlay">
+        <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
+    </div>
+
+    <div id="login-overlay">
+        <div style="width: 100%; max-width: 380px; padding: 30px; text-align: center;">
+            <a href="/"><img src="https://premiereflow.com/logo.png" style="width: 180px; margin-bottom: 50px; border: none;"></a>
+            
+            <div id="ui-login">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" placeholder="Enter email address">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="Enter password">
+                </div>
+                <button class="btn-main" id="login-btn" onclick="portalAuth()">Unlock Studio</button>
+                <button class="auth-switch-link" onclick="toggleAuthUI('forgot')">Forgot Password?</button>
+            </div>
+
+            <div id="ui-forgot" style="display: none;">
+                <p style="font-size: 12px; color: #888; margin-bottom: 25px; line-height: 1.5; font-weight: 700;">Enter your email to receive a 6-digit reset code.</p>
+                <div class="form-group">
+                    <label>Account Email</label>
+                    <input type="email" id="reset-email" placeholder="Enter account email">
+                </div>
+                <button class="btn-main btn-gold" id="btn-req-code" onclick="requestCode()">Send Reset Code</button>
+                <button class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">← Back to Login</button>
+            </div>
+
+            <div id="ui-reset" style="display: none;">
+                <p style="font-size: 12px; color: var(--accent-gold); margin-bottom: 25px; line-height: 1.5; font-weight: 900;">Code sent! Check your inbox.</p>
+                <div class="form-group">
+                    <label>6-Digit Code</label>
+                    <input type="text" id="reset-code" placeholder="_ _ _ _ _ _" maxlength="6" oninput="validateResetForm()" style="text-align: center; letter-spacing: 5px; font-size: 20px; font-weight: 900;">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="new-password" placeholder="Enter new password" oninput="validateResetForm()" style="margin-bottom: 10px;">
+                    
+                    <div class="pwd-meter-container">
+                        <div class="pwd-meter-fill" id="pwd-fill"></div>
+                    </div>
+                    <div class="pwd-criteria" style="margin-bottom: 15px;">
+                        <span class="crit-item crit-fail" id="crit-len">8+ Chars</span>
+                        <span class="crit-item crit-fail" id="crit-up">1 Upper</span>
+                        <span class="crit-item crit-fail" id="crit-num">1 Num/Sym</span>
+                    </div>
+
+                    <input type="password" id="confirm-password" placeholder="Confirm new password" oninput="validateResetForm()">
+                </div>
+                <button class="btn-main btn-gold" id="btn-verify-reset" disabled onclick="submitNewPassword()">Update Password</button>
+                <button class="auth-switch-link" onclick="toggleAuthUI('login')" style="color: #666;">Cancel</button>
+            </div>
+
+            <p id="auth-error" style="color: #ff4d4d; font-size: 12px; margin-top: 25px; display: none; font-weight: 700;"></p>
+        </div>
+    </div>
+
+    <script>
+        let isPassStrong = false;
+        
+        // --- WEBHOOK CONFIGURATION ---
+        const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
+        const resetRequestWebhook = 'https://hook.us2.make.com/3gh3awd4o6wsajv1vuso8ue765l8bzs3';
+        const resetVerifyWebhook = 'https://hook.us2.make.com/0qqm7s3zsceqatg9sbyato6luir0s7rk';
+
+        window.onload = function() {
+            const savedEmail = localStorage.getItem('pf_email');
+            const savedPass = localStorage.getItem('pf_pass');
+            const urlParams = new URLSearchParams(window.location.search);
+            const hash = window.location.hash;
+
+            // Check if they are supposed to see the forgot tab
+            if (urlParams.get('view') === 'forgot' || hash === '#forgot') {
+                toggleAuthUI('forgot');
+                document.getElementById('transition-overlay').style.display = 'none';
+            } 
+            // If they are already logged in locally, route them straight to dashboard
+            else if (savedEmail && savedPass) {
+                window.location.href = '/dashboard/';
+            } else {
+                document.getElementById('transition-overlay').style.display = 'none';
+            }
+        };
+
+        function toggleAuthUI(view) {
+            document.getElementById('ui-login').style.display = 'none';
+            document.getElementById('ui-forgot').style.display = 'none';
+            document.getElementById('ui-reset').style.display = 'none';
+            document.getElementById('auth-error').style.display = 'none';
+            document.getElementById(`ui-${view}`).style.display = 'block';
+        }
+
+        async function requestCode() {
+            const email = document.getElementById('reset-email').value;
+            const error = document.getElementById('auth-error');
+            const btn = document.getElementById('btn-req-code');
+            if(!email) return;
+
+            btn.classList.add('btn-loading');
+            error.style.display = 'none';
+
+            try {
+                const res = await fetch(resetRequestWebhook, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                btn.classList.remove('btn-loading');
+
+                if(data.success) {
+                    toggleAuthUI('reset');
+                } else {
+                    error.innerText = "EMAIL NOT FOUND.";
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                btn.classList.remove('btn-loading');
+                error.innerText = "CONNECTION ERROR.";
+                error.style.display = 'block';
+            }
+        }
+
+        function validateResetForm() {
+            const p1 = document.getElementById('new-password').value;
+            const p2 = document.getElementById('confirm-password').value;
+            const code = document.getElementById('reset-code').value;
+            const btn = document.getElementById('btn-verify-reset');
+
+            const lenPass = p1.length >= 8;
+            const upPass = /[A-Z]/.test(p1);
+            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(p1);
+
+            document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
+            document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
+            document.getElementById('crit-num').className = `crit-item ${numSymPass ? 'crit-pass' : 'crit-fail'}`;
+
+            let score = 0;
+            if(lenPass) score++;
+            if(upPass) score++;
+            if(numSymPass) score++;
+
+            isPassStrong = (score === 3);
+            const fill = document.getElementById('pwd-fill');
+            
+            fill.style.width = (score / 3 * 100) + '%';
+            if (score === 0) fill.style.width = '0%';
+            else if (score === 1) fill.style.backgroundColor = '#ff4d4d';
+            else if (score === 2) fill.style.backgroundColor = '#ffa64d';
+            else if (score === 3) fill.style.backgroundColor = 'var(--accent-gold)';
+
+            if (isPassStrong && p1 === p2 && p1 !== "" && code.length > 0) {
+                btn.disabled = false;
+                document.getElementById('auth-error').style.display = 'none';
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        async function submitNewPassword() {
+            const email = document.getElementById('reset-email').value;
+            const code = document.getElementById('reset-code').value;
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+            const error = document.getElementById('auth-error');
+            const btn = document.getElementById('btn-verify-reset');
+
+            if(!code || !isPassStrong || newPass !== confirmPass) {
+                error.innerText = "PLEASE MEET ALL PASSWORD REQUIREMENTS.";
+                error.style.display = 'block';
+                return;
+            }
+
+            btn.classList.add('btn-loading');
+            error.style.display = 'none';
+
+            try {
+                const res = await fetch(resetVerifyWebhook, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email, code: code, newPassword: newPass, confirmPassword: confirmPass })
+                });
+                const data = await res.json();
+                btn.classList.remove('btn-loading');
+
+                if(data.success) {
+                    document.getElementById('login-email').value = email;
+                    document.getElementById('login-password').value = newPass;
+                    toggleAuthUI('login');
+                    portalAuth();
+                } else {
+                    error.innerText = "INVALID OR EXPIRED CODE.";
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                btn.classList.remove('btn-loading');
+                error.innerText = "CONNECTION ERROR.";
+                error.style.display = 'block';
+            }
+        }
+
+        async function portalAuth() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            const error = document.getElementById('auth-error');
+            const transitionOverlay = document.getElementById('transition-overlay');
+            if(!email || !pass) return;
+
+            transitionOverlay.style.display = 'flex';
+            error.style.display = 'none';
+            
+            try {
+                const res = await fetch(loginWebhook, {
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email, password: pass })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    localStorage.setItem('pf_email', email);
+                    localStorage.setItem('pf_pass', pass);
+                    
+                    transitionOverlay.style.opacity = '1';
+                    
+                    // Redirect to the new dashboard page
+                    setTimeout(() => { 
+                        window.location.href = '/dashboard/'; 
+                    }, 500);
+                } else {
+                    transitionOverlay.style.display = 'none';
+                    error.innerText = "INVALID CREDENTIALS.";
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                transitionOverlay.style.display = 'none';
+                error.innerText = "CONNECTION ERROR.";
+                error.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
