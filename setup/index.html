@@ -2,86 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Setup | Premiere Flow</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Your Studio | Premiere Flow</title>
+    
+    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
+    <link rel="stylesheet" href="../style.css">
+    
     <style>
-        /* PLACEHOLDER STYLES (High-End Ghosting) */
-        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
-        input:focus::placeholder { opacity: 0.1; }
+        /* PAGE ARCHITECTURE */
+        body.login-body { 
+            background: #000; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            font-family: 'Inter', sans-serif;
+        }
 
-        /* PASSWORD METER STYLES */
-        .pwd-meter-container { width: 100%; height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 15px; overflow: hidden; }
-        .pwd-meter-fill { height: 100%; width: 0%; background: #ff4d4d; transition: width 0.3s ease, background-color 0.3s ease; }
-        .pwd-criteria { font-size: 9px; color: #666; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
-        .crit-item { transition: color 0.3s; }
-        .crit-pass { color: #c5a059; font-weight: 900; }
-        .crit-fail { color: #555; }
+        .login-card { 
+            background: #0a0a0a; 
+            padding: 50px 40px; 
+            border-radius: 24px; 
+            border: 1px solid #111; 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.6);
+        }
+
+        h2 { 
+            color: #fff; 
+            margin-bottom: 8px; 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            letter-spacing: -0.5px; 
+            font-size: 22px;
+        }
+
+        .sub-text { color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 35px; display: block; }
+
+        /* INPUTS */
+        input[type="password"] { 
+            width: 100%; 
+            padding: 20px; 
+            margin: 10px 0; 
+            background: #000; 
+            border: 1px solid #1a1a1a; 
+            color: #fff; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent-gold); outline: none; }
+        ::placeholder { color: #ffffff; opacity: 0.2; transition: opacity 0.3s; }
+
+        /* PASSWORD METER */
+        .pwd-meter-container { width: 100%; height: 3px; background: #111; border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .pwd-meter-fill { height: 100%; width: 0%; background: #ff4d4d; transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), background-color 0.4s ease; }
         
-        /* BUTTON STYLES */
-        .btn-main { transition: opacity 0.3s ease; }
-        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; }
-        
-        /* Spinner for the button when processing */
+        .pwd-criteria { font-size: 9px; color: #333; margin-top: 12px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; justify-content: space-between; font-weight: 800; }
+        .crit-pass { color: var(--accent-gold); }
+
+        /* BUTTON */
+        .btn-main { 
+            width: 100%; 
+            padding: 22px; 
+            background: #fff; 
+            color: #000; 
+            border: none; 
+            border-radius: 50px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            cursor: pointer; 
+            margin-top: 30px; 
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .btn-main:hover:not(:disabled) { background: var(--accent-gold); transform: translateY(-2px); }
+        .btn-main:disabled { opacity: 0.2; cursor: not-allowed; }
+
         .spinner {
             display: none;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border: 2px solid #000;
-            border-top: 2px solid #c5a059;
+            border-top: 2px solid var(--accent-gold);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-left: 10px;
+            margin-left: 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #msg { margin-top: 25px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; height: 14px; }
     </style>
 </head>
 <body class="login-body">
-    <div class="setup-container" style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #000;">
-        <div class="login-card" style="background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333; width: 100%; max-width: 400px; text-align: center;">
-            <img src="https://premiereflow.com/logo.png" style="width: 140px; margin-bottom: 30px;">
-            <h2 style="color: #fff; margin-bottom: 10px; font-family: sans-serif; letter-spacing: -1px;">Set Your Password</h2>
-            <p style="color: #888; font-size: 13px; margin-bottom: 25px; font-family: sans-serif;">Secure your studio access below.</p>
-            
-            <input type="password" id="pass1" placeholder="Enter new password" oninput="validateForm()" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
-            
-            <div class="pwd-meter-container">
-                <div class="pwd-meter-fill" id="pwd-fill"></div>
-            </div>
-            <div class="pwd-criteria" style="margin-bottom: 15px;">
-                <span class="crit-item crit-fail" id="crit-len">8+ Chars</span>
-                <span class="crit-item crit-fail" id="crit-up">1 Upper</span>
-                <span class="crit-item crit-fail" id="crit-num">1 Num/Sym</span>
-            </div>
 
-            <input type="password" id="pass2" placeholder="Confirm new password" oninput="validateForm()" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
-            
-            <button class="btn-main" id="submit-btn" disabled onclick="submitSetup()" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; margin-top: 15px; font-family: sans-serif;">
-                <span>FINISH SETUP</span>
-                <div id="btn-spinner" class="spinner"></div>
-            </button>
-            
-            <p id="msg" style="margin-top: 20px; font-size: 11px; font-weight: 700; color: #fff; font-family: sans-serif; text-transform: uppercase; letter-spacing: 1px;"></p>
+    <div class="login-card">
+        <img src="../logo.png" style="width: 160px; margin-bottom: 40px; filter: brightness(1);">
+        
+        <h2>Set Password</h2>
+        <span class="sub-text">Initialize Studio Credentials</span>
+        
+        <input type="password" id="pass1" placeholder="New Password" oninput="validateForm()">
+        
+        <div class="pwd-meter-container">
+            <div class="pwd-meter-fill" id="pwd-fill"></div>
         </div>
+        
+        <div class="pwd-criteria">
+            <span class="crit-item" id="crit-len">8+ Chars</span>
+            <span class="crit-item" id="crit-up">1 Upper</span>
+            <span class="crit-item" id="crit-num">1 Number</span>
+        </div>
+
+        <input type="password" id="pass2" placeholder="Confirm Password" oninput="validateForm()">
+        
+        <button class="btn-main" id="submit-btn" disabled onclick="submitSetup()">
+            <span>Finish Setup</span>
+            <div id="btn-spinner" class="spinner"></div>
+        </button>
+        
+        <p id="msg"></p>
     </div>
 
     <script>
         let isPassStrong = false;
 
-        // Unified validation function checking both strength and matching
         function validateForm() {
             const p1 = document.getElementById('pass1').value;
             const p2 = document.getElementById('pass2').value;
             const btn = document.getElementById('submit-btn');
 
-            // 1. Check Strength
             const lenPass = p1.length >= 8;
             const upPass = /[A-Z]/.test(p1);
-            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(p1);
+            const numSymPass = /[0-9!@#$%^&*()]/.test(p1);
 
-            document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
-            document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
-            document.getElementById('crit-num').className = `crit-item ${numSymPass ? 'crit-pass' : 'crit-fail'}`;
+            document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : ''}`;
+            document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : ''}`;
+            document.getElementById('crit-num').className = `crit-item ${numSymPass ? 'crit-pass' : ''}`;
 
             let score = 0;
             if(lenPass) score++;
@@ -92,15 +157,12 @@
             const fill = document.getElementById('pwd-fill');
             
             fill.style.width = (score / 3 * 100) + '%';
-            if (score === 0) fill.style.width = '0%';
-            else if (score === 1) fill.style.backgroundColor = '#ff4d4d'; 
+            if (score === 1) fill.style.backgroundColor = '#ff4d4d'; 
             else if (score === 2) fill.style.backgroundColor = '#ffa64d'; 
             else if (score === 3) fill.style.backgroundColor = '#c5a059'; 
 
-            // 2. Check Match & Enable Button
             if (isPassStrong && p1 === p2 && p1 !== "") {
                 btn.disabled = false;
-                document.getElementById('msg').innerText = ""; // Clear any error messages
             } else {
                 btn.disabled = true;
             }
@@ -116,17 +178,12 @@
 
             if (!token) { 
                 msg.style.color = "#ff4d4d";
-                msg.innerText = "ERROR: INVALID OR MISSING TOKEN"; 
+                msg.innerText = "Error: Invalid or Missing Token"; 
                 return; 
             }
-            
-            // Double-check just in case they bypassed the disabled HTML attribute
-            if (!isPassStrong || p1 !== p2) {
-                return;
-            }
 
-            msg.style.color = "#888";
-            msg.innerText = "SECURING ACCOUNT";
+            msg.style.color = "#555";
+            msg.innerText = "Securing Studio Assets...";
             btn.disabled = true;
             spinner.style.display = "inline-block";
             
@@ -137,19 +194,21 @@
                     body: JSON.stringify({ 
                         token: token, 
                         password: p1,
-                        confirmPassword: p2 // Sent to Make.com for the backend Router check
+                        confirmPassword: p2 
                     })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     
+                    // Auto-cache credentials if Make returns the email
                     if (data.email) {
                         localStorage.setItem('pf_email', data.email);
                         localStorage.setItem('pf_pass', p1);
                     }
 
-                    msg.innerHTML = "<span style='color: #c5a059;'>SUCCESS UNLOCKING STUDIO</span>";
+                    msg.style.color = "#c5a059";
+                    msg.innerText = "Success. Studio Unlocked.";
                     
                     setTimeout(() => {
                         window.location.href = "/login/";
@@ -158,13 +217,13 @@
                     btn.disabled = false;
                     spinner.style.display = "none";
                     msg.style.color = "#ff4d4d";
-                    msg.innerText = "ERROR: LINK EXPIRED OR INVALID";
+                    msg.innerText = "Error: Link Expired or Invalid";
                 }
             } catch (err) { 
                 btn.disabled = false;
                 spinner.style.display = "none";
                 msg.style.color = "#ff4d4d";
-                msg.innerText = "CONNECTION ERROR PLEASE TRY AGAIN"; 
+                msg.innerText = "Connection Error. Try Again."; 
             }
         }
     </script>
