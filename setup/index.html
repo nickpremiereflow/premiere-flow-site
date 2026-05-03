@@ -37,7 +37,7 @@
             <h2 style="color: #fff; margin-bottom: 10px; font-family: sans-serif; letter-spacing: -1px;">Set Your Password</h2>
             <p style="color: #888; font-size: 13px; margin-bottom: 25px; font-family: sans-serif;">Secure your studio access below.</p>
             
-            <input type="password" id="pass1" placeholder="New Password" onkeyup="checkPasswordStrength(this.value)" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="pass1" placeholder="Enter Password" onkeyup="checkPasswordStrength(this.value)" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
             
             <div class="pwd-meter-container">
                 <div class="pwd-meter-fill" id="pwd-fill"></div>
@@ -128,7 +128,6 @@
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // Save to localStorage for Auto-Login
                     if (data.email) {
                         localStorage.setItem('pf_email', data.email);
                         localStorage.setItem('pf_pass', p1);
