@@ -127,7 +127,6 @@
 
         .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; }
 
-        /* NEW THREE-DOT MENU STYLES */
         .listing-menu-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; }
         .listing-menu-btn:hover { color: var(--accent-gold); }
 
@@ -248,7 +247,7 @@
                 <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;">
                     <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3>
                     <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible.</p>
-                    <button class="btn-split" onclick="resetSupportTab()" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
+                    <button class="btn-split" onclick="showTab('dashboard')" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
                 </div>
             </div>
         </section>
@@ -326,6 +325,21 @@
                     body: JSON.stringify({ email: email })
                 });
                 const data = await res.json();
+                
+                // CRITICAL FIX: Ensure rowId is mapped from Sheets __rowNumber__
+                if (data.listings) {
+                    data.listings = data.listings.map(item => ({
+                        ...item,
+                        rowId: item.rowId || item.__rowNumber__
+                    }));
+                }
+                if (data.history) {
+                    data.history = data.history.map(item => ({
+                        ...item,
+                        rowId: item.rowId || item.__rowNumber__
+                    }));
+                }
+
                 userData = { ...userData, ...data }; 
                 refreshUI();
             } catch (err) { console.error("Dashboard data load failed", err); }
