@@ -116,6 +116,8 @@
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .remove-thumb { position: absolute; top: 4px; right: 4px; background: rgba(255, 77, 77, 0.95); color: white; border: none; border-radius: 5px; width: 22px; height: 22px; font-size: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+        /* BUTTON LOADING FIXES */
+        .btn-main:disabled { opacity: 0.7; cursor: not-allowed; }
         .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; }
         .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
 
@@ -491,17 +493,21 @@
 
         function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
-        // UPDATED SUBMISSION HANDLER
+        // FULLY LOCKED DOWN SUBMISSION LOGIC
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            const originalText = btn.innerText;
             
+            // 1. Prevent double clicks immediately
+            if (btn.disabled) return; 
+            btn.disabled = true;
+
+            const originalText = btn.innerText;
             btn.innerText = 'INITIALIZING...';
             btn.classList.add('btn-loading');
             
             const formData = new FormData();
-            formData.append('email', localStorage.getItem('pf_email')); // Explicitly sending email
+            formData.append('email', localStorage.getItem('pf_email')); 
             formData.append('accountId', userData.accountId || userData.accountID || '');
             formData.append('vehicleName', document.getElementById('f-name').value.trim());
             formData.append('assetSource', document.getElementById('f-source').value.trim());
@@ -513,6 +519,8 @@
                 const res = await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
                 
                 if (res.ok) {
+                    // 2. Remove transparent text class BEFORE showing success message
+                    btn.classList.remove('btn-loading'); 
                     btn.innerText = 'SUCCESS. REDIRECTING...';
                     btn.style.backgroundColor = '#c5a059'; 
                     btn.style.color = '#000';
@@ -520,10 +528,10 @@
                     setTimeout(() => {
                         document.getElementById('inventory-form').reset();
                         stagedFiles = []; renderGallery();
-                        btn.classList.remove('btn-loading');
                         btn.innerText = originalText;
                         btn.style.backgroundColor = '';
                         btn.style.color = '';
+                        btn.disabled = false; // Unlock button for next time
                         showTab('dashboard');
                         fetchDashboardData(localStorage.getItem('pf_email'));
                     }, 1500);
@@ -534,9 +542,12 @@
                 btn.classList.remove('btn-loading'); 
                 btn.innerText = 'ERROR. TRY AGAIN.';
                 btn.style.backgroundColor = '#ff4d4d';
+                btn.style.color = '#fff';
                 setTimeout(() => {
                     btn.innerText = originalText;
                     btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    btn.disabled = false; // Unlock button
                 }, 3000);
             }
         });
@@ -561,15 +572,23 @@
             const formData = new FormData();
             formData.append('logoFile', file);
             formData.append('accountId', userData.accountId || userData.accountID);
+            
+            if (btn.disabled) return;
+            btn.disabled = true;
             btn.classList.add('btn-loading');
+            
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
                 if (res.ok) {
                     userData.logo = URL.createObjectURL(file);
-                    refreshUI(); btn.classList.remove('btn-loading');
-                    setTimeout(() => { btn.style.display = 'none'; }, 2000);
+                    refreshUI(); 
+                    btn.classList.remove('btn-loading');
+                    setTimeout(() => { btn.style.display = 'none'; btn.disabled = false; }, 2000);
                 }
-            } catch (err) { btn.classList.remove('btn-loading'); }
+            } catch (err) { 
+                btn.classList.remove('btn-loading'); 
+                btn.disabled = false;
+            }
         }
 
         function toggleContact(event) { event.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); }
