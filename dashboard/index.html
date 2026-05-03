@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Account Dashboard | Premiere Flow</title>
     
-    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
-    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <style>
@@ -31,6 +29,8 @@
         }
 
         ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
+        input:focus::placeholder, textarea:focus::placeholder { opacity: 0.1; }
+
         header {
             position: fixed; top: 0; left: 0; width: 100%; height: 75px;
             background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
@@ -39,13 +39,16 @@
         }
 
         .header-left { display: flex; align-items: center; z-index: 1001; }
+        .header-left a { display: flex; align-items: center; }
         .logo-img { height: 22px; border: none; transition: 0.3s; }
+        .logo-img:hover { opacity: 0.7; }
+
         .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; }
         .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
         .contact-wrapper { display: flex; align-items: center; position: relative; }
-        .contact-bubble { visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: absolute; z-index: 100; top: 40px; left: 50%; transform: translateX(-50%); border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); width: max-content; opacity: 0; transition: 0.3s; }
+        .contact-bubble { visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: absolute; z-index: 100; top: 40px; left: 50%; transform: translateX(-50%); border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif; }
         .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
         .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
         .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
@@ -69,7 +72,10 @@
         
         .form-group { margin-bottom: 30px; text-align: left; }
         label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
+        
         input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .btn-gold { background: var(--accent-gold); color: #000; }
@@ -81,6 +87,7 @@
         .listing-info-left { display: flex; align-items: center; gap: 15px; flex: 1;}
         .listing-status-right { display: flex; align-items: center; gap: 15px; }
         .listing-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
+        .listing-thumb-placeholder { width: 55px; height: 55px; background: #000; border: 1px solid #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #333; font-weight: 900; }
         .listing-title { margin: 0 0 4px 0; font-weight: 800; font-size: 15px; color: #fff; }
         .listing-date { font-size: 10px; color: #555; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -96,10 +103,12 @@
         .accordion-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .accordion-btn:hover { color: #fff; background: #0a0a0a; }
         .accordion-btn:first-child { border-right: 1px solid #111; }
+        .accordion-btn.disabled { opacity: 0.3; pointer-events: none; }
 
         .listing-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
         .gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #000; }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
+        .gallery-item img:hover { opacity: 0.7; }
 
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; }
@@ -107,23 +116,32 @@
         .remove-thumb { position: absolute; top: 4px; right: 4px; background: rgba(255, 77, 77, 0.95); color: white; border: none; border-radius: 5px; width: 22px; height: 22px; font-size: 12px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; }
-        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s infinite; }
-        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #fff; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(350%); width: 30%; } }
 
-        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); width: 180px; filter: brightness(0); }
         @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
 
+        footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; width: 100%; box-sizing: border-box; }
+        .footer-copyright { color: #ffffff; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
+
+        .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; }
+
         @media (max-width: 768px) {
             header { padding: 0 20px; }
+            .hamburger { display: block; }
             .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
             .listing-status-right { width: 100%; justify-content: space-between; }
-            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; }
-            .header-nav.mobile-active { display: flex !important; }
+        }
+
+        @media (min-width: 768px) {
+            .split-row { flex-direction: row; }
+            .dash-menu { flex-wrap: wrap; gap: 30px; }
         }
     </style>
 </head>
-<body> 
+<body style="display: none;"> 
     <div id="transition-overlay">
         <img src="https://premiereflow.com/logo.png" class="pulse-logo">
     </div>
@@ -150,7 +168,7 @@
                 <span class="user-email" id="header-email">---</span>
                 <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span>
             </div>
-            <button class="hamburger" onclick="toggleMobileMenu()" style="display:none; background:none; border:none; color:#fff; font-size:24px; padding:0 0 0 15px;">☰</button>
+            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
         </div>
     </header>
 
@@ -174,8 +192,8 @@
             <h3>Recent activity</h3>
             <div id="notif-list">
                 <div class="card" style="border-left: 4px solid var(--accent-gold);">
-                    <p style="font-size: 14px; margin: 0; line-height: 1.6;"><b>System:</b> Dashboard operational. Ready for staging.</p>
-                    <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800;">Just Now</span>
+                    <p style="font-size: 14px; margin: 0; line-height: 1.6; text-align: left;"><b>System:</b> Dashboard operational.</p>
+                    <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800; text-align: left;">Just Now</span>
                 </div>
             </div>
         </section>
@@ -183,13 +201,13 @@
         <section id="view-profile" class="view-section">
             <div class="card">
                 <h3>Account Logo</h3>
-                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0; background-color: #050505; overflow: hidden; padding: 15px;">
+                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px auto; background-color: #050505; overflow: hidden; padding: 15px;">
                     <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
                     <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
                 </div>
                 <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
                 <div style="display: flex; gap: 15px;">
-                    <button id="btn-select-logo" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Upload Logo</button>
+                    <button onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Upload Logo</button>
                     <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save to Profile</button>
                 </div>
             </div>
@@ -197,7 +215,7 @@
             <div class="card">
                 <h3>Account Details</h3>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <span style="font-size: 13px; color: #666; text-transform: uppercase; font-weight: 800;">Active Plan</span>
+                    <span style="font-size: 13px; color: #666; font-weight: 800;">Active Plan</span>
                     <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
@@ -228,7 +246,9 @@
         </section>
 
         <section id="view-submit" class="view-section">
-            <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-bottom: 30px;">← Cancel Production</button>
+            <div style="margin-bottom: 30px; text-align: left;">
+                <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; letter-spacing: 1px;">← Cancel Production</button>
+            </div>
             <div class="card">
                 <form id="inventory-form">
                     <div class="form-group">
@@ -244,8 +264,8 @@
                         <input type="file" id="f-gallery" multiple accept="image/*" style="display: none;" onchange="stageFiles(this)">
                     </div>
                     <div class="split-row" style="display:flex; gap:20px;">
-                        <div class="form-group" style="flex:1;"><label>Wall Color</label><input type="text" id="f-color" placeholder="White"></div>
-                        <div class="form-group" style="flex:1;">
+                        <div class="form-group" style="flex: 1;"><label>Wall Color</label><input type="text" id="f-color" placeholder="White"></div>
+                        <div class="form-group" style="flex: 1;">
                             <label>Logo Placement</label>
                             <select id="f-logo">
                                 <option value="Bottom Left" selected>Bottom Left</option>
@@ -263,44 +283,53 @@
         </section>
     </div>
 
+    <footer><p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p></footer>
+
     <script>
-        let userData = { listings: [], history: [] };
+        let userData = { listings: [], history: [], credits: 0, tier: '---', logo: '' };
         let stagedFiles = [];
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
+
+        function killOverlay() {
+            const ov = document.getElementById('transition-overlay');
+            if(ov) { ov.style.opacity = '0'; setTimeout(() => { ov.style.display = 'none'; }, 850); }
+        }
 
         window.onload = function() {
             const email = localStorage.getItem('pf_email');
             if (!email) { window.location.href = '/login/'; return; }
+            document.body.style.display = 'block';
             fetchDashboardData(email);
-            setTimeout(() => { 
-                const overlay = document.getElementById('transition-overlay');
-                if(overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 850); }
-            }, 1200);
+            setTimeout(killOverlay, 3000); 
         };
 
         async function fetchDashboardData(email) {
             try {
                 const res = await fetch(dataFetchWebhook, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: email }) });
-                const data = await res.json();
-                userData = { ...userData, ...data }; 
-                refreshUI();
+                if (res.ok) {
+                    const data = await res.json();
+                    userData = { ...userData, ...data };
+                    refreshUI();
+                }
             } catch (err) { console.error("Load failed", err); }
+            finally { killOverlay(); }
         }
 
         function refreshUI() {
-            const email = localStorage.getItem('pf_email');
+            const email = localStorage.getItem('pf_email') || 'Authorized';
             document.getElementById('header-email').innerText = email.toUpperCase();
             document.getElementById('header-credits').innerText = (userData.credits || 0) + ' LISTINGS REMAINING';
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
-                document.getElementById('actual-logo-img').src = userData.logo;
-                document.getElementById('actual-logo-img').style.display = 'block';
+                const actualImg = document.getElementById('actual-logo-img');
+                actualImg.src = userData.logo;
+                actualImg.style.display = 'block';
                 document.getElementById('no-logo-text').style.display = 'none';
             }
 
             const list = document.getElementById('submissions-list');
-            const items = (userData.listings || userData.history || []).reverse();
+            const items = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
             if(items.length > 0) {
                 list.innerHTML = items.map((item, idx) => {
                     const rawStatus = (item.status || 'Received').toUpperCase();
@@ -310,12 +339,13 @@
                         const id = url.split('id=')[1] || url.split('/d/')[1]?.split('/')[0];
                         return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
                     };
+                    let thumbSource = fixGoogleLink(item.thumbnail || (item.originals ? item.originals.split(',')[0].trim() : ''));
                     return `
                     <div class="listing-card">
                         <div class="listing-main-row">
                             <div class="listing-info-left">
-                                <img src="${fixGoogleLink(item.thumbnail || (item.originals ? item.originals.split(',')[0].trim() : ''))}" class="listing-thumb">
-                                <div><p class="listing-title">${item.vehicle || 'Listing'}</p><span class="listing-date">Submitted: ${item.date || '---'}</span></div>
+                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
+                                <div><p class="listing-title">${item.vehicle || item.name || 'Listing'}</p><span class="listing-date">Submitted: ${item.date || '---'}</span></div>
                             </div>
                             <div class="listing-status-right">
                                 <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span>
@@ -327,10 +357,10 @@
                             <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged ▾</button>
                         </div>
                         <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            <div class="listing-gallery">${(item.originals || '').split(',').map(u => `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>`).join('')}</div>
+                            <div class="listing-gallery">${(item.originals || '').split(',').map(u => u.trim() ? `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>` : '').join('')}</div>
                         </div>
                         <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            <div class="listing-gallery">${isComplete ? (item.staged || '').split(',').map(u => `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>`).join('')} : 'Processing...'}</div>
+                            <div class="listing-gallery">${isComplete ? (item.staged || '').split(',').map(u => u.trim() ? `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>` : '').join('')} : 'Processing...'}</div>
                         </div>
                     </div>`;
                 }).join('');
@@ -364,6 +394,32 @@
                 location.reload();
             } catch (err) { btn.classList.remove('btn-loading'); }
         });
+
+        function handleLogoSelect(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const actualImg = document.getElementById('actual-logo-img');
+                    actualImg.src = e.target.result;
+                    actualImg.style.display = 'block';
+                    document.getElementById('no-logo-text').style.display = 'none';
+                    document.getElementById('save-logo-btn').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function uploadNewLogo() {
+            const btn = document.getElementById('save-logo-btn');
+            const formData = new FormData();
+            formData.append('logoFile', document.getElementById('field-logoUpload').files[0]);
+            formData.append('accountId', userData.accountId || userData.accountID);
+            btn.classList.add('btn-loading');
+            try {
+                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
+                if (res.ok) { location.reload(); }
+            } catch (err) { btn.classList.remove('btn-loading'); }
+        }
     </script>
 </body>
 </html>
