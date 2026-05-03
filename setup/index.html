@@ -6,6 +6,10 @@
     <title>Account Setup | Premiere Flow</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* PLACEHOLDER STYLES (High-End Ghosting) */
+        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
+        input:focus::placeholder { opacity: 0.1; }
+
         /* PASSWORD METER STYLES */
         .pwd-meter-container { width: 100%; height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 15px; overflow: hidden; }
         .pwd-meter-fill { height: 100%; width: 0%; background: #ff4d4d; transition: width 0.3s ease, background-color 0.3s ease; }
@@ -14,7 +18,9 @@
         .crit-pass { color: #c5a059; font-weight: 900; }
         .crit-fail { color: #555; }
         
-        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* BUTTON STYLES */
+        .btn-main { transition: opacity 0.3s ease; }
+        .btn-main:disabled { opacity: 0.3; cursor: not-allowed; }
         
         /* Spinner for the button when processing */
         .spinner {
@@ -37,7 +43,7 @@
             <h2 style="color: #fff; margin-bottom: 10px; font-family: sans-serif; letter-spacing: -1px;">Set Your Password</h2>
             <p style="color: #888; font-size: 13px; margin-bottom: 25px; font-family: sans-serif;">Secure your studio access below.</p>
             
-            <input type="password" id="pass1" placeholder="Enter Password" onkeyup="checkPasswordStrength(this.value)" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="pass1" placeholder="Enter new password" oninput="validateForm()" style="width: 100%; padding: 12px; margin: 10px 0 0 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
             
             <div class="pwd-meter-container">
                 <div class="pwd-meter-fill" id="pwd-fill"></div>
@@ -48,9 +54,9 @@
                 <span class="crit-item crit-fail" id="crit-num">1 Num/Sym</span>
             </div>
 
-            <input type="password" id="pass2" placeholder="Confirm Password" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="pass2" placeholder="Confirm new password" oninput="validateForm()" style="width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
             
-            <button class="btn-main" id="submit-btn" onclick="submitSetup()" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px; font-family: sans-serif;">
+            <button class="btn-main" id="submit-btn" disabled onclick="submitSetup()" style="display: flex; align-items: center; justify-content: center; width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 700; margin-top: 15px; font-family: sans-serif;">
                 <span>FINISH SETUP</span>
                 <div id="btn-spinner" class="spinner"></div>
             </button>
@@ -62,10 +68,16 @@
     <script>
         let isPassStrong = false;
 
-        function checkPasswordStrength(val) {
-            const lenPass = val.length >= 8;
-            const upPass = /[A-Z]/.test(val);
-            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(val);
+        // Unified validation function checking both strength and matching
+        function validateForm() {
+            const p1 = document.getElementById('pass1').value;
+            const p2 = document.getElementById('pass2').value;
+            const btn = document.getElementById('submit-btn');
+
+            // 1. Check Strength
+            const lenPass = p1.length >= 8;
+            const upPass = /[A-Z]/.test(p1);
+            const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(p1);
 
             document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
             document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
@@ -84,6 +96,14 @@
             else if (score === 1) fill.style.backgroundColor = '#ff4d4d'; 
             else if (score === 2) fill.style.backgroundColor = '#ffa64d'; 
             else if (score === 3) fill.style.backgroundColor = '#c5a059'; 
+
+            // 2. Check Match & Enable Button
+            if (isPassStrong && p1 === p2 && p1 !== "") {
+                btn.disabled = false;
+                document.getElementById('msg').innerText = ""; // Clear any error messages
+            } else {
+                btn.disabled = true;
+            }
         }
 
         async function submitSetup() {
@@ -99,15 +119,10 @@
                 msg.innerText = "ERROR: INVALID OR MISSING TOKEN"; 
                 return; 
             }
-            if (!isPassStrong) { 
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "PLEASE MEET ALL PASSWORD REQUIREMENTS"; 
-                return; 
-            }
-            if (p1 !== p2) { 
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "PASSWORDS DO NOT MATCH"; 
-                return; 
+            
+            // Double-check just in case they bypassed the disabled HTML attribute
+            if (!isPassStrong || p1 !== p2) {
+                return;
             }
 
             msg.style.color = "#888";
@@ -121,7 +136,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         token: token, 
-                        password: p1 
+                        password: p1,
+                        confirmPassword: p2 // Sent to Make.com for the backend Router check
                     })
                 });
 
