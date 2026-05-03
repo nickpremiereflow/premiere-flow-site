@@ -127,7 +127,6 @@
 
         .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; }
 
-        /* NEW THREE-DOT MENU STYLES */
         .listing-menu-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; }
         .listing-menu-btn:hover { color: var(--accent-gold); }
 
@@ -146,7 +145,8 @@
         }
     </style>
 </head>
-<body style="display: none;"> <div id="transition-overlay">
+<body style="display: none;"> 
+    <div id="transition-overlay">
         <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
     </div>
 
@@ -327,7 +327,7 @@
                 });
                 const data = await res.json();
                 
-                // CRITICAL FIX: Ensure rowId is mapped from Sheets __rowNumber__
+                // MAP ROW NUMBERS FROM SHEETS SO RENAME WORKS
                 if (data.listings) {
                     data.listings = data.listings.map(item => ({
                         ...item,
