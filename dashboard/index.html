@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../style.css">
     
     <style>
-        /* DASHBOARD CRITICAL UI */
+        /* DASHBOARD CRITICAL OVERRIDES */
         #app-container { margin-top: 140px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -24,17 +24,16 @@
         
         .form-group { margin-bottom: 30px; text-align: left; }
         label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
-        input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        input, textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; }
 
         .btn-main { width: 100%; padding: 22px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; border: none; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; }
 
-        /* LISTING CARDS */
         .listing-card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; overflow: hidden; margin-bottom: 25px; display: flex; flex-direction: column; }
         .listing-main-row { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
         .listing-info-left { display: flex; align-items: center; gap: 15px; flex: 1; text-align: left; }
-        .listing-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
+        .listing-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #222; background: #000; }
         .listing-title { margin: 0 0 4px 0; font-weight: 800; font-size: 15px; color: #fff; }
         .listing-date { font-size: 10px; color: #555; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -63,7 +62,6 @@
         .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s infinite; }
         @keyframes loadingBarSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
 
-        /* THE OVERLAY MUST WORK */
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease; pointer-events: none; }
         .pulse-logo { animation: pulse 2s infinite; width: 180px; filter: brightness(0); }
         @keyframes pulse { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } }
@@ -75,20 +73,31 @@
         <img src="https://premiereflow.com/logo.png" class="pulse-logo" alt="Loading...">
     </div>
 
-    <script>
-        // 1. IMMEDIATE OVERLAY KILLER (Safety First)
-        function killOverlay() {
-            const ov = document.getElementById('transition-overlay');
-            if(ov) {
-                ov.style.opacity = '0';
-                setTimeout(() => { ov.style.display = 'none'; }, 850);
-            }
-        }
-        // Force it after 4 seconds no matter what
-        setTimeout(killOverlay, 4000);
-    </script>
-
-    <script src="/header.js"></script>
+    <header class="main-top-header">
+        <div class="header-left">
+            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a>
+        </div>
+        <nav class="header-nav">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/about/" class="nav-link">About</a>
+            <div class="contact-wrapper">
+                <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
+                <div id="contactBubble" class="contact-bubble">
+                    <span style="font-size: 9px; display: block; margin-bottom: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span>
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
+                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
+                </div>
+            </div>
+            <a href="/terms/" class="nav-link">Terms</a>
+        </nav>
+        <div class="header-right">
+            <div class="user-meta-stack">
+                <span id="header-email-display" class="user-email-text">---</span>
+                <span onclick="signOut()" class="log-out-text">Log Out</span>
+            </div>
+            <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
+        </div>
+    </header>
 
     <div id="app-container">
         <nav class="dash-menu">
@@ -109,7 +118,7 @@
         <section id="view-notifications" class="view-section">
             <h3>Recent activity</h3>
             <div class="card" style="border-left: 4px solid var(--accent-gold);">
-                <p style="font-size: 14px; margin: 0; line-height: 1.6; text-align: left;"><b>System:</b> Dashboard operational.</p>
+                <p style="font-size: 14px; margin: 0; line-height: 1.6; text-align: left;"><b>System:</b> Dashboard operational. Ready for staging.</p>
                 <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800; text-align: left;">Just Now</span>
             </div>
         </section>
@@ -208,10 +217,20 @@
         let stagedFiles = [];
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
+        function killOverlay() {
+            const ov = document.getElementById('transition-overlay');
+            if(ov) {
+                ov.style.opacity = '0';
+                setTimeout(() => { ov.style.display = 'none'; }, 850);
+            }
+        }
+
         window.onload = function() {
             const email = localStorage.getItem('pf_email');
             if (!email) { window.location.href = '/login/'; return; }
+            document.getElementById('header-email-display').innerText = email.toUpperCase();
             fetchDashboardData(email);
+            setTimeout(killOverlay, 3500); 
         };
 
         async function fetchDashboardData(email) {
@@ -228,7 +247,7 @@
                     renderListings();
                 }
             } catch (err) { console.error("Load failed", err); }
-            finally { killOverlay(); } // Always kill overlay when attempt finishes
+            finally { killOverlay(); }
         }
 
         function renderListings() {
@@ -246,7 +265,6 @@
                     return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
                 };
                 let thumbSource = fixGoogleLink(item.thumbnail || (item.originals ? item.originals.split(',')[0].trim() : ''));
-
                 return `
                 <div class="listing-card">
                     <div class="listing-main-row">
@@ -348,6 +366,8 @@
         }
 
         function signOut() { localStorage.clear(); window.location.href = '/login/'; }
+        function toggleContact(e) { e.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); }
+        function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); }
     </script>
 </body>
 </html>
