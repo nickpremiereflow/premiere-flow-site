@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Account Dashboard | Premiere Flow</title>
     
-    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <style>
@@ -118,11 +117,9 @@
 
         .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; }
         .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes loadingBarSlide { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(350%); width: 30%; } }
 
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); width: 180px; filter: brightness(0); }
-        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
+        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
 
         footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; width: 100%; box-sizing: border-box; }
         .footer-copyright { color: #ffffff; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
@@ -144,15 +141,15 @@
         }
     </style>
 </head>
-<body style="display: none;"> 
-    <div id="transition-overlay">
-        <img src="https://premiereflow.com/logo.png" class="pulse-logo">
+<body style="display: none;"> <div id="transition-overlay">
+        <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
     </div>
 
     <header id="main-header">
         <div class="header-left">
             <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a>
         </div>
+
         <nav class="header-nav">
             <a href="/" class="nav-link">Home</a>
             <a href="/about/" class="nav-link">About</a>
@@ -166,6 +163,7 @@
             </div>
             <a href="/terms/" class="nav-link">Terms</a>
         </nav>
+
         <div class="header-right">
             <div class="user-info-stack">
                 <span class="user-email" id="header-email">---</span>
@@ -176,6 +174,7 @@
     </header>
 
     <div id="app-container">
+        
         <nav class="dash-menu">
             <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span>
             <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')">Alerts</span>
@@ -232,7 +231,7 @@
                     <form id="support-form">
                         <div class="form-group">
                             <label>Subject</label>
-                            <input type="text" id="sup-subject" required placeholder="Subject">
+                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my listing">
                         </div>
                         <div class="form-group">
                             <label>Inquiry</label>
@@ -243,6 +242,7 @@
                 </div>
                 <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;">
                     <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3>
+                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible.</p>
                     <button class="btn-split" onclick="resetSupportTab()" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
                 </div>
             </div>
@@ -250,7 +250,7 @@
 
         <section id="view-submit" class="view-section">
             <div style="margin-bottom: 30px;">
-                <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer;">← Cancel Production</button>
+                <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Production</button>
             </div>
             <div class="card">
                 <form id="inventory-form">
@@ -275,7 +275,7 @@
                             <input type="text" id="f-color" placeholder="e.g. White (Default)">
                         </div>
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label>Logo Placement</label>
+                            <label id="logo-label-text">Logo Placement</label>
                             <select id="f-logo">
                                 <option value="Bottom Left" selected>Bottom Left</option>
                                 <option value="Bottom Right">Bottom Right</option>
@@ -292,66 +292,142 @@
         </section>
     </div>
 
-    <footer>
+    <footer id="dashboard-footer">
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
 
     <script>
         let userData = { listings: [], history: [] };
         let stagedFiles = [];
+        
+        // --- WEBHOOK CONFIGURATION ---
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             const savedPass = localStorage.getItem('pf_pass');
-            if (!savedEmail || !savedPass) { window.location.href = '/login/'; return; }
+            
+            // SECURITY CHECK: If no credentials exist, boot them to login immediately
+            if (!savedEmail || !savedPass) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            // If verified, show the body and fetch data
             document.body.style.display = 'block';
             fetchDashboardData(savedEmail);
+            
+            // Fade out transition overlay
             setTimeout(() => { 
-                const overlay = document.getElementById('transition-overlay');
-                if(overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 850); }
+                document.getElementById('transition-overlay').style.opacity = '0';
+                setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
             }, 500);
         };
 
         async function fetchDashboardData(email) {
             try {
-                const res = await fetch(dataFetchWebhook, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: email }) });
+                const res = await fetch(dataFetchWebhook, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: email })
+                });
                 const data = await res.json();
+                
                 userData = { ...userData, ...data }; 
                 refreshUI();
-            } catch (err) { console.error("Load failed", err); }
+            } catch (err) {
+                console.error("Dashboard data load failed", err);
+            }
         }
 
         function refreshUI() {
-            const email = localStorage.getItem('pf_email') || 'Authorized';
-            document.getElementById('header-email').innerText = email.toUpperCase();
-            document.getElementById('header-credits').innerText = (userData.credits || 0) + ' LISTINGS REMAINING';
+            const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
+            document.getElementById('header-email').innerText = currentEmail.toUpperCase();
+            
+            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
+            if (isUnlimited) {
+                document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
+            } else {
+                document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' LISTINGS REMAINING';
+            }
+
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
+            const actualImg = document.getElementById('actual-logo-img');
+            const noLogoText = document.getElementById('no-logo-text');
+            const selectLogoBtn = document.getElementById('btn-select-logo');
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
-                const actualImg = document.getElementById('actual-logo-img');
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
-                document.getElementById('no-logo-text').style.display = 'none';
+                noLogoText.style.display = 'none';
+                selectLogoBtn.innerText = 'Update Logo';
             }
 
             const list = document.getElementById('submissions-list');
-            const items = (userData.listings || userData.history || []).reverse();
-            if(items.length > 0) {
-                list.innerHTML = items.map((item, idx) => {
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
+            
+            if(validHistory.length > 0) {
+                list.innerHTML = validHistory.map((item, idx) => {
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
+                    
                     const fixGoogleLink = (url) => {
-                        if (!url || !url.includes('drive.google.com')) return url;
-                        const id = url.split('id=')[1] || url.split('/d/')[1]?.split('/')[0];
-                        return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
+                        if (!url) return '';
+                        let trimmed = url.trim();
+                        if (trimmed.includes('drive.google.com')) {
+                            const id = trimmed.split('id=')[1] || trimmed.split('/d/')[1]?.split('/')[0];
+                            if (id) {
+                                return `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
+                            }
+                        }
+                        return trimmed;
                     };
+
+                    let originalGallery = '<p style="color:#222; font-size:10px; padding:10px;">No images available</p>';
+                    if (item.originals) {
+                        const urls = item.originals.split(',').filter(u => u.trim() !== "");
+                        originalGallery = `
+                            <div class="listing-gallery">
+                                ${urls.map(url => `
+                                    <div class="gallery-item">
+                                        <a href="${url.trim()}" target="_blank">
+                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>`;
+                    }
+
+                    let stagedGallery = '<p style="font-size: 11px; color: #333; text-align: center;">Final staged assets will appear here once processing is complete.</p>';
+                    if (item.staged && isComplete) {
+                        const urls = item.staged.split(',').filter(u => u.trim() !== "");
+                        stagedGallery = `
+                            <div class="listing-gallery">
+                                ${urls.map(url => `
+                                    <div class="gallery-item">
+                                        <a href="${url.trim()}" target="_blank">
+                                            <img src="${fixGoogleLink(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>`;
+                    }
+
+                    let thumbSource = item.thumbnail;
+                    if (!thumbSource && item.originals) {
+                        thumbSource = item.originals.split(',')[0].trim();
+                    }
+                    thumbSource = fixGoogleLink(thumbSource);
+
                     return `
                     <div class="listing-card">
                         <div class="listing-main-row">
                             <div class="listing-info-left">
-                                <img src="${fixGoogleLink(item.thumbnail || (item.originals ? item.originals.split(',')[0].trim() : ''))}" class="listing-thumb">
-                                <div><p class="listing-title">${item.vehicle || 'Listing'}</p><span class="listing-date">Submitted: ${item.date || '---'}</span></div>
+                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
+                                <div>
+                                    <p class="listing-title">${item.vehicle || item.name || 'Listing'}</p>
+                                    <span class="listing-date">Submitted: ${item.date || '---'}</span>
+                                </div>
                             </div>
                             <div class="listing-status-right">
                                 <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span>
@@ -359,14 +435,14 @@
                             </div>
                         </div>
                         <div class="listing-accordion-row">
-                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Originals ▾</button>
-                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged ▾</button>
+                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Assets ▾</button>
+                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged Assets ▾</button>
                         </div>
                         <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            <div class="listing-gallery">${(item.originals || '').split(',').map(u => `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>`).join('')}</div>
+                             ${originalGallery}
                         </div>
                         <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">
-                            <div class="listing-gallery">${isComplete ? (item.staged || '').split(',').map(u => `<div class="gallery-item"><img src="${fixGoogleLink(u.trim())}"></div>`).join('')} : 'Processing...'}</div>
+                            ${stagedGallery}
                         </div>
                     </div>`;
                 }).join('');
@@ -375,15 +451,49 @@
             }
         }
 
-        function toggleAccordion(id) { const p = document.getElementById(id); p.style.display = (p.style.display === "none") ? "block" : "none"; }
-        function signOut() { localStorage.clear(); window.location.href = '/login/'; }
-        function showTab(t) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active')); document.getElementById('view-' + t).classList.add('active'); document.getElementById('tab-' + t)?.classList.add('active'); window.scrollTo(0,0); }
+        function toggleAccordion(id) {
+            const panel = document.getElementById(id);
+            panel.style.display = (panel.style.display === "none") ? "block" : "none";
+        }
+
+        function signOut() {
+            localStorage.removeItem('pf_email');
+            localStorage.removeItem('pf_pass');
+            // Instead of reloading, push them to the login page
+            window.location.href = '/login/'; 
+        }
+
+        function showTab(t) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('view-' + t).classList.add('active');
+            const tabBtn = document.getElementById('tab-' + t);
+            if(tabBtn) tabBtn.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function toggleMobileMenu() {
+            document.querySelector('.header-nav').classList.toggle('mobile-active');
+        }
+
         function openSubmit() { showTab('submit'); }
-        function stageFiles(input) { Array.from(input.files).forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); }); renderGallery(); }
-        function renderGallery() { const cont = document.getElementById('staging-gallery'); cont.innerHTML = stagedFiles.map((f, i) => `<div class="thumb-wrapper"><img src="${URL.createObjectURL(f)}"><button type="button" class="remove-thumb" onclick="stagedFiles.splice(${i}, 1); renderGallery();">✕</button></div>`).join(''); }
-        function toggleContact(e) { e.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); }
-        function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); }
-        function toggleMobileMenu() { document.querySelector('.header-nav').classList.toggle('mobile-active'); }
+
+        function stageFiles(input) {
+            const incoming = Array.from(input.files);
+            incoming.forEach(f => { if (stagedFiles.length < 10) stagedFiles.push(f); });
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const cont = document.getElementById('staging-gallery');
+            cont.innerHTML = '';
+            stagedFiles.forEach((f, i) => {
+                const url = URL.createObjectURL(f);
+                cont.innerHTML += `<div class="thumb-wrapper"><img src="${url}"><button type="button" class="remove-thumb" onclick="removePhoto(${i})">✕</button></div>`;
+            });
+        }
+
+        function removePhoto(i) { stagedFiles.splice(i, 1); renderGallery(); }
 
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -398,8 +508,34 @@
             stagedFiles.forEach(f => formData.append('uploadAssets', f));
             try {
                 await fetch('https://hook.us2.make.com/ffvrlwmhkukr66bmik4obd0c1ymi2sso', { method: 'POST', body: formData });
-                location.reload();
+                document.getElementById('inventory-form').reset();
+                stagedFiles = []; renderGallery();
+                btn.classList.remove('btn-loading');
+                showTab('dashboard');
+                fetchDashboardData(localStorage.getItem('pf_email'));
             } catch (err) { btn.classList.remove('btn-loading'); }
+        });
+
+        document.getElementById('support-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('support-submit-btn');
+            btn.classList.add('btn-loading');
+            const payload = {
+                accountId: userData.accountId || userData.accountID,
+                email: localStorage.getItem('pf_email'),
+                subject: document.getElementById('sup-subject').value.trim(),
+                inquiry: document.getElementById('sup-inquiry').value.trim()
+            };
+            try {
+                await fetch('https://hook.us2.make.com/nywbhvlk1rnd96ff77g6oqyifiugbbch', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                btn.classList.remove('btn-loading');
+                document.getElementById('support-form-container').style.display = 'none';
+                document.getElementById('support-confirmation').style.display = 'block';
+            } catch (err) { btn.classList.remove('btn-loading'); alert("Connection error."); }
         });
 
         function handleLogoSelect(input) {
@@ -417,15 +553,39 @@
         }
 
         async function uploadNewLogo() {
+            const file = document.getElementById('field-logoUpload').files[0];
             const btn = document.getElementById('save-logo-btn');
             const formData = new FormData();
-            formData.append('logoFile', document.getElementById('field-logoUpload').files[0]);
+            formData.append('logoFile', file);
             formData.append('accountId', userData.accountId || userData.accountID);
             btn.classList.add('btn-loading');
             try {
                 const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
-                if (res.ok) { location.reload(); }
+                if (res.ok) {
+                    userData.logo = URL.createObjectURL(file);
+                    refreshUI(); btn.classList.remove('btn-loading');
+                    setTimeout(() => { btn.style.display = 'none'; }, 2000);
+                }
             } catch (err) { btn.classList.remove('btn-loading'); }
+        }
+
+        function toggleContact(event) {
+            event.stopPropagation();
+            document.getElementById("contactBubble").classList.toggle("show");
+        }
+
+        function copyEmail() {
+            navigator.clipboard.writeText("info@premiereflow.com");
+            const btn = document.querySelector(".copy-btn");
+            btn.innerText = "DONE";
+            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+        }
+
+        window.onclick = function(event) {
+            const bubble = document.getElementById("contactBubble");
+            if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target)) {
+                bubble.classList.remove('show');
+            }
         }
     </script>
 </body>
