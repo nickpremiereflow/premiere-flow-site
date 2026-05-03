@@ -60,7 +60,7 @@
         .nav-link { 
             color: #666; text-decoration: none; font-size: 11px; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; 
-            cursor: pointer; line-height: 1; /* Fixed vertical baseline */
+            cursor: pointer; line-height: 1; 
         }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
@@ -166,47 +166,6 @@
             margin-bottom: 0;
         }
 
-        /* LOGIN MODAL */
-        #loginModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;
-        }
-        .login-card {
-            background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333;
-            width: 100%; max-width: 380px; text-align: center; position: relative;
-        }
-        .login-card input {
-            width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444;
-            color: #fff; border-radius: 6px; box-sizing: border-box;
-        }
-        .btn-login {
-            position: relative; overflow: hidden;
-            width: 100%; padding: 12px; background: #fff; color: #000; border: none;
-            border-radius: 6px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase;
-        }
-        
-        /* LUXURY PROGRESS BAR ANIMATION */
-        .btn-loading {
-            pointer-events: none;
-            opacity: 0.9;
-        }
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            width: 30%;
-            background: #000;
-            border-radius: 4px;
-            animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes loadingBarSlide {
-            0% { transform: translateX(-100%); width: 30%; }
-            50% { width: 50%; }
-            100% { transform: translateX(350%); width: 30%; }
-        }
-
         /* NEW WHITE TRANSITION OVERLAY */
         #transition-overlay { 
             position: fixed; 
@@ -222,8 +181,6 @@
         }
         .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.4; transform: scale(0.98); } }
-
-        .close-modal { position: absolute; top: 15px; right: 20px; color: #555; cursor: pointer; font-size: 20px; }
 
         /* --- VISIBLE FOOTER --- */
         footer { 
@@ -313,13 +270,13 @@
         </nav>
 
         <div class="header-right">
-            <button id="btn-header-login" class="header-btn" onclick="toggleModal()">Partner Login</button>
+            <button id="btn-header-login" class="header-btn" onclick="window.location.href='/login/'">Partner Login</button>
             <div id="header-logged-in" style="display: none; align-items: center; gap: 10px;">
                 <div class="user-meta-stack">
                     <span id="header-email-display" class="user-email-text"></span>
                     <span onclick="signOut()" class="log-out-text">Log Out</span>
                 </div>
-                <a href="../submit/" class="header-btn gold-btn">Dashboard</a>
+                <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
             </div>
             <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
         </div>
@@ -361,28 +318,12 @@
         </div>
     </main>
 
-    <div id="loginModal" class="modal-overlay">
-        <div class="login-card">
-            <span class="close-modal" onclick="toggleModal()">×</span>
-            <img src="../logo.png" style="width: 120px; margin-bottom: 20px;">
-            <h2 style="color: #fff; font-size: 1.2rem; margin-bottom: 20px;">Partner Login</h2>
-            <input type="email" id="log-email" placeholder="Email Address">
-            <input type="password" id="log-pass" placeholder="Password">
-            <button class="btn-login" onclick="portalAuth()">Unlock Studio</button>
-            
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="../submit/" onclick="localStorage.clear();" style="color: #c5a059; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; transition: 0.3s;">Forgot Password?</a>
-            </div>
-
-            <p id="log-msg" style="margin-top: 15px; font-size: 12px; color: #ff4d4d;"></p>
-        </div>
-    </div>
-
     <footer>
         <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
     </footer>
 
     <script>
+        // --- AUTH & HEADER STATE LOGIC ---
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
             if (savedEmail) {
@@ -395,77 +336,12 @@
         function signOut() {
             localStorage.removeItem('pf_email');
             localStorage.removeItem('pf_pass');
-            window.location.reload(); 
-        }
-
-        function toggleModal() {
-            const modal = document.getElementById('loginModal');
-            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+            window.location.href = '/login/'; 
         }
 
         function toggleMobileMenu() {
             const nav = document.querySelector('.header-nav');
             nav.classList.toggle('mobile-active');
-        }
-
-        async function portalAuth() {
-            const email = document.getElementById('log-email').value;
-            const pass = document.getElementById('log-pass').value;
-            const msg = document.getElementById('log-msg');
-            const btn = document.querySelector('.btn-login');
-            const transitionOverlay = document.getElementById('transition-overlay');
-
-            if (!email || !pass) { 
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "Please enter credentials."; 
-                return; 
-            }
-
-            msg.style.display = "none";
-            btn.classList.add('btn-loading');
-            btn.innerText = "AUTHENTICATING...";
-            btn.disabled = true;
-
-            try {
-                const response = await fetch('https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: pass })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    localStorage.setItem('pf_email', email);
-                    localStorage.setItem('pf_pass', pass);
-                    
-                    // Trigger the white fade out before redirecting
-                    transitionOverlay.style.display = 'flex';
-                    setTimeout(() => {
-                        transitionOverlay.style.opacity = '1';
-                    }, 10);
-
-                    // Wait for the fade to finish, then send them to the dashboard
-                    setTimeout(() => {
-                        window.location.href = "../submit/"; 
-                    }, 800);
-                    
-                } else {
-                    btn.classList.remove('btn-loading');
-                    btn.innerText = "Unlock Studio";
-                    btn.disabled = false;
-                    msg.style.color = "#ff4d4d";
-                    msg.innerText = data.error || "Login failed.";
-                    msg.style.display = "block";
-                }
-            } catch (e) {
-                btn.classList.remove('btn-loading');
-                btn.innerText = "Unlock Studio";
-                btn.disabled = false;
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "Connection error. Check your Make scenario.";
-                msg.style.display = "block";
-            }
         }
 
         function toggleContact(event) {
@@ -483,10 +359,10 @@
         window.onclick = function(event) {
             const bubble = document.getElementById("contactBubble");
             const contactBtn = document.getElementById("contactBtn");
+            
             if (bubble && bubble.classList.contains('show') && !bubble.contains(event.target) && event.target !== contactBtn) {
                 bubble.classList.remove('show');
             }
-            if (event.target === document.getElementById('loginModal')) toggleModal();
         }
     </script>
 </body>
