@@ -425,12 +425,12 @@
         let isPassStrong = false;
         
         // --- WEBHOOK CONFIGURATION ---
+        // Your [PORTAL] Login webhook
         const loginWebhook = 'https://hook.us2.make.com/ysngiu1djqh8wagjtn15rgzpwnwd9leu';
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
         
-        // ADD YOUR TWO NEW MAKE.COM WEBHOOKS HERE:
-        const resetRequestWebhook = 'https://hook.us2.make.com/3gh3awd4o6wsajv1vuso8ue765l8bzs3'; // Scenario A
-        const resetVerifyWebhook = 'https://hook.us2.make.com/0qqm7s3zsceqatg9sbyato6luir0s7rk'; // Scenario B
+        const resetRequestWebhook = 'https://hook.us2.make.com/3gh3awd4o6wsajv1vuso8ue765l8bzs3';
+        const resetVerifyWebhook = 'https://hook.us2.make.com/0qqm7s3zsceqatg9sbyato6luir0s7rk';
 
         window.onload = function() {
             const savedEmail = localStorage.getItem('pf_email');
@@ -488,12 +488,10 @@
             const upPass = /[A-Z]/.test(val);
             const numSymPass = /[0-9!@#$%^&*(),.?":{}|<>]/.test(val);
 
-            // Update UI Text Classes
             document.getElementById('crit-len').className = `crit-item ${lenPass ? 'crit-pass' : 'crit-fail'}`;
             document.getElementById('crit-up').className = `crit-item ${upPass ? 'crit-pass' : 'crit-fail'}`;
             document.getElementById('crit-num').className = `crit-item ${numSymPass ? 'crit-pass' : 'crit-fail'}`;
 
-            // Calculate Score & Meter Fill
             let score = 0;
             if(lenPass) score++;
             if(upPass) score++;
@@ -504,9 +502,9 @@
             
             fill.style.width = (score / 3 * 100) + '%';
             if (score === 0) fill.style.width = '0%';
-            else if (score === 1) fill.style.backgroundColor = '#ff4d4d'; // Red
-            else if (score === 2) fill.style.backgroundColor = '#ffa64d'; // Orange
-            else if (score === 3) fill.style.backgroundColor = 'var(--accent-gold)'; // Gold
+            else if (score === 1) fill.style.backgroundColor = '#ff4d4d';
+            else if (score === 2) fill.style.backgroundColor = '#ffa64d';
+            else if (score === 3) fill.style.backgroundColor = 'var(--accent-gold)';
         }
 
         async function submitNewPassword() {
@@ -534,7 +532,6 @@
                 btn.classList.remove('btn-loading');
 
                 if(data.success) {
-                    // Log them in immediately with new credentials
                     document.getElementById('login-email').value = email;
                     document.getElementById('login-password').value = newPass;
                     toggleAuthUI('login');
@@ -550,6 +547,7 @@
             }
         }
 
+        // --- THE HASH-AWARE AUTHENTICATION ---
         async function portalAuth() {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
@@ -561,6 +559,7 @@
             error.style.display = 'none';
             
             try {
+                // Your loginWebhook now correctly checks the Salt and Hash in the Sheet
                 const res = await fetch(loginWebhook, {
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'},
@@ -633,7 +632,6 @@
             }
 
             const list = document.getElementById('submissions-list');
-            // FIX: Added .reverse() to force newest submissions to the top
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
             
             if(validHistory.length > 0) {
