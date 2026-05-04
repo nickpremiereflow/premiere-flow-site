@@ -46,8 +46,8 @@
         }
 
         .header-left { display: flex; align-items: center; height: 100%; z-index: 1001; }
-        .header-left a { display: flex; align-items: center; height: 100%; }
-        .logo-img { height: 22px; border: none; transition: 0.3s; display: block; }
+        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; }
+        .logo-img { height: 22px; width: auto; transition: 0.3s; display: block; margin: auto 0; }
         .logo-img:hover { opacity: 0.7; }
 
         .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; }
@@ -420,7 +420,12 @@
 
                 userData = { ...userData, ...data }; 
                 refreshUI();
-            } catch (err) { console.error("Dashboard data load failed", err); }
+            } catch (err) { 
+                console.error("Dashboard data load failed", err); 
+                // FETCH FAILED OR RETURNED EMPTY - FORCE UI UPDATE ANYWAY
+                refreshUI();
+                document.getElementById('submissions-list').innerHTML = '<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>';
+            }
         }
 
         function refreshUI() {
@@ -539,7 +544,7 @@
                     </div>`;
                 }).join('');
             } else {
-                list.innerHTML = `<div class="card" style="text-align:center; padding: 50px 20px;"><p style="color: #444; font-size: 11px; text-transform: uppercase; font-weight:800;">No Listings Found</p></div>`;
+                list.innerHTML = `<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>`;
             }
         }
 
