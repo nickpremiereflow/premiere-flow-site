@@ -430,7 +430,7 @@
 
         function refreshUI() {
             const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
-            document.getElementById('header-email').innerText = currentEmail.toUpperCase();
+            document.getElementById('header-email').innerText = currentEmail.toLowerCase();
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
             if (isUnlimited) {
@@ -464,21 +464,33 @@
             let thumb = '';
             let rawUrl = urlsRaw.trim();
 
-            if (rawUrl.includes('ucarecdn.com') && rawUrl.includes('~')) {
-                let groupBase = rawUrl.split('~')[0];
-                let countStr = rawUrl.split('~')[1].replace('/', '');
-                let count = parseInt(countStr);
-                
-                for(let i = 0; i < count; i++) {
-                    let singleImgUrl = `${groupBase}~${count}/nth/${i}/`;
-                    html += `<div class="gallery-item"><a href="${singleImgUrl}" target="_blank"><img src="${singleImgUrl}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`;
+            if (rawUrl.includes('ucarecdn.com')) {
+                // Handle Group Uploadcare Links (Multiple Files)
+                if (rawUrl.includes('~')) {
+                    let groupBase = rawUrl.split('~')[0];
+                    let countStr = rawUrl.split('~')[1].replace('/', '');
+                    let count = parseInt(countStr);
+                    
+                    for(let i = 0; i < count; i++) {
+                        let singleImgUrl = `${groupBase}~${count}/nth/${i}/`;
+                        html += `<div class="gallery-item"><a href="${singleImgUrl}" target="_blank"><img src="${singleImgUrl}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`;
+                    }
+                    thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
+                    
+                    html = `<div class="listing-gallery">${html}</div>
+                            <a href="${rawUrl}archive/zip/" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
+                    
+                    return { html: html, thumb: thumb };
+                } 
+                // Handle Single Uploadcare Links (One File)
+                else {
+                    let cleanUrl = rawUrl.endsWith('/') ? rawUrl : rawUrl + '/';
+                    thumb = `${cleanUrl}-/scale_crop/400x400/center/`;
+                    html = `<div class="listing-gallery">
+                                <div class="gallery-item"><a href="${cleanUrl}" target="_blank"><img src="${thumb}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>
+                            </div>`;
+                    return { html: html, thumb: thumb };
                 }
-                thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
-                
-                html = `<div class="listing-gallery">${html}</div>
-                        <a href="${rawUrl}archive/zip/" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
-                
-                return { html: html, thumb: thumb };
             }
             
             if (rawUrl.includes('drive.google.com')) {
@@ -490,7 +502,7 @@
                 }
             }
 
-            if (rawUrl.includes('.jpg') || rawUrl.includes('.png')) {
+            if (rawUrl.includes('.jpg') || rawUrl.includes('.png') || rawUrl.includes('.jpeg') || rawUrl.includes('.webp')) {
                 const urls = rawUrl.split(',').filter(u => u.trim() !== "");
                 thumb = urls[0].trim();
                 html = `<div class="listing-gallery">${urls.map(url => `
@@ -499,6 +511,25 @@
             }
 
             return { html: `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' };
+        }
+
+        // Helper function to format the date
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr === '---') return '---';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr; 
+                return d.toLocaleString('en-US', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            } catch(e) {
+                return dateStr;
+            }
         }
 
         function renderSubmissions() {
@@ -527,7 +558,7 @@
                                 ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
                                     <p class="listing-title" id="name-text-${idx}">${item.vehicle || item.name || 'Listing'}</p>
-                                    <span class="listing-date">Submitted: ${item.date || '---'}</span>
+                                    <span class="listing-date">Submitted: ${formatDate(item.date)}</span>
                                 </div>
                             </div>
                             <div class="listing-status-right">
