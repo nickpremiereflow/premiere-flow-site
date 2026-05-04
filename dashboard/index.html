@@ -115,17 +115,28 @@
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
         .gallery-item img:hover { opacity: 0.7; }
 
-        /* LIVE UPLOAD PREVIEW GALLERY */
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 15px; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* SHIMMER LOADING */
         .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #0a0a0a 4%, #151515 25%, #0a0a0a 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #111; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
-        .btn-loading { pointer-events: none; opacity: 0.9; color: transparent !important; }
-        .btn-loading::after { content: ''; position: absolute; bottom: 0; left: 0; height: 4px; width: 30%; background: #000; border-radius: 4px; animation: loadingBarSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        /* NEW PREMIUM SPINNER ANIMATION */
+        .btn-loading { pointer-events: none; color: transparent !important; position: relative; }
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            left: 50%; top: 50%;
+            width: 22px; height: 22px;
+            margin: -11px 0 0 -11px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .btn-gold.btn-loading::after { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
@@ -225,15 +236,16 @@
         <section id="view-profile" class="view-section">
             <div class="card">
                 <h3>Account Logo</h3>
-                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0; background-color: #050505; overflow: hidden; padding: 15px;">
+                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0 25px 0; background-color: #050505; overflow: hidden; padding: 15px;">
                     <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
                     <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
                 </div>
-                <input type="file" id="field-logoUpload" accept="image/*" style="display: none;" onchange="handleLogoSelect(this)">
-                <div style="display: flex; gap: 15px;">
-                    <button id="btn-select-logo" onclick="document.getElementById('field-logoUpload').click()" class="btn-split">Upload Logo</button>
-                    <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none;" class="btn-split">Save to Profile</button>
+                
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <input type="hidden" role="uploadcare-uploader" id="ucare-logo-uploader" data-images-only="true" data-crop="free, 1:1" />
                 </div>
+                
+                <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; margin-top: 15px;" class="btn-main btn-gold">Save Logo to Profile</button>
             </div>
             
             <div class="card">
@@ -290,7 +302,6 @@
                         <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                             <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
-                            
                             <div id="staging-gallery" style="width: 100%;"></div>
                         </div>
                     </div>
@@ -337,17 +348,38 @@
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
             }, 500);
 
-            // --- INIT UPLOADCARE LIVE THUMBNAILS ---
+            // INIT MAIN SUBMISSION LIVE THUMBNAILS
             const ucareWidget = uploadcare.Widget('#ucare-uploader');
             ucareWidget.onChange(function(group) {
                 const gallery = document.getElementById('staging-gallery');
-                gallery.innerHTML = ''; // Clear old thumbs
+                gallery.innerHTML = ''; 
                 if (group) {
                     Promise.all(group.files()).then(function(files) {
                         files.forEach(function(fileInfo) {
                             const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/';
                             gallery.innerHTML += `<div class="thumb-wrapper"><img src="${thumbUrl}" loading="lazy"></div>`;
                         });
+                    });
+                }
+            });
+
+            // INIT LOGO UPLOAD WIDGET LIVE PREVIEW
+            const logoWidget = uploadcare.Widget('#ucare-logo-uploader');
+            logoWidget.onChange(function(file) {
+                if (file) {
+                    // Update UI while uploading huge files
+                    const noLogoText = document.getElementById('no-logo-text');
+                    noLogoText.innerText = 'PROCESSING...';
+                    noLogoText.style.display = 'block';
+                    
+                    file.done(function(fileInfo) {
+                        const actualImg = document.getElementById('actual-logo-img');
+                        actualImg.src = fileInfo.cdnUrl;
+                        actualImg.style.display = 'block';
+                        noLogoText.style.display = 'none';
+                        document.getElementById('save-logo-btn').style.display = 'block';
+                    }).fail(function() {
+                        noLogoText.innerText = 'UPLOAD FAILED';
                     });
                 }
             });
@@ -389,12 +421,13 @@
             
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
-            const selectLogoBtn = document.getElementById('btn-select-logo');
+            
             if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
                 actualImg.src = userData.logo;
                 actualImg.style.display = 'block';
                 noLogoText.style.display = 'none';
-                selectLogoBtn.innerText = 'Update Logo';
+            } else {
+                noLogoText.innerText = 'NO LOGO SET';
             }
 
             renderSubmissions();
@@ -571,10 +604,9 @@
                     
                     setTimeout(() => {
                         document.getElementById('inventory-form').reset();
-                        const widget = uploadcare.Widget('[role=uploadcare-uploader]');
+                        const widget = uploadcare.Widget('#ucare-uploader');
                         if(widget) widget.value(null);
                         
-                        // Clear staging gallery visually
                         document.getElementById('staging-gallery').innerHTML = '';
                         
                         btn.innerText = originalText;
@@ -604,42 +636,61 @@
             }
         });
 
-        function handleLogoSelect(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const actualImg = document.getElementById('actual-logo-img');
-                    actualImg.src = e.target.result;
-                    actualImg.style.display = 'block';
-                    document.getElementById('no-logo-text').style.display = 'none';
-                    document.getElementById('save-logo-btn').style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
+        // FIXED LOGO SUBMISSION JSON
         async function uploadNewLogo() {
-            const file = document.getElementById('field-logoUpload').files[0];
+            const ucareUrl = document.getElementById('ucare-logo-uploader').value;
             const btn = document.getElementById('save-logo-btn');
-            const formData = new FormData();
-            formData.append('logoFile', file);
-            formData.append('accountId', userData.accountId || userData.accountID);
             
-            if (btn.disabled) return;
+            if (!ucareUrl || btn.disabled) return;
+            
             btn.disabled = true;
+            const originalText = btn.innerText;
+            btn.innerText = 'SAVING...';
             btn.classList.add('btn-loading');
             
             try {
-                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { method: 'POST', body: formData });
+                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: localStorage.getItem('pf_email'),
+                        accountId: userData.accountId || userData.accountID,
+                        logoUrl: ucareUrl
+                    })
+                });
+                
                 if (res.ok) {
-                    userData.logo = URL.createObjectURL(file);
+                    userData.logo = ucareUrl;
                     refreshUI(); 
+                    
                     btn.classList.remove('btn-loading');
-                    setTimeout(() => { btn.style.display = 'none'; btn.disabled = false; }, 2000);
+                    btn.innerText = 'SAVED';
+                    btn.style.backgroundColor = '#c5a059';
+                    btn.style.color = '#000';
+                    
+                    setTimeout(() => { 
+                        btn.style.display = 'none'; 
+                        btn.disabled = false;
+                        btn.innerText = originalText;
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                        uploadcare.Widget('#ucare-logo-uploader').value(null);
+                    }, 2000);
+                } else {
+                    throw new Error("Bad response");
                 }
             } catch (err) { 
                 btn.classList.remove('btn-loading'); 
-                btn.disabled = false;
+                btn.innerText = 'ERROR';
+                btn.style.backgroundColor = '#ff4d4d';
+                btn.style.color = '#fff';
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    btn.disabled = false;
+                }, 2000);
             }
         }
 
