@@ -63,7 +63,6 @@
         .header-right { display: flex; align-items: center; gap: 15px; height: 100%; z-index: 1001; }
         .user-info-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; max-width: 150px; }
         
-        /* MOBILE EMAIL FIX */
         .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
         .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; }
 
@@ -116,6 +115,11 @@
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
         .gallery-item img:hover { opacity: 0.7; }
 
+        /* LIVE UPLOAD PREVIEW GALLERY */
+        #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 15px; }
+        .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
         /* SHIMMER LOADING */
         .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #0a0a0a 4%, #151515 25%, #0a0a0a 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #111; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
@@ -146,6 +150,7 @@
             .listing-status-right { width: 100%; justify-content: space-between; }
             .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; }
             .header-nav.mobile-active { display: flex !important; }
+            #staging-gallery { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (min-width: 768px) {
@@ -283,8 +288,10 @@
                         <div style="text-align: center; margin: 25px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
                         
                         <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
-                        <div style="display: flex; justify-content: center; width: 100%;">
-                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" />
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
+                            
+                            <div id="staging-gallery" style="width: 100%;"></div>
                         </div>
                     </div>
 
@@ -329,6 +336,21 @@
                 document.getElementById('transition-overlay').style.opacity = '0';
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
             }, 500);
+
+            // --- INIT UPLOADCARE LIVE THUMBNAILS ---
+            const ucareWidget = uploadcare.Widget('#ucare-uploader');
+            ucareWidget.onChange(function(group) {
+                const gallery = document.getElementById('staging-gallery');
+                gallery.innerHTML = ''; // Clear old thumbs
+                if (group) {
+                    Promise.all(group.files()).then(function(files) {
+                        files.forEach(function(fileInfo) {
+                            const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/';
+                            gallery.innerHTML += `<div class="thumb-wrapper"><img src="${thumbUrl}" loading="lazy"></div>`;
+                        });
+                    });
+                }
+            });
         };
 
         async function fetchDashboardData(email) {
@@ -378,7 +400,6 @@
             renderSubmissions();
         }
 
-        // --- THE MAGIC INLINE UPLOADCARE PARSER ---
         function parseGalleryUrls(urlsRaw) {
             if (!urlsRaw) return { html: '<p style="color:#444; font-size:10px; padding:10px;">No images available</p>', thumb: '' };
             
@@ -386,9 +407,7 @@
             let thumb = '';
             let rawUrl = urlsRaw.trim();
 
-            // 1. Uploadcare Group URL Handling (Inline Preview)
             if (rawUrl.includes('ucarecdn.com') && rawUrl.includes('~')) {
-                // e.g. https://ucarecdn.com/uuid~10/
                 let groupBase = rawUrl.split('~')[0];
                 let countStr = rawUrl.split('~')[1].replace('/', '');
                 let count = parseInt(countStr);
@@ -399,14 +418,12 @@
                 }
                 thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
                 
-                // Add the magic ZIP Download button for delivery
                 html = `<div class="listing-gallery">${html}</div>
                         <a href="${rawUrl}archive/zip/" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
                 
                 return { html: html, thumb: thumb };
             }
             
-            // 2. Google Drive Handling (Fallback)
             if (rawUrl.includes('drive.google.com')) {
                 const id = rawUrl.split('id=')[1] || rawUrl.split('/d/')[1]?.split('/')[0];
                 if (id) {
@@ -416,7 +433,6 @@
                 }
             }
 
-            // 3. Direct Comma-Separated Links (Old fallback)
             if (rawUrl.includes('.jpg') || rawUrl.includes('.png')) {
                 const urls = rawUrl.split(',').filter(u => u.trim() !== "");
                 thumb = urls[0].trim();
@@ -437,17 +453,14 @@
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
                     
-                    // Parse Originals
                     let origData = parseGalleryUrls(item.originals);
                     let originalGallery = origData.html;
                     
-                    // Parse Staged
                     let stagedGallery = '<p style="font-size: 11px; color: #444; text-align: center; padding:20px;">Final staged assets will appear here once processing is complete.</p>';
                     if (item.staged && isComplete) {
                         stagedGallery = parseGalleryUrls(item.staged).html;
                     }
 
-                    // Determine Thumbnail (prioritize explicit thumbnail, then parsed original thumb)
                     let thumbSource = item.thumbnail || origData.thumb;
 
                     return `
@@ -560,6 +573,9 @@
                         document.getElementById('inventory-form').reset();
                         const widget = uploadcare.Widget('[role=uploadcare-uploader]');
                         if(widget) widget.value(null);
+                        
+                        // Clear staging gallery visually
+                        document.getElementById('staging-gallery').innerHTML = '';
                         
                         btn.innerText = originalText;
                         btn.style.backgroundColor = '';
