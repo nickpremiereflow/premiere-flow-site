@@ -148,7 +148,10 @@
             const btn = document.querySelector('.btn-login');
 
             if (!email || !pass) { msg.innerText = "Please enter credentials."; return; }
+            
+            const originalText = btn.innerText;
             btn.innerText = "AUTHENTICATING...";
+            btn.classList.add('btn-loading'); // Applies the coherent loading spinner
             btn.disabled = true;
 
             try {
@@ -164,11 +167,14 @@
                     setTimeout(() => { document.getElementById('transition-overlay').style.opacity = '1'; }, 10);
                     setTimeout(() => { window.location.href = "/dashboard/"; }, 800);
                 } else {
-                    btn.innerText = "Unlock Studio";
+                    btn.innerText = originalText;
+                    btn.classList.remove('btn-loading');
                     btn.disabled = false;
                     msg.innerText = data.error || "Login failed.";
                 }
             } catch (e) {
+                btn.innerText = originalText;
+                btn.classList.remove('btn-loading');
                 btn.disabled = false;
                 msg.innerText = "Connection error.";
             }
