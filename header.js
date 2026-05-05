@@ -9,15 +9,19 @@ function loadUniversalHeader() {
     const headerHTML = `
     <header class="main-top-header">
         <div class="header-left">
-            <a href="/" id="header-logo-link" style="${isHomePage ? 'visibility: hidden;' : 'visibility: visible;'}">
+            <a href="/" id="header-logo-link" class="mobile-logo-el" style="display: ${isHomePage ? 'none' : 'block'};">
                 <img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img">
             </a>
+            
+            <div id="mobile-home-auth-wrapper" style="display: ${isHomePage ? 'block' : 'none'};">
+                <button id="mobile-home-login-btn" class="header-btn" onclick="window.location.href='/login/'" style="display: none;">Partner Login</button>
+                <a href="/dashboard/" id="mobile-home-dash-btn" class="header-btn gold-btn" style="display: none;">Dashboard</a>
+            </div>
         </div>
 
         <nav class="header-nav" id="global-header-nav">
             <div class="mobile-account-info" id="mobile-auth-container" style="display: none;">
                 <span id="mobile-email-display" class="mobile-user-email"></span>
-                <span id="mobile-credits-display" class="mobile-user-credits"></span>
                 <a href="/dashboard/" class="header-btn gold-btn" style="margin-top: 10px; width: 80%;">Dashboard</a>
                 <span onclick="signOut()" class="log-out-text" style="margin-top: 10px; font-size: 11px;">Log Out</span>
             </div>
@@ -49,6 +53,7 @@ function loadUniversalHeader() {
                 </div>
                 <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
             </div>
+            
             <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button>
         </div>
     </header>`;
@@ -60,44 +65,74 @@ function loadUniversalHeader() {
 
 function syncAuthState() {
     const savedEmail = localStorage.getItem('pf_email');
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('premiereflow.com/');
+    const isMobile = window.innerWidth <= 768;
     
     // Desktop Elements
-    const btnLogin = document.getElementById('btn-header-login');
-    const divLoggedIn = document.getElementById('header-logged-in');
-    const emailDisplay = document.getElementById('header-email-display');
+    const desktopLoginBtn = document.getElementById('btn-header-login');
+    const desktopLoggedIn = document.getElementById('header-logged-in');
+    const desktopEmailDisplay = document.getElementById('header-email-display');
     
-    // Mobile Elements
+    // Mobile Home Page (Top-Left) Elements
+    const mobileHomeAuthWrapper = document.getElementById('mobile-home-auth-wrapper');
+    const mobileHomeLoginBtn = document.getElementById('mobile-home-login-btn');
+    const mobileHomeDashBtn = document.getElementById('mobile-home-dash-btn');
+
+    // Mobile Hamburger Menu (Inner Pages) Elements
     const mobileAuthContainer = document.getElementById('mobile-auth-container');
     const mobileLoginContainer = document.getElementById('mobile-login-container');
     const mobileEmailDisplay = document.getElementById('mobile-email-display');
 
-    // Check if on mobile view
-    const isMobile = window.innerWidth <= 768;
-
     if (savedEmail) {
-        // User is LOGGED IN
-        if (btnLogin && divLoggedIn) {
-            btnLogin.style.display = 'none';
-            divLoggedIn.style.display = 'flex';
-            emailDisplay.innerText = savedEmail.toLowerCase();
+        // --- USER IS LOGGED IN ---
+        
+        // 1. Desktop UI
+        if (desktopLoginBtn) desktopLoginBtn.style.display = 'none';
+        if (desktopLoggedIn) {
+            desktopLoggedIn.style.display = 'flex';
+            if(desktopEmailDisplay) desktopEmailDisplay.innerText = savedEmail.toLowerCase();
         }
         
-        if (mobileAuthContainer && mobileLoginContainer) {
-             mobileLoginContainer.style.display = 'none';
-             if(isMobile) {
+        // 2. Mobile Home Page (Top-Left)
+        if (isMobile && isHomePage) {
+            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'block';
+            if (mobileHomeLoginBtn) mobileHomeLoginBtn.style.display = 'none';
+            if (mobileHomeDashBtn) mobileHomeDashBtn.style.display = 'inline-block';
+        } else {
+            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'none';
+        }
+        
+        // 3. Mobile Hamburger Menu (Inner Pages)
+        if (mobileLoginContainer) mobileLoginContainer.style.display = 'none';
+        if (mobileAuthContainer) {
+             if (isMobile && !isHomePage) {
                  mobileAuthContainer.style.display = 'flex';
-                 mobileEmailDisplay.innerText = savedEmail.toLowerCase();
-                 // Credits will be injected here by the dashboard script later
-                 document.getElementById('mobile-credits-display').innerText = "LOADING CREDITS...";
+                 if(mobileEmailDisplay) mobileEmailDisplay.innerText = savedEmail.toLowerCase();
              } else {
                  mobileAuthContainer.style.display = 'none';
              }
         }
+        
     } else {
-        // User is LOGGED OUT
-        if (mobileAuthContainer && mobileLoginContainer) {
-            mobileAuthContainer.style.display = 'none';
-            if(isMobile) {
+        // --- USER IS LOGGED OUT ---
+        
+        // 1. Desktop UI
+        if (desktopLoginBtn) desktopLoginBtn.style.display = 'inline-block';
+        if (desktopLoggedIn) desktopLoggedIn.style.display = 'none';
+        
+        // 2. Mobile Home Page (Top-Left)
+        if (isMobile && isHomePage) {
+            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'block';
+            if (mobileHomeLoginBtn) mobileHomeLoginBtn.style.display = 'inline-block';
+            if (mobileHomeDashBtn) mobileHomeDashBtn.style.display = 'none';
+        } else {
+            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'none';
+        }
+        
+        // 3. Mobile Hamburger Menu (Inner Pages)
+        if (mobileAuthContainer) mobileAuthContainer.style.display = 'none';
+        if (mobileLoginContainer) {
+            if (isMobile && !isHomePage) {
                 mobileLoginContainer.style.display = 'flex';
             } else {
                 mobileLoginContainer.style.display = 'none';
@@ -152,6 +187,21 @@ window.addEventListener('click', function(event) {
 
 // Update mobile containers if window is resized
 window.addEventListener('resize', function() {
+    // Trigger the logo/button display swap dynamically if moving from desktop to mobile
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('premiereflow.com/');
+    const isMobile = window.innerWidth <= 768;
+    const logoEl = document.getElementById('header-logo-link');
+    
+    if (logoEl) {
+        if (isMobile && isHomePage) {
+            logoEl.style.display = 'none';
+        } else if (isHomePage) {
+             logoEl.style.display = 'none';
+        } else {
+             logoEl.style.display = 'block';
+        }
+    }
+    
     syncAuthState();
 });
 
