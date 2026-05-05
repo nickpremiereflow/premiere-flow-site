@@ -594,7 +594,7 @@ h1 {
 }
 
 /* ========================================
-8. CTA, FOOTER & RESPONSIVE
+8. CTA, FOOTER & COHERENT ANIMATIONS
 ========================================
 */
 .cta-area { 
@@ -637,6 +637,30 @@ footer {
     margin: 0; 
 }
 
+/* GLOBAL BUTTON LOADING SPINNER */
+.btn-loading { 
+    pointer-events: none; 
+    color: transparent !important; 
+    position: relative; 
+}
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 22px; height: 22px;
+    margin: -11px 0 0 -11px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+.btn-gold.btn-loading::after { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ========================================
+9. RESPONSIVE BREAKPOINTS
+========================================
+*/
 .hamburger { 
     display: none; 
     background: none; 
@@ -648,10 +672,6 @@ footer {
     z-index: 1002; /* Ensure it stays above the menu */
 }
 
-/* ========================================
-9. MOBILE SPECIFIC BREAKPOINTS
-========================================
-*/
 @media (max-width: 768px) {
     h1 { white-space: normal; }
     
