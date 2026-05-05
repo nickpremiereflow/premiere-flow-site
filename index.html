@@ -19,7 +19,7 @@
 
     <script src="/header.js"></script>
 
-    <div id="transition-overlay">
+    <div id="transition-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);">
         <img src="logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
     </div>
 
@@ -195,6 +195,13 @@
             afterImg.style.clipPath = `inset(0 0 0 ${val}%)`;
             handle.style.left = `${val}%`;
         }
+
+        // Clean up transition overlay on initial load (in case of back button)
+        window.addEventListener('pageshow', function() {
+            const overlay = document.getElementById('transition-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 800);
+        });
     </script>
 </body>
 </html>
