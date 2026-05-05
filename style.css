@@ -137,6 +137,7 @@ body {
     align-items: flex-end; 
     justify-content: center; 
     gap: 3px; 
+    max-width: 250px; /* Added max-width to prevent overlap */
 }
 
 .user-email-text { 
@@ -144,7 +145,13 @@ body {
     color: #888; 
     text-transform: uppercase; 
     letter-spacing: 1px; 
-    font-weight: 700; 
+    font-weight: 700;
+    display: block;
+    width: 100%;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    text-align: right; 
 }
 
 .log-out-text { 
@@ -153,6 +160,39 @@ body {
     text-transform: uppercase; 
     cursor: pointer; 
     font-weight: 800; 
+}
+
+/* MOBILE SPECIFIC ACCOUNT INFO CONTAINERS */
+.mobile-account-info {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 15px 0;
+    border-bottom: 1px solid #1a1a1a;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.mobile-user-email {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.mobile-user-credits {
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* ========================================
@@ -604,29 +644,83 @@ footer {
     color: #fff; 
     font-size: 24px; 
     cursor: pointer; 
+    padding: 10px; /* Increased tap target */
+    z-index: 1002; /* Ensure it stays above the menu */
 }
 
+/* ========================================
+9. MOBILE SPECIFIC BREAKPOINTS
+========================================
+*/
 @media (max-width: 768px) {
     h1 { white-space: normal; }
-    .main-top-header { padding: 0 20px; }
-    .hamburger { display: block; }
+    
+    /* Center Logo Logic */
+    .main-top-header { 
+        padding: 0 15px; 
+        justify-content: center; /* Push everything to center */
+    }
+    
+    .header-left {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: auto;
+    }
+    
+    .logo-img {
+        height: 20px; /* Slightly smaller for mobile */
+    }
+    
+    /* Push Right Side Elements to edges */
+    .header-right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    /* Hide desktop account info on mobile */
+    .user-meta-stack {
+        display: none !important;
+    }
+    
+    .hamburger { 
+        display: block; 
+        margin-left: auto; /* Push hamburger to right */
+    }
+    
     .header-nav { 
         display: none !important; 
         position: fixed; 
-        top: 75px; 
+        top: var(--header-height); 
         left: 0; 
         width: 100%; 
+        height: calc(100vh - var(--header-height)); /* Full screen menu */
         background: rgba(0,0,0,0.98); 
         backdrop-filter: blur(15px);
         flex-direction: column; 
-        padding: 30px 0; 
-        gap: 25px; 
+        justify-content: flex-start;
+        padding: 40px 0; 
+        gap: 30px; 
         border-bottom: 1px solid #111;
         transform: none; 
+        z-index: 999;
+        overflow-y: auto;
     }
+    
     .header-nav.mobile-active { 
         display: flex !important; 
     }
+    
+    .nav-link {
+        font-size: 14px; /* Larger tap targets */
+        padding: 15px;
+        width: 100%;
+    }
+    
+    .mobile-account-info {
+        display: flex; /* Show account info inside mobile menu */
+    }
+
     .pricing { flex-direction: column; align-items: center; }
     .card { width: 100%; max-width: 350px; }
     .dropdown-content li { font-size: 12px; }
