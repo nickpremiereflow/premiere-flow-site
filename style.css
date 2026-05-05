@@ -90,6 +90,7 @@ body {
     transition: 0.3s ease;
     cursor: pointer;
     line-height: 1;
+    white-space: nowrap; /* Forces text to stay on one line */
 }
 
 .nav-link:hover, 
@@ -137,7 +138,7 @@ body {
     align-items: flex-end; 
     justify-content: center; 
     gap: 3px; 
-    max-width: 250px; /* Added max-width to prevent overlap */
+    max-width: 250px; 
 }
 
 .user-email-text { 
@@ -253,7 +254,7 @@ body {
 ========================================
 */
 .hero-section { 
-    margin-top: 140px; /* Specific offset for fixed header */
+    margin-top: 140px; 
     padding: 0 20px; 
     max-width: 1200px; 
     margin-left: auto;
@@ -262,7 +263,7 @@ body {
 }
 
 .hero-logo { 
-    height: 110px !important; /* Forces correct size regardless of logo asset size */
+    height: 110px !important; 
     width: auto;
     max-width: 90%;
     object-fit: contain;
@@ -668,17 +669,16 @@ footer {
     color: #fff; 
     font-size: 24px; 
     cursor: pointer; 
-    padding: 10px; /* Increased tap target */
-    z-index: 1002; /* Ensure it stays above the menu */
+    padding: 10px;
+    z-index: 1002;
 }
 
 @media (max-width: 768px) {
     h1 { white-space: normal; }
     
-    /* Center Logo Logic */
     .main-top-header { 
         padding: 0 15px; 
-        justify-content: center; /* Push everything to center */
+        justify-content: center; 
     }
     
     .header-left {
@@ -689,23 +689,21 @@ footer {
     }
     
     .logo-img {
-        height: 20px; /* Slightly smaller for mobile */
+        height: 20px; 
     }
     
-    /* Push Right Side Elements to edges */
     .header-right {
         width: 100%;
         justify-content: flex-end;
     }
 
-    /* Hide desktop account info on mobile */
     .user-meta-stack {
         display: none !important;
     }
     
     .hamburger { 
         display: block; 
-        margin-left: auto; /* Push hamburger to right */
+        margin-left: auto; 
     }
     
     .header-nav { 
@@ -714,7 +712,7 @@ footer {
         top: var(--header-height); 
         left: 0; 
         width: 100%; 
-        height: calc(100vh - var(--header-height)); /* Full screen menu */
+        height: calc(100vh - var(--header-height)); 
         background: rgba(0,0,0,0.98); 
         backdrop-filter: blur(15px);
         flex-direction: column; 
@@ -732,13 +730,20 @@ footer {
     }
     
     .nav-link {
-        font-size: 14px; /* Larger tap targets */
+        font-size: 14px; 
         padding: 15px;
         width: 100%;
     }
     
     .mobile-account-info {
-        display: flex; /* Show account info inside mobile menu */
+        display: flex; 
+    }
+
+    /* Target the contact wrapper properly for mobile menus */
+    .contact-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 
     .pricing { flex-direction: column; align-items: center; }
