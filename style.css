@@ -697,8 +697,10 @@ footer {
         justify-content: flex-end;
     }
 
-    .user-meta-stack {
-        display: none !important;
+    /* HIDDEN ELEMENTS FOR MOBILE UI */
+    .user-meta-stack,
+    .desktop-auth-el {
+        display: none !important; /* Force hide desktop buttons on mobile header */
     }
     
     .hamburger { 
@@ -735,8 +737,9 @@ footer {
         width: 100%;
     }
     
+    /* REMOVED default display:flex so header.js controls visibility */
     .mobile-account-info {
-        display: flex; 
+        /* let inline JS styles control this to avoid overlap */
     }
 
     /* Target the contact wrapper properly for mobile menus */
