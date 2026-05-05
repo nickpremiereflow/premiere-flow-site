@@ -51,7 +51,7 @@
         .logo-img:hover { opacity: 0.7; }
 
         .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; }
-        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; }
+        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; white-space: nowrap; }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
         .contact-wrapper { display: flex; align-items: center; position: relative; }
@@ -65,6 +65,10 @@
         
         .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
         .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; }
+        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; }
+
+        .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; }
+        .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 
         .dash-menu { display: flex; justify-content: center; gap: 45px; margin-bottom: 45px; border-bottom: 1px solid #111; padding-bottom: 20px; }
         .tab-link { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #444; cursor: pointer; transition: 0.3s; }
@@ -86,6 +90,7 @@
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-main:disabled { cursor: not-allowed; opacity: 0.5; }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; transition: 0.3s; }
         .btn-split:hover { background: #1a1a1a; border-color: #444; }
@@ -153,13 +158,21 @@
         .uploadcare--widget__button_type_open:hover { background: #1a1a1a !important; border-color: var(--accent-gold) !important; color: var(--accent-gold) !important; }
 
         @media (max-width: 768px) {
-            header { padding: 0 20px; }
+            header { padding: 0 15px; justify-content: center; }
+            .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; }
+            .logo-img { height: 20px; }
+            .header-right { width: 100%; justify-content: flex-end; }
+            .desktop-auth-el { display: none !important; }
+            .mobile-account-info { display: flex; }
+            .contact-wrapper { width: 100%; display: flex; justify-content: center; }
+            
             .hamburger { display: block; }
-            .user-info-stack { max-width: 180px; } /* Increased for mobile to fit email */
             .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
             .listing-status-right { width: 100%; justify-content: space-between; }
-            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; }
+            
+            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; }
             .header-nav.mobile-active { display: flex !important; }
+            
             #staging-gallery { grid-template-columns: repeat(3, 1fr); }
         }
 
@@ -179,7 +192,12 @@
             <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a>
         </div>
 
-        <nav class="header-nav">
+        <nav class="header-nav" id="global-header-nav">
+            <div class="mobile-account-info" id="mobile-auth-container">
+                <span id="mobile-email-display" class="mobile-user-email"></span>
+                <span onclick="signOut()" class="log-out-text" style="margin-top: 15px; font-size: 11px;">Log Out</span>
+            </div>
+
             <a href="/" class="nav-link">Home</a>
             <a href="/about/" class="nav-link">About</a>
             <div class="contact-wrapper">
@@ -194,11 +212,12 @@
         </nav>
 
         <div class="header-right">
-            <div class="user-info-stack">
+            <div class="user-info-stack desktop-auth-el">
                 <span class="user-email" id="header-email">---</span>
                 <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span>
+                <span onclick="signOut()" class="log-out-text" style="font-size: 9px; margin-top: 2px;">Log Out</span>
             </div>
-            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button>
         </div>
     </header>
 
@@ -214,7 +233,18 @@
         <section id="view-dashboard" class="view-section active">
             <div style="margin-bottom: 40px;">
                 <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Listing</button>
+                
+                <div id="upgrade-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; text-align: center;">
+                    <p style="color: #ff4d4d; font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px;">Out of Credits</p>
+                    <a href="/#pricing" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: bold; cursor: pointer;" onclick="window.location.href='/#pricing'">Upgrade or buy more listings to continue</a>
+                </div>
+                
+                <div id="low-credit-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;">
+                    <p style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p>
+                    <p style="color: #aaa; font-size: 11px; margin: 0;">You are running low on your Partner Pack. Top up soon to avoid delays.</p>
+                </div>
             </div>
+            
             <h3>Active Listings</h3>
             <div id="submissions-list">
                 <div class="shimmer-wrapper"></div>
@@ -433,10 +463,50 @@
             document.getElementById('header-email').innerText = currentEmail.toLowerCase();
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
+            const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER'));
+            const creditsNum = Math.round(userData.credits || 0);
+
+            const actionBtn = document.getElementById('action-btn');
+            const upgradePrompt = document.getElementById('upgrade-prompt');
+            const lowCreditPrompt = document.getElementById('low-credit-prompt');
+            
             if (isUnlimited) {
                 document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
+                
+                // Active unlimited status unlocks button entirely
+                actionBtn.disabled = false;
+                actionBtn.innerText = 'New Listing';
+                actionBtn.style.opacity = '1';
+                actionBtn.style.cursor = 'pointer';
+                if (upgradePrompt) upgradePrompt.style.display = 'none';
+                if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
             } else {
-                document.getElementById('header-credits').innerText = Math.round(userData.credits || 0) + ' LISTINGS REMAINING';
+                document.getElementById('header-credits').innerText = creditsNum + ' LISTINGS REMAINING';
+                
+                // Credit System Validation
+                if (creditsNum <= 0) {
+                    // Hard Stop Gate
+                    actionBtn.disabled = true;
+                    actionBtn.innerText = 'OUT OF CREDITS';
+                    actionBtn.style.opacity = '0.5';
+                    actionBtn.style.cursor = 'not-allowed';
+                    if (upgradePrompt) upgradePrompt.style.display = 'block';
+                    if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
+                } else {
+                    // Authorized
+                    actionBtn.disabled = false;
+                    actionBtn.innerText = 'New Listing';
+                    actionBtn.style.opacity = '1';
+                    actionBtn.style.cursor = 'pointer';
+                    if (upgradePrompt) upgradePrompt.style.display = 'none';
+                    
+                    // Upsell Trigger for Low Credits on Partner Pack
+                    if (isPartner && creditsNum <= 2) {
+                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'block';
+                    } else {
+                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
+                    }
+                }
             }
 
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
@@ -457,7 +527,7 @@
             renderSubmissions();
         }
 
-        function parseGalleryUrls(urlsRaw) {
+        function parseGalleryUrls(urlsRaw, listingName = 'Assets') {
             if (!urlsRaw) return { html: '<p style="color:#444; font-size:10px; padding:10px;">No images available</p>', thumb: '' };
             
             let html = '';
@@ -477,8 +547,11 @@
                     }
                     thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
                     
+                    let safeName = encodeURIComponent(listingName.replace(/[^a-z0-9]/gi, '_').toLowerCase());
+                    let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`;
+
                     html = `<div class="listing-gallery">${html}</div>
-                            <a href="${rawUrl}archive/zip/" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
+                            <a href="${zipUrl}" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
                     
                     return { html: html, thumb: thumb };
                 } 
@@ -540,13 +613,14 @@
                 list.innerHTML = validHistory.map((item, idx) => {
                     const rawStatus = (item.status || 'Received').toUpperCase();
                     const isComplete = rawStatus === 'COMPLETED';
+                    const listingName = item.vehicle || item.name || 'Listing';
                     
-                    let origData = parseGalleryUrls(item.originals);
+                    let origData = parseGalleryUrls(item.originals, listingName + '_Originals');
                     let originalGallery = origData.html;
                     
                     let stagedGallery = '<p style="font-size: 11px; color: #444; text-align: center; padding:20px;">Final staged assets will appear here once processing is complete.</p>';
                     if (item.staged && isComplete) {
-                        stagedGallery = parseGalleryUrls(item.staged).html;
+                        stagedGallery = parseGalleryUrls(item.staged, listingName + '_Staged').html;
                     }
 
                     let thumbSource = item.thumbnail || origData.thumb;
@@ -557,7 +631,7 @@
                             <div class="listing-info-left">
                                 ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div>
-                                    <p class="listing-title" id="name-text-${idx}">${item.vehicle || item.name || 'Listing'}</p>
+                                    <p class="listing-title" id="name-text-${idx}">${listingName}</p>
                                     <span class="listing-date">Submitted: ${formatDate(item.date)}</span>
                                 </div>
                             </div>
@@ -621,7 +695,20 @@
             window.scrollTo(0,0);
         }
 
-        function toggleMobileMenu() { document.querySelector('.header-nav').classList.toggle('mobile-active'); }
+        function toggleMobileMenu(event) {
+            if(event) event.stopPropagation();
+            document.querySelector('.header-nav').classList.toggle('mobile-active'); 
+        }
+        
+        // Mobile menu close on background click
+        window.addEventListener('click', function(event) {
+            const nav = document.querySelector('.header-nav');
+            const hamburger = document.getElementById('hamburger-btn');
+            if (nav && nav.classList.contains('mobile-active') && !nav.contains(event.target) && event.target !== hamburger) {
+                nav.classList.remove('mobile-active');
+            }
+        });
+
         function openSubmit() { showTab('submit'); }
 
         document.getElementById('inventory-form').addEventListener('submit', async (e) => {
