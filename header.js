@@ -29,7 +29,7 @@ function loadUniversalHeader() {
             <a href="/" class="nav-link ${isHomePage ? 'active' : ''}">Home</a>
             <a href="/about/" class="nav-link ${window.location.pathname.includes('/about/') ? 'active' : ''}">About</a>
             <a href="/sign-up/" class="nav-link ${window.location.pathname.includes('/sign-up/') ? 'active' : ''}">Sign Up</a>
-            <div class="contact-wrapper" style="width: 100%;">
+            <div class="contact-wrapper">
                 <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
                 <div id="contactBubble" class="contact-bubble">
                     <span style="font-size: 9px; display: block; margin-bottom: 8px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Support Hub</span>
