@@ -45,8 +45,8 @@
             justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        .header-left { display: flex; align-items: center; height: 100%; position: relative; z-index: 2000; }
-        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; cursor: pointer; }
+        .header-left { display: flex; align-items: center; height: 100%; position: relative; z-index: 2000; pointer-events: auto; }
+        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; cursor: pointer; position: relative; z-index: 2001; }
         .logo-img { height: 22px; width: auto; transition: 0.3s; display: block; margin: auto 0; }
         .logo-img:hover { opacity: 0.7; }
 
@@ -71,7 +71,7 @@
         .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
         .mobile-user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        /* APPLE GLASS UI TABS */
+        /* APPLE GLASS UI TABS (Desktop Default) */
         .dash-menu-container { 
             width: 100%; 
             display: flex; 
@@ -212,19 +212,10 @@
             .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; }
             .header-nav.mobile-active { display: flex !important; }
             
-            /* Mobile tweaks for the new Glass UI Tabs to fit and scroll smoothly */
-            .dash-menu-container { 
-                justify-content: flex-start; 
-                padding-bottom: 10px; 
-                margin-bottom: 30px; 
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; 
-                scrollbar-width: none; /* Firefox */
-                -ms-overflow-style: none; /* IE/Edge */
-            }
-            .dash-menu-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
-            .dash-menu { border-radius: 100px; width: max-content; }
-            .tab-link { padding: 10px 14px; font-size: 10px; }
+            /* Mobile tweaks for the new Glass UI Tabs to fit perfectly and span */
+            .dash-menu-container { margin-bottom: 30px; }
+            .dash-menu { width: 100%; display: flex; border-radius: 12px; }
+            .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
             #staging-gallery { grid-template-columns: repeat(3, 1fr); }
         }
@@ -312,10 +303,7 @@
         <section id="view-notifications" class="view-section">
             <h3>Recent activity</h3>
             <div id="notif-list">
-                <div class="card" style="border-left: 4px solid var(--accent-gold);">
-                    <p style="font-size: 14px; margin: 0; line-height: 1.6;"><b>System:</b> Dashboard operational. Ready for staging.</p>
-                    <span style="font-size: 10px; color: #555; display: block; margin-top: 12px; font-weight: 800;">Just Now</span>
-                </div>
+                <div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">Loading activity...</p></div>
             </div>
         </section>
 
@@ -511,20 +499,53 @@
             }
         }
 
-        function checkNotifications() {
-            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
+        // GENERATE AND RENDER DYNAMIC NOTIFICATIONS
+        function renderNotifications() {
+            const list = document.getElementById('notif-list');
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
             
-            if (validHistory.length > 0) {
-                let latestStamp = 0;
-                validHistory.forEach(item => {
-                    const d = new Date(item.date).getTime();
-                    if (d > latestStamp) latestStamp = d;
-                });
+            if (validHistory.length === 0) {
+                list.innerHTML = `<div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">No recent activity</p></div>`;
+                return;
+            }
+
+            let notifs = [];
+            validHistory.forEach(item => {
+                const name = item.vehicle || item.name || 'Listing';
+                const date = new Date(item.date).getTime() || 0;
+                const status = (item.status || '').toUpperCase();
                 
-                if (latestStamp > lastViewed) {
-                    document.getElementById('alert-dot').style.display = 'inline-block';
+                // Alert 1: Submission Received
+                notifs.push({
+                    text: `<b>${name}:</b> Submission received. Processing started.`,
+                    time: date,
+                    formattedTime: formatDate(item.date)
+                });
+
+                // Alert 2: Staging Completed
+                if (status === 'COMPLETED') {
+                    notifs.push({
+                        text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`,
+                        time: date + 1000, // Make it sort slightly newer than the received alert
+                        formattedTime: formatDate(item.date)
+                    });
                 }
+            });
+
+            // Sort newest to oldest
+            notifs.sort((a,b) => b.time - a.time);
+
+            list.innerHTML = notifs.map(n => `
+                <div class="card" style="border-left: 4px solid var(--accent-gold); padding: 20px;">
+                    <p style="font-size: 13px; margin: 0; line-height: 1.6; color: #eee;">${n.text}</p>
+                    <span style="font-size: 10px; color: #555; display: block; margin-top: 8px; font-weight: 800;">${n.formattedTime}</span>
+                </div>
+            `).join('');
+            
+            // Check Notification Dot logic
+            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
+            if (notifs.length > 0 && notifs[0].time > lastViewed) {
+                document.getElementById('alert-dot').style.display = 'inline-block';
             }
         }
 
@@ -595,7 +616,7 @@
 
             setCustomWidgetLabels();
             renderSubmissions();
-            checkNotifications();
+            renderNotifications();
         }
 
         function parseGalleryUrls(urlsRaw, listingName = 'Assets') {
