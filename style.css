@@ -90,7 +90,7 @@ body {
     transition: 0.3s ease;
     cursor: pointer;
     line-height: 1;
-    white-space: nowrap; /* Forces text to stay on one line */
+    white-space: nowrap; 
 }
 
 .nav-link:hover, 
@@ -131,6 +131,23 @@ body {
     display: inline-block; 
 }
 
+/* ========================================
+2.5 BULLETPROOF HEADER STATES (NEW ARCHITECTURE)
+========================================
+*/
+/* Controls Auth Login/Logout Triggers */
+.state-logged-in .auth-logged-out { display: none !important; }
+.state-logged-out .auth-logged-in { display: none !important; }
+
+/* Desktop Defaults (Mobile elements hidden) */
+.mobile-home-auth { display: none !important; } 
+.mobile-hamburger-auth { display: none !important; } 
+.desktop-auth-container { display: flex; align-items: center; } 
+
+/* Desktop Page Types */
+.state-home-page .header-logo-el { visibility: hidden; }
+.state-inner-page .header-logo-el { visibility: visible; }
+
 /* AUTH META STACK (LOGGED IN STATE) */
 .user-meta-stack { 
     display: flex; 
@@ -163,18 +180,6 @@ body {
     font-weight: 800; 
 }
 
-/* MOBILE SPECIFIC ACCOUNT INFO CONTAINERS */
-.mobile-account-info {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    padding: 15px 0;
-    border-bottom: 1px solid #1a1a1a;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
 .mobile-user-email {
     font-size: 11px;
     color: #888;
@@ -186,14 +191,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: center;
-}
-
-.mobile-user-credits {
-    font-size: 12px;
-    color: var(--accent-gold);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 /* ========================================
@@ -697,11 +694,18 @@ footer {
         justify-content: flex-end;
     }
 
-    /* HIDDEN ELEMENTS FOR MOBILE UI */
-    .user-meta-stack,
-    .desktop-auth-el {
-        display: none !important; /* Force hide desktop buttons on mobile header */
-    }
+    /* Force hide desktop buttons on mobile header */
+    .desktop-auth-container { display: none !important; } 
+
+    /* HOME PAGE MOBILE UI */
+    .state-home-page .header-logo-el { display: none !important; } 
+    .state-home-page .mobile-home-auth { display: block !important; } 
+    .state-home-page .mobile-hamburger-auth { display: none !important; } 
+
+    /* INNER PAGE MOBILE UI */
+    .state-inner-page .header-logo-el { display: block !important; visibility: visible; } 
+    .state-inner-page .mobile-home-auth { display: none !important; } 
+    .state-inner-page .mobile-hamburger-auth { display: flex !important; } 
     
     .hamburger { 
         display: block; 
@@ -737,12 +741,15 @@ footer {
         width: 100%;
     }
     
-    /* REMOVED default display:flex so header.js controls visibility */
     .mobile-account-info {
-        /* let inline JS styles control this to avoid overlap */
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid #1a1a1a;
+        padding: 15px 0;
+        margin-bottom: 10px;
     }
 
-    /* Target the contact wrapper properly for mobile menus */
     .contact-wrapper {
         width: 100%;
         display: flex;
