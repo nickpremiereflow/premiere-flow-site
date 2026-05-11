@@ -45,34 +45,39 @@
             justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
         }
 
-        .header-left { display: flex; align-items: center; height: 100%; z-index: 1001; }
-        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; }
+        .header-left { display: flex; align-items: center; height: 100%; position: relative; z-index: 2000; }
+        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; cursor: pointer; }
         .logo-img { height: 22px; width: auto; transition: 0.3s; display: block; margin: auto 0; }
         .logo-img:hover { opacity: 0.7; }
 
-        .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; }
-        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; white-space: nowrap; }
+        .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; pointer-events: none; }
+        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; white-space: nowrap; pointer-events: auto; }
         .nav-link:hover, .nav-link.active { color: #fff; }
 
-        .contact-wrapper { display: flex; align-items: center; position: relative; }
+        .contact-wrapper { display: flex; align-items: center; position: relative; pointer-events: auto; }
         .contact-bubble { visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: absolute; z-index: 100; top: 40px; left: 50%; transform: translateX(-50%); border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif; }
         .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
         .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
         .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-        .header-right { display: flex; align-items: center; gap: 15px; height: 100%; z-index: 1001; }
+        .header-right { display: flex; align-items: center; gap: 15px; height: 100%; position: relative; z-index: 2000; }
         .user-info-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; max-width: 300px; }
         
         .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
         .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; }
         .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; }
 
-        .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; }
+        .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; pointer-events: auto; }
         .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 
-        .dash-menu { display: flex; justify-content: center; gap: 45px; margin-bottom: 45px; border-bottom: 1px solid #111; padding-bottom: 20px; }
-        .tab-link { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #444; cursor: pointer; transition: 0.3s; }
-        .tab-link.active { color: var(--accent-gold); }
+        /* APPLE GLASS UI TABS */
+        .dash-menu-container { width: 100%; display: flex; justify-content: center; margin-bottom: 40px; }
+        .dash-menu { display: inline-flex; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #222; border-radius: 100px; padding: 6px; gap: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tab-link { position: relative; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #777; cursor: pointer; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 12px 24px; border-radius: 100px; display: flex; align-items: center; justify-content: center; }
+        .tab-link:hover { color: #fff; }
+        .tab-link.active { background: #222; color: var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
+        .notification-dot { display: none; width: 6px; height: 6px; background-color: var(--accent-gold); border-radius: 50%; margin-left: 6px; box-shadow: 0 0 8px var(--accent-gold); }
 
         #app-container { margin-top: 120px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -162,23 +167,30 @@
             .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; }
             .logo-img { height: 20px; }
             .header-right { width: 100%; justify-content: flex-end; }
+            
+            /* Hide desktop info, show mobile info */
             .desktop-auth-el { display: none !important; }
             .mobile-account-info { display: flex; }
+            
             .contact-wrapper { width: 100%; display: flex; justify-content: center; }
             
-            .hamburger { display: block; }
+            .hamburger { display: block; pointer-events: auto; }
             .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
             .listing-status-right { width: 100%; justify-content: space-between; }
             
-            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; }
+            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; }
             .header-nav.mobile-active { display: flex !important; }
+            
+            /* Mobile tweaks for the new Glass UI Tabs */
+            .dash-menu-container { overflow-x: auto; justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; -webkit-overflow-scrolling: touch; }
+            .dash-menu { flex-wrap: nowrap; border-radius: 16px; width: max-content; }
+            .tab-link { padding: 12px 20px; }
             
             #staging-gallery { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (min-width: 768px) {
             .split-row { flex-direction: row; }
-            .dash-menu { flex-wrap: wrap; gap: 30px; }
         }
     </style>
 </head>
@@ -223,12 +235,16 @@
 
     <div id="app-container">
         
-        <nav class="dash-menu">
-            <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span>
-            <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')">Alerts</span>
-            <span class="tab-link" id="tab-profile" onclick="showTab('profile')">Account</span>
-            <span class="tab-link" id="tab-support" onclick="showTab('support')">Support</span>
-        </nav>
+        <div class="dash-menu-container">
+            <nav class="dash-menu">
+                <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span>
+                <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')">
+                    Alerts <span id="alert-dot" class="notification-dot"></span>
+                </span>
+                <span class="tab-link" id="tab-profile" onclick="showTab('profile')">Account</span>
+                <span class="tab-link" id="tab-support" onclick="showTab('support')">Support</span>
+            </nav>
+        </div>
 
         <section id="view-dashboard" class="view-section active">
             <div style="margin-bottom: 40px;">
@@ -379,7 +395,7 @@
                     const hasLogo = (userData.logo && userData.logo !== "" && userData.logo !== "undefined");
                     btn.textContent = hasLogo ? 'UPDATE LOGO' : 'UPLOAD LOGO';
                 });
-            }, 300); // Slight delay to ensure Uploadcare finished rendering the DOM
+            }, 300); 
         }
 
         window.onload = function() {
@@ -393,7 +409,6 @@
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
             }, 500);
 
-            // INIT MAIN SUBMISSION LIVE THUMBNAILS
             const ucareWidget = uploadcare.Widget('#ucare-uploader');
             ucareWidget.onChange(function(group) {
                 const gallery = document.getElementById('staging-gallery');
@@ -408,7 +423,6 @@
                 }
             });
 
-            // INIT LOGO UPLOAD WIDGET LIVE PREVIEW
             const logoWidget = uploadcare.Widget('#ucare-logo-uploader');
             logoWidget.onChange(function(file) {
                 if (file) {
@@ -428,7 +442,6 @@
                 }
             });
             
-            // Set initial labels
             setCustomWidgetLabels();
         };
 
@@ -452,15 +465,36 @@
                 refreshUI();
             } catch (err) { 
                 console.error("Dashboard data load failed", err); 
-                // FETCH FAILED OR RETURNED EMPTY - FORCE UI UPDATE ANYWAY
                 refreshUI();
                 document.getElementById('submissions-list').innerHTML = '<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>';
+            }
+        }
+
+        function checkNotifications() {
+            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
+            
+            if (validHistory.length > 0) {
+                // The API usually returns chronological or we reverse it in render. 
+                // Let's grab the most recent timestamp to be safe.
+                let latestStamp = 0;
+                validHistory.forEach(item => {
+                    const d = new Date(item.date).getTime();
+                    if (d > latestStamp) latestStamp = d;
+                });
+                
+                if (latestStamp > lastViewed) {
+                    document.getElementById('alert-dot').style.display = 'inline-block';
+                }
             }
         }
 
         function refreshUI() {
             const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
             document.getElementById('header-email').innerText = currentEmail.toLowerCase();
+            if(document.getElementById('mobile-email-display')) {
+                document.getElementById('mobile-email-display').innerText = currentEmail.toLowerCase();
+            }
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
             const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER'));
@@ -473,7 +507,6 @@
             if (isUnlimited) {
                 document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
                 
-                // Active unlimited status unlocks button entirely
                 actionBtn.disabled = false;
                 actionBtn.innerText = 'New Listing';
                 actionBtn.style.opacity = '1';
@@ -483,9 +516,7 @@
             } else {
                 document.getElementById('header-credits').innerText = creditsNum + ' LISTINGS REMAINING';
                 
-                // Credit System Validation
                 if (creditsNum <= 0) {
-                    // Hard Stop Gate
                     actionBtn.disabled = true;
                     actionBtn.innerText = 'OUT OF CREDITS';
                     actionBtn.style.opacity = '0.5';
@@ -493,14 +524,12 @@
                     if (upgradePrompt) upgradePrompt.style.display = 'block';
                     if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
                 } else {
-                    // Authorized
                     actionBtn.disabled = false;
                     actionBtn.innerText = 'New Listing';
                     actionBtn.style.opacity = '1';
                     actionBtn.style.cursor = 'pointer';
                     if (upgradePrompt) upgradePrompt.style.display = 'none';
                     
-                    // Upsell Trigger for Low Credits on Partner Pack
                     if (isPartner && creditsNum <= 2) {
                         if (lowCreditPrompt) lowCreditPrompt.style.display = 'block';
                     } else {
@@ -522,9 +551,9 @@
                 noLogoText.innerText = 'NO LOGO SET';
             }
 
-            // Update custom widget labels after data loads
             setCustomWidgetLabels();
             renderSubmissions();
+            checkNotifications();
         }
 
         function parseGalleryUrls(urlsRaw, listingName = 'Assets') {
@@ -535,7 +564,6 @@
             let rawUrl = urlsRaw.trim();
 
             if (rawUrl.includes('ucare')) {
-                // Handle Group Uploadcare Links (Multiple Files)
                 if (rawUrl.includes('~')) {
                     let groupBase = rawUrl.split('~')[0];
                     let countStr = rawUrl.split('~')[1].replace('/', '');
@@ -547,6 +575,7 @@
                     }
                     thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
                     
+                    // Creates custom ZIP filename
                     let safeName = encodeURIComponent(listingName.replace(/[^a-z0-9]/gi, '_').toLowerCase());
                     let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`;
 
@@ -555,7 +584,6 @@
                     
                     return { html: html, thumb: thumb };
                 } 
-                // Handle Single Uploadcare Links (One File)
                 else {
                     let cleanUrl = rawUrl.endsWith('/') ? rawUrl : rawUrl + '/';
                     thumb = `${cleanUrl}-/scale_crop/400x400/center/`;
@@ -586,7 +614,6 @@
             return { html: `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' };
         }
 
-        // Helper function to format the date
         function formatDate(dateStr) {
             if (!dateStr || dateStr === '---') return '---';
             try {
@@ -692,6 +719,11 @@
             document.getElementById('view-' + t).classList.add('active');
             const tabBtn = document.getElementById('tab-' + t);
             if(tabBtn) tabBtn.classList.add('active');
+            
+            if (t === 'notifications') {
+                document.getElementById('alert-dot').style.display = 'none';
+                localStorage.setItem('pf_alerts_viewed', Date.now().toString());
+            }
             window.scrollTo(0,0);
         }
 
@@ -700,7 +732,6 @@
             document.querySelector('.header-nav').classList.toggle('mobile-active'); 
         }
         
-        // Mobile menu close on background click
         window.addEventListener('click', function(event) {
             const nav = document.querySelector('.header-nav');
             const hamburger = document.getElementById('hamburger-btn');
@@ -719,7 +750,6 @@
             btn.disabled = true;
 
             const originalText = btn.innerText;
-            // The text disappears due to the premium spinner CSS, but we set it just in case
             btn.innerText = 'INITIALIZING...';
             btn.classList.add('btn-loading');
             
@@ -817,7 +847,7 @@
                         btn.style.backgroundColor = '';
                         btn.style.color = '';
                         uploadcare.Widget('#ucare-logo-uploader').value(null);
-                        setCustomWidgetLabels(); // Refresh the button text to "UPDATE LOGO"
+                        setCustomWidgetLabels();
                     }, 2000);
                 } else {
                     throw new Error("Bad response");
