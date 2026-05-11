@@ -69,11 +69,42 @@
 
         .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; pointer-events: auto; }
         .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        .mobile-user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
         /* APPLE GLASS UI TABS */
-        .dash-menu-container { width: 100%; display: flex; justify-content: center; margin-bottom: 40px; }
-        .dash-menu { display: inline-flex; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #222; border-radius: 100px; padding: 6px; gap: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .tab-link { position: relative; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #777; cursor: pointer; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 12px 24px; border-radius: 100px; display: flex; align-items: center; justify-content: center; }
+        .dash-menu-container { 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            margin-bottom: 40px; 
+        }
+        .dash-menu { 
+            display: inline-flex; 
+            background: rgba(20, 20, 20, 0.8); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid #222; 
+            border-radius: 100px; 
+            padding: 6px; 
+            gap: 4px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        .tab-link { 
+            position: relative; 
+            font-size: 11px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #777; 
+            cursor: pointer; 
+            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+            padding: 12px 24px; 
+            border-radius: 100px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            white-space: nowrap;
+        }
         .tab-link:hover { color: #fff; }
         .tab-link.active { background: #222; color: var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
@@ -181,10 +212,19 @@
             .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; }
             .header-nav.mobile-active { display: flex !important; }
             
-            /* Mobile tweaks for the new Glass UI Tabs */
-            .dash-menu-container { overflow-x: auto; justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; -webkit-overflow-scrolling: touch; }
-            .dash-menu { flex-wrap: nowrap; border-radius: 16px; width: max-content; }
-            .tab-link { padding: 12px 20px; }
+            /* Mobile tweaks for the new Glass UI Tabs to fit and scroll smoothly */
+            .dash-menu-container { 
+                justify-content: flex-start; 
+                padding-bottom: 10px; 
+                margin-bottom: 30px; 
+                overflow-x: auto; 
+                -webkit-overflow-scrolling: touch; 
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* IE/Edge */
+            }
+            .dash-menu-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+            .dash-menu { border-radius: 100px; width: max-content; }
+            .tab-link { padding: 10px 14px; font-size: 10px; }
             
             #staging-gallery { grid-template-columns: repeat(3, 1fr); }
         }
@@ -207,6 +247,7 @@
         <nav class="header-nav" id="global-header-nav">
             <div class="mobile-account-info" id="mobile-auth-container">
                 <span id="mobile-email-display" class="mobile-user-email"></span>
+                <span id="mobile-credits-display" class="mobile-user-credits">---</span>
                 <span onclick="signOut()" class="log-out-text" style="margin-top: 15px; font-size: 11px;">Log Out</span>
             </div>
 
@@ -475,8 +516,6 @@
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
             
             if (validHistory.length > 0) {
-                // The API usually returns chronological or we reverse it in render. 
-                // Let's grab the most recent timestamp to be safe.
                 let latestStamp = 0;
                 validHistory.forEach(item => {
                     const d = new Date(item.date).getTime();
@@ -503,9 +542,11 @@
             const actionBtn = document.getElementById('action-btn');
             const upgradePrompt = document.getElementById('upgrade-prompt');
             const lowCreditPrompt = document.getElementById('low-credit-prompt');
+            const mobileCreditsDisplay = document.getElementById('mobile-credits-display');
             
             if (isUnlimited) {
                 document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
+                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = 'UNLIMITED LISTINGS';
                 
                 actionBtn.disabled = false;
                 actionBtn.innerText = 'New Listing';
@@ -515,6 +556,7 @@
                 if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
             } else {
                 document.getElementById('header-credits').innerText = creditsNum + ' LISTINGS REMAINING';
+                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = creditsNum + ' LISTINGS REMAINING';
                 
                 if (creditsNum <= 0) {
                     actionBtn.disabled = true;
