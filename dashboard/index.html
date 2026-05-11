@@ -195,7 +195,7 @@
 
         @media (max-width: 768px) {
             header { padding: 0 15px; justify-content: center; }
-            .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; }
+            .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; z-index: 2005; pointer-events: auto; }
             .logo-img { height: 20px; }
             .header-right { width: 100%; justify-content: flex-end; }
             
@@ -213,7 +213,8 @@
             .header-nav.mobile-active { display: flex !important; }
             
             /* Mobile tweaks for the new Glass UI Tabs to fit perfectly and span */
-            .dash-menu-container { margin-bottom: 30px; }
+            .dash-menu-container { justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+            .dash-menu-container::-webkit-scrollbar { display: none; }
             .dash-menu { width: 100%; display: flex; border-radius: 12px; }
             .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
@@ -499,7 +500,23 @@
             }
         }
 
-        // GENERATE AND RENDER DYNAMIC NOTIFICATIONS
+        function checkNotifications() {
+            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
+            
+            if (validHistory.length > 0) {
+                let latestStamp = 0;
+                validHistory.forEach(item => {
+                    const d = new Date(item.date).getTime();
+                    if (d > latestStamp) latestStamp = d;
+                });
+                
+                if (latestStamp > lastViewed) {
+                    document.getElementById('alert-dot').style.display = 'inline-block';
+                }
+            }
+        }
+
         function renderNotifications() {
             const list = document.getElementById('notif-list');
             const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
@@ -526,13 +543,12 @@
                 if (status === 'COMPLETED') {
                     notifs.push({
                         text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`,
-                        time: date + 1000, // Make it sort slightly newer than the received alert
+                        time: date + 1000, 
                         formattedTime: formatDate(item.date)
                     });
                 }
             });
 
-            // Sort newest to oldest
             notifs.sort((a,b) => b.time - a.time);
 
             list.innerHTML = notifs.map(n => `
@@ -542,7 +558,6 @@
                 </div>
             `).join('');
             
-            // Check Notification Dot logic
             const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
             if (notifs.length > 0 && notifs[0].time > lastViewed) {
                 document.getElementById('alert-dot').style.display = 'inline-block';
@@ -638,7 +653,6 @@
                     }
                     thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
                     
-                    // Creates custom ZIP filename
                     let safeName = encodeURIComponent(listingName.replace(/[^a-z0-9]/gi, '_').toLowerCase());
                     let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`;
 
