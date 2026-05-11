@@ -6,28 +6,35 @@
 function loadUniversalHeader() {
     const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('premiereflow.com/');
     
+    // Inject state classes into the body so CSS can handle the layout perfectly
+    document.body.classList.add(isHomePage ? 'state-home-page' : 'state-inner-page');
+
     const headerHTML = `
     <header class="main-top-header">
         <div class="header-left">
-            <a href="/" id="header-logo-link" class="mobile-logo-el" style="display: ${isHomePage ? 'none' : 'block'};">
+            <a href="/" id="header-logo-link" class="header-logo-el">
                 <img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img">
             </a>
             
-            <div id="mobile-home-auth-wrapper" style="display: ${isHomePage ? 'block' : 'none'};">
-                <button id="mobile-home-login-btn" class="header-btn" onclick="window.location.href='/login/'" style="display: none;">Partner Login</button>
-                <a href="/dashboard/" id="mobile-home-dash-btn" class="header-btn gold-btn" style="display: none;">Dashboard</a>
+            <div class="mobile-home-auth">
+                <button class="header-btn auth-logged-out" onclick="window.location.href='/login/'">Partner Login</button>
+                <a href="/dashboard/" class="header-btn gold-btn auth-logged-in">Dashboard</a>
             </div>
         </div>
 
         <nav class="header-nav" id="global-header-nav">
-            <div class="mobile-account-info" id="mobile-auth-container" style="display: none;">
-                <span id="mobile-email-display" class="mobile-user-email"></span>
-                <a href="/dashboard/" class="header-btn gold-btn" style="margin-top: 10px; width: 80%;">Dashboard</a>
-                <span onclick="signOut()" class="log-out-text" style="margin-top: 10px; font-size: 11px;">Log Out</span>
-            </div>
-
-            <div class="mobile-account-info" id="mobile-login-container" style="display: none;">
-                 <button class="header-btn" onclick="window.location.href='/login/'" style="width: 80%;">Partner Login</button>
+            <div class="mobile-account-info mobile-hamburger-auth">
+                
+                <div class="auth-logged-in" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <span class="mobile-user-email global-email-display"></span>
+                    <a href="/dashboard/" class="header-btn gold-btn" style="margin-top: 10px; width: 80%;">Dashboard</a>
+                    <span onclick="signOut()" class="log-out-text" style="margin-top: 10px; font-size: 11px;">Log Out</span>
+                </div>
+                
+                <div class="auth-logged-out" style="width: 100%; display: flex; justify-content: center;">
+                     <button class="header-btn" onclick="window.location.href='/login/'" style="width: 80%;">Partner Login</button>
+                </div>
+                
             </div>
 
             <a href="/" class="nav-link ${isHomePage ? 'active' : ''}">Home</a>
@@ -45,13 +52,15 @@ function loadUniversalHeader() {
         </nav>
 
         <div class="header-right">
-            <button id="btn-header-login" class="header-btn" onclick="window.location.href='/login/'">Partner Login</button>
-            <div id="header-logged-in" style="display: none; align-items: center; gap: 10px;">
-                <div class="user-meta-stack">
-                    <span id="header-email-display" class="user-email-text"></span>
-                    <span onclick="signOut()" class="log-out-text">Log Out</span>
+            <div class="desktop-auth-container">
+                <button class="header-btn auth-logged-out" onclick="window.location.href='/login/'">Partner Login</button>
+                <div class="auth-logged-in" style="display: flex; align-items: center; gap: 10px;">
+                    <div class="user-meta-stack">
+                        <span class="user-email-text global-email-display"></span>
+                        <span onclick="signOut()" class="log-out-text">Log Out</span>
+                    </div>
+                    <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
                 </div>
-                <a href="/dashboard/" class="header-btn gold-btn">Dashboard</a>
             </div>
             
             <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button>
@@ -65,79 +74,19 @@ function loadUniversalHeader() {
 
 function syncAuthState() {
     const savedEmail = localStorage.getItem('pf_email');
-    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('premiereflow.com/');
-    const isMobile = window.innerWidth <= 768;
     
-    // Desktop Elements
-    const desktopLoginBtn = document.getElementById('btn-header-login');
-    const desktopLoggedIn = document.getElementById('header-logged-in');
-    const desktopEmailDisplay = document.getElementById('header-email-display');
-    
-    // Mobile Home Page (Top-Left) Elements
-    const mobileHomeAuthWrapper = document.getElementById('mobile-home-auth-wrapper');
-    const mobileHomeLoginBtn = document.getElementById('mobile-home-login-btn');
-    const mobileHomeDashBtn = document.getElementById('mobile-home-dash-btn');
-
-    // Mobile Hamburger Menu (Inner Pages) Elements
-    const mobileAuthContainer = document.getElementById('mobile-auth-container');
-    const mobileLoginContainer = document.getElementById('mobile-login-container');
-    const mobileEmailDisplay = document.getElementById('mobile-email-display');
-
+    // JS simply checks if logged in, and applies a master class to the body.
     if (savedEmail) {
-        // --- USER IS LOGGED IN ---
+        document.body.classList.add('state-logged-in');
+        document.body.classList.remove('state-logged-out');
         
-        // 1. Desktop UI
-        if (desktopLoginBtn) desktopLoginBtn.style.display = 'none';
-        if (desktopLoggedIn) {
-            desktopLoggedIn.style.display = 'flex';
-            if(desktopEmailDisplay) desktopEmailDisplay.innerText = savedEmail.toLowerCase();
-        }
-        
-        // 2. Mobile Home Page (Top-Left)
-        if (isMobile && isHomePage) {
-            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'block';
-            if (mobileHomeLoginBtn) mobileHomeLoginBtn.style.display = 'none';
-            if (mobileHomeDashBtn) mobileHomeDashBtn.style.display = 'inline-block';
-        } else {
-            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'none';
-        }
-        
-        // 3. Mobile Hamburger Menu (Inner Pages)
-        if (mobileLoginContainer) mobileLoginContainer.style.display = 'none';
-        if (mobileAuthContainer) {
-             if (isMobile && !isHomePage) {
-                 mobileAuthContainer.style.display = 'flex';
-                 if(mobileEmailDisplay) mobileEmailDisplay.innerText = savedEmail.toLowerCase();
-             } else {
-                 mobileAuthContainer.style.display = 'none';
-             }
-        }
-        
+        // Push email text to all display locations dynamically
+        document.querySelectorAll('.global-email-display').forEach(el => {
+            el.innerText = savedEmail.toLowerCase();
+        });
     } else {
-        // --- USER IS LOGGED OUT ---
-        
-        // 1. Desktop UI
-        if (desktopLoginBtn) desktopLoginBtn.style.display = 'inline-block';
-        if (desktopLoggedIn) desktopLoggedIn.style.display = 'none';
-        
-        // 2. Mobile Home Page (Top-Left)
-        if (isMobile && isHomePage) {
-            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'block';
-            if (mobileHomeLoginBtn) mobileHomeLoginBtn.style.display = 'inline-block';
-            if (mobileHomeDashBtn) mobileHomeDashBtn.style.display = 'none';
-        } else {
-            if (mobileHomeAuthWrapper) mobileHomeAuthWrapper.style.display = 'none';
-        }
-        
-        // 3. Mobile Hamburger Menu (Inner Pages)
-        if (mobileAuthContainer) mobileAuthContainer.style.display = 'none';
-        if (mobileLoginContainer) {
-            if (isMobile && !isHomePage) {
-                mobileLoginContainer.style.display = 'flex';
-            } else {
-                mobileLoginContainer.style.display = 'none';
-            }
-        }
+        document.body.classList.add('state-logged-out');
+        document.body.classList.remove('state-logged-in');
     }
 }
 
@@ -151,9 +100,6 @@ function toggleMobileMenu(event) {
     if(event) event.stopPropagation();
     const nav = document.getElementById('global-header-nav');
     nav.classList.toggle('mobile-active');
-    
-    // Ensure auth state is correct when opening menu
-    syncAuthState();
 }
 
 function toggleContact(event) {
@@ -183,26 +129,6 @@ window.addEventListener('click', function(event) {
     if (nav && nav.classList.contains('mobile-active') && !nav.contains(event.target) && event.target !== hamburger) {
         nav.classList.remove('mobile-active');
     }
-});
-
-// Update mobile containers if window is resized
-window.addEventListener('resize', function() {
-    // Trigger the logo/button display swap dynamically if moving from desktop to mobile
-    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html' || window.location.pathname.endsWith('premiereflow.com/');
-    const isMobile = window.innerWidth <= 768;
-    const logoEl = document.getElementById('header-logo-link');
-    
-    if (logoEl) {
-        if (isMobile && isHomePage) {
-            logoEl.style.display = 'none';
-        } else if (isHomePage) {
-             logoEl.style.display = 'none';
-        } else {
-             logoEl.style.display = 'block';
-        }
-    }
-    
-    syncAuthState();
 });
 
 // Run as soon as the body is ready
