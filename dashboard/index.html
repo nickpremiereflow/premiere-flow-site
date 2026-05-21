@@ -141,7 +141,7 @@
         .listing-title { margin: 0 0 4px 0; font-weight: 800; font-size: 15px; color: #fff; }
         .listing-date { font-size: 10px; color: #555; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
-        .status-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 4px; }
+        .status-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 4px; text-align: center; }
         .status-progress { color: #888; background: #111; border: 1px solid #222; }
         .status-completed { color: var(--bg-dark); background: var(--accent-gold); }
 
@@ -156,8 +156,9 @@
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
         .gallery-item img:hover { opacity: 0.7; }
 
-        #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 15px; }
-        .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; }
+        /* FIXED STAGING GALLERY CSS */
+        #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
+        .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; width: 100%; box-sizing: border-box; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
         .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #0a0a0a 4%, #151515 25%, #0a0a0a 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #111; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
@@ -218,7 +219,8 @@
             .dash-menu { width: 100%; display: flex; border-radius: 12px; }
             .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
-            #staging-gallery { grid-template-columns: repeat(3, 1fr); }
+            /* Keep 5 items per row on mobile so it doesn't break format, just smaller gaps */
+            #staging-gallery { grid-template-columns: repeat(5, 1fr); gap: 6px; }
         }
 
         @media (min-width: 768px) {
@@ -294,7 +296,11 @@
                 </div>
             </div>
             
-            <h3>Active Listings</h3>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+                <h3 style="margin-bottom: 0;">Active Listings</h3>
+                <span style="font-size: 9px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; text-align: right; font-weight: 800; max-width: 50%; line-height: 1.4;">* Images undergo AI evaluation<br>upon submission</span>
+            </div>
+
             <div id="submissions-list">
                 <div class="shimmer-wrapper"></div>
                 <div class="shimmer-wrapper"></div>
@@ -848,7 +854,7 @@
                 
                 if (res.ok) {
                     btn.classList.remove('btn-loading'); 
-                    btn.innerText = 'SUCCESS. REDIRECTING...';
+                    btn.innerText = 'SUCCESS. EVALUATING IMAGES...';
                     btn.style.backgroundColor = '#c5a059'; 
                     btn.style.color = '#000';
                     
