@@ -71,43 +71,11 @@
         .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
         .mobile-user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        /* APPLE GLASS UI TABS (Desktop Default) */
-        .dash-menu-container { 
-            width: 100%; 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: 40px; 
-        }
-        .dash-menu { 
-            display: inline-flex; 
-            background: rgba(20, 20, 20, 0.8); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border: 1px solid #222; 
-            border-radius: 100px; 
-            padding: 6px; 
-            gap: 4px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-        }
-        .tab-link { 
-            position: relative; 
-            font-size: 11px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            color: #777; 
-            cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
-            padding: 12px 24px; 
-            border-radius: 100px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            white-space: nowrap;
-        }
+        .dash-menu-container { width: 100%; display: flex; justify-content: center; margin-bottom: 40px; }
+        .dash-menu { display: inline-flex; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #222; border-radius: 100px; padding: 6px; gap: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tab-link { position: relative; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #777; cursor: pointer; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 12px 24px; border-radius: 100px; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
         .tab-link:hover { color: #fff; }
         .tab-link.active { background: #222; color: var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
         .notification-dot { display: none; width: 6px; height: 6px; background-color: var(--accent-gold); border-radius: 50%; margin-left: 6px; box-shadow: 0 0 8px var(--accent-gold); }
 
         #app-container { margin-top: 120px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
@@ -156,7 +124,6 @@
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
         .gallery-item img:hover { opacity: 0.7; }
 
-        /* FIXED STAGING GALLERY CSS */
         #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
         .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; width: 100%; box-sizing: border-box; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
@@ -166,15 +133,10 @@
 
         .btn-loading { pointer-events: none; color: transparent !important; position: relative; }
         .btn-loading::after {
-            content: '';
-            position: absolute;
-            left: 50%; top: 50%;
-            width: 22px; height: 22px;
-            margin: -11px 0 0 -11px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            content: ''; position: absolute; left: 50%; top: 50%;
+            width: 22px; height: 22px; margin: -11px 0 0 -11px;
+            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
         .btn-gold.btn-loading::after { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -189,7 +151,6 @@
         .listing-menu-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; }
         .listing-menu-btn:hover { color: var(--accent-gold); }
 
-        /* UPLOADCARE WIDGET OVERRIDES */
         .uploadcare--widget { width: 100%; }
         .uploadcare--widget__button_type_open { background: #111 !important; color: #fff !important; border: 1px dashed #444 !important; border-radius: 10px !important; padding: 18px !important; font-family: 'Inter', sans-serif !important; font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: 0.3s !important; width: 100%; box-sizing: border-box; }
         .uploadcare--widget__button_type_open:hover { background: #1a1a1a !important; border-color: var(--accent-gold) !important; color: var(--accent-gold) !important; }
@@ -200,7 +161,6 @@
             .logo-img { height: 20px; }
             .header-right { width: 100%; justify-content: flex-end; }
             
-            /* Hide desktop info, show mobile info */
             .desktop-auth-el { display: none !important; }
             .mobile-account-info { display: flex; }
             
@@ -213,13 +173,11 @@
             .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; }
             .header-nav.mobile-active { display: flex !important; }
             
-            /* Mobile tweaks for the new Glass UI Tabs to fit perfectly and span */
             .dash-menu-container { justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .dash-menu-container::-webkit-scrollbar { display: none; }
             .dash-menu { width: 100%; display: flex; border-radius: 12px; }
             .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
-            /* Keep 5 items per row on mobile so it doesn't break format, just smaller gaps */
             #staging-gallery { grid-template-columns: repeat(5, 1fr); gap: 6px; }
         }
 
@@ -298,7 +256,6 @@
             
             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
                 <h3 style="margin-bottom: 0;">Active Listings</h3>
-                <span style="font-size: 9px; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; text-align: right; font-weight: 800; max-width: 50%; line-height: 1.4;">* Images undergo AI evaluation<br>upon submission</span>
             </div>
 
             <div id="submissions-list">
@@ -335,6 +292,13 @@
                     <span style="font-size: 13px; color: #666; text-transform: uppercase; font-weight: 800;">Active Plan</span>
                     <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
+                
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label>Account Holder Name</label>
+                    <input type="text" id="profile-name" placeholder="Enter your full name">
+                    <button id="save-name-btn" onclick="updateProfileName()" class="btn-split" style="margin-top: 15px; width: 100%;">Save Name Update</button>
+                </div>
+
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
             </div>
         </section>
@@ -390,7 +354,12 @@
                     <div class="split-row">
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Wall Color</label>
-                            <input type="text" id="f-color" placeholder="e.g. White (Default)">
+                            <select id="f-color">
+                                <option value="White" selected>White (Default)</option>
+                                <option value="Black">Black / Dark Mode</option>
+                                <option value="Concrete">Concrete / Industrial</option>
+                                <option value="Warm Studio">Warm Studio</option>
+                            </select>
                         </div>
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label id="logo-label-text">Logo Placement</label>
@@ -418,14 +387,11 @@
         let userData = { listings: [], history: [] };
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
-        // RENAME WIDGET BUTTONS
         function setCustomWidgetLabels() {
             setTimeout(() => {
-                // Main Photo Upload Button
                 const mainBtns = document.querySelectorAll('#view-submit .uploadcare--widget__button_type_open');
                 mainBtns.forEach(btn => btn.textContent = 'UPLOAD HIGH-RES PHOTOS');
 
-                // Logo Upload Button (Changes based on existing logo)
                 const logoBtns = document.querySelectorAll('#view-profile .uploadcare--widget__button_type_open');
                 logoBtns.forEach(btn => {
                     const hasLogo = (userData.logo && userData.logo !== "" && userData.logo !== "undefined");
@@ -538,14 +504,12 @@
                 const date = new Date(item.date).getTime() || 0;
                 const status = (item.status || '').toUpperCase();
                 
-                // Alert 1: Submission Received
                 notifs.push({
                     text: `<b>${name}:</b> Submission received. Processing started.`,
                     time: date,
                     formattedTime: formatDate(item.date)
                 });
 
-                // Alert 2: Staging Completed
                 if (status === 'COMPLETED') {
                     notifs.push({
                         text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`,
@@ -623,6 +587,9 @@
             }
 
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
+            
+            // Populates the Name input if it exists in the database
+            document.getElementById('profile-name').value = userData.name || '';
             
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
@@ -751,8 +718,8 @@
                             </div>
                         </div>
                         <div class="listing-accordion-row">
-                            <button class="accordion-btn" onclick="toggleAccordion('uploaded-${idx}')">Original Assets ▾</button>
-                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded-${idx}')">Staged Assets ▾</button>
+                            <button class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button>
+                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button>
                         </div>
                         <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${originalGallery}</div>
                         <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${stagedGallery}</div>
@@ -785,9 +752,62 @@
             }
         }
 
-        function toggleAccordion(id) {
-            const panel = document.getElementById(id);
-            panel.style.display = (panel.style.display === "none") ? "block" : "none";
+        // ACCORDION LOGIC FIX (Closes the sibling when one opens)
+        function toggleAccordion(type, idx) {
+            const uploaded = document.getElementById(`uploaded-${idx}`);
+            const upgraded = document.getElementById(`upgraded-${idx}`);
+            
+            if (type === 'uploaded') {
+                const isOpening = uploaded.style.display === "none";
+                uploaded.style.display = isOpening ? "block" : "none";
+                if (isOpening && upgraded) upgraded.style.display = "none";
+            } else {
+                const isOpening = upgraded.style.display === "none";
+                upgraded.style.display = isOpening ? "block" : "none";
+                if (isOpening && uploaded) uploaded.style.display = "none";
+            }
+        }
+
+        // NEW PROFILE NAME UPDATE FUNCTION
+        async function updateProfileName() {
+            const newName = document.getElementById('profile-name').value.trim();
+            const btn = document.getElementById('save-name-btn');
+            
+            if (!newName) return;
+            
+            btn.disabled = true;
+            const originalText = btn.innerText;
+            btn.innerText = 'SAVING...';
+            
+            try {
+                // Sends to the exact same webhook you use for fetching and renaming
+                await fetch(dataFetchWebhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'update_name',
+                        email: localStorage.getItem('pf_email'),
+                        accountId: userData.accountId || userData.accountID,
+                        newName: newName
+                    })
+                });
+                
+                userData.name = newName;
+                btn.innerText = 'SAVED';
+                btn.style.backgroundColor = '#c5a059';
+                btn.style.color = '#000';
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    btn.disabled = false;
+                }, 2000);
+            } catch (err) {
+                console.error(err);
+                btn.innerText = 'ERROR';
+                setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000);
+            }
         }
 
         function signOut() {
@@ -850,7 +870,6 @@
             }
             
             try {
-                // UPDATE: Webhook URL successfully updated.
                 const res = await fetch('https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p', { method: 'POST', body: formData });
                 
                 if (res.ok) {
