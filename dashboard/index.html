@@ -295,8 +295,16 @@
                 
                 <div class="form-group" style="margin-bottom: 25px;">
                     <label>Account Holder Name</label>
-                    <input type="text" id="profile-name" placeholder="Enter your full name">
-                    <button id="save-name-btn" onclick="updateProfileName()" class="btn-split" style="margin-top: 15px; width: 100%;">Save Name Update</button>
+                    
+                    <div id="profile-name-empty">
+                        <input type="text" id="profile-name" placeholder="Enter your full name">
+                        <button id="save-name-btn" onclick="updateProfileName()" class="btn-split" style="margin-top: 15px; width: 100%;">Save Name Update</button>
+                    </div>
+
+                    <div id="profile-name-populated" style="display: none; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; padding: 20px; align-items: center; justify-content: space-between;">
+                        <span id="display-profile-name" style="color: #fff; font-size: 16px; font-weight: 700;"></span>
+                        <button class="listing-menu-btn" onclick="editProfileNamePrompt()" style="margin: 0; padding: 0 10px;">⋮</button>
+                    </div>
                 </div>
 
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
@@ -588,8 +596,20 @@
 
             document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
             
-            // Populates the Name input if it exists in the database
-            document.getElementById('profile-name').value = userData.name || '';
+            // Populates the Name input or toggles the populated UI state
+            const nameEmptyState = document.getElementById('profile-name-empty');
+            const namePopulatedState = document.getElementById('profile-name-populated');
+            const displayProfileName = document.getElementById('display-profile-name');
+
+            if (userData.name && userData.name.trim() !== "") {
+                nameEmptyState.style.display = 'none';
+                namePopulatedState.style.display = 'flex';
+                displayProfileName.innerText = userData.name.toUpperCase();
+            } else {
+                nameEmptyState.style.display = 'block';
+                namePopulatedState.style.display = 'none';
+                document.getElementById('profile-name').value = '';
+            }
             
             const actualImg = document.getElementById('actual-logo-img');
             const noLogoText = document.getElementById('no-logo-text');
@@ -768,7 +788,7 @@
             }
         }
 
-        // NEW PROFILE NAME UPDATE FUNCTION
+        // NEW PROFILE NAME UPDATE FUNCTION (Initial Setup)
         async function updateProfileName() {
             const newName = document.getElementById('profile-name').value.trim();
             const btn = document.getElementById('save-name-btn');
@@ -780,7 +800,6 @@
             btn.innerText = 'SAVING...';
             
             try {
-                // Sends to the exact same webhook you use for fetching and renaming
                 await fetch(dataFetchWebhook, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -802,11 +821,43 @@
                     btn.style.backgroundColor = '';
                     btn.style.color = '';
                     btn.disabled = false;
-                }, 2000);
+                    refreshUI(); // Triggers the UI to swap to the populated state instantly
+                }, 1000);
             } catch (err) {
                 console.error(err);
                 btn.innerText = 'ERROR';
                 setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000);
+            }
+        }
+
+        // PROMPT EDIT FUNCTION (For existing names)
+        async function editProfileNamePrompt() {
+            const currentName = userData.name || "";
+            const newName = prompt("Edit Account Holder Name:", currentName);
+
+            if (newName && newName.trim() !== "" && newName !== currentName) {
+                const displayEl = document.getElementById('display-profile-name');
+                displayEl.innerText = "UPDATING...";
+
+                try {
+                    await fetch(dataFetchWebhook, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'update_name',
+                            email: localStorage.getItem('pf_email'),
+                            accountId: userData.accountId || userData.accountID,
+                            newName: newName.trim()
+                        })
+                    });
+
+                    userData.name = newName.trim();
+                    refreshUI(); // Instantly displays the new name
+                } catch (err) {
+                    console.error("Rename failed", err);
+                    displayEl.innerText = currentName.toUpperCase(); // Reverts visual change on failure
+                    alert("Failed to update name. Please try again.");
+                }
             }
         }
 
