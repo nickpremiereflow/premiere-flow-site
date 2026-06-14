@@ -273,24 +273,21 @@
 
         <section id="view-profile" class="view-section">
             <div class="card">
-                <h3>Account Logo</h3>
-                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0 25px 0; background-color: #050505; overflow: hidden; padding: 15px;">
-                    <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
-                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
-                </div>
-                
-                <div style="margin-bottom: 20px; text-align: center;">
-                    <input type="hidden" role="uploadcare-uploader" id="ucare-logo-uploader" data-images-only="true" data-crop="free, 1:1" />
-                </div>
-                
-                <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; margin-top: 15px;" class="btn-main btn-gold">Save Logo to Profile</button>
-            </div>
-            
-            <div class="card">
                 <h3>Account Details</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <span style="font-size: 13px; color: #666; text-transform: uppercase; font-weight: 800;">Active Plan</span>
-                    <span id="profile-tier" style="font-size: 13px; font-weight: 900; color: var(--accent-gold);">---</span>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #111; padding-bottom: 10px;">
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800;">Email</span>
+                    <span id="profile-email-display" style="font-size: 11px; font-weight: 700; color: #fff;">---</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #111; padding-bottom: 10px;">
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800;">Active Plan</span>
+                    <span id="profile-tier" style="font-size: 11px; font-weight: 900; color: var(--accent-gold);">---</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800;">Listings Remaining</span>
+                    <span id="profile-credits-display" style="font-size: 11px; font-weight: 900; color: #fff;">---</span>
                 </div>
                 
                 <div class="form-group" style="margin-bottom: 25px;">
@@ -308,6 +305,20 @@
                 </div>
 
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
+            </div>
+            
+            <div class="card">
+                <h3>Account Logo</h3>
+                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0 25px 0; background-color: #050505; overflow: hidden; padding: 15px;">
+                    <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
+                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
+                </div>
+                
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <input type="hidden" role="uploadcare-uploader" id="ucare-logo-uploader" data-images-only="true" data-crop="free, 1:1" />
+                </div>
+                
+                <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; margin-top: 15px;" class="btn-main btn-gold">Save Logo to Profile</button>
             </div>
         </section>
 
@@ -549,9 +560,17 @@
                 document.getElementById('mobile-email-display').innerText = currentEmail.toLowerCase();
             }
             
+            const profileEmailDisplay = document.getElementById('profile-email-display');
+            if (profileEmailDisplay) profileEmailDisplay.innerText = currentEmail.toLowerCase();
+            
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
             const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER'));
             const creditsNum = Math.round(userData.credits || 0);
+
+            const profileCreditsDisplay = document.getElementById('profile-credits-display');
+            if (profileCreditsDisplay) {
+                profileCreditsDisplay.innerText = isUnlimited ? 'UNLIMITED' : creditsNum;
+            }
 
             const actionBtn = document.getElementById('action-btn');
             const upgradePrompt = document.getElementById('upgrade-prompt');
