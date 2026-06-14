@@ -93,6 +93,10 @@
         
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
+        /* UPLOAD CONTAINER HEIGHT & OVERFLOW LOCK FIX */
+        .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; height: auto !important; min-height: 180px; display: block !important; overflow: visible !important; }
+        .uploadcare--page-container, .uploadcare--widget, .uploadcare--widget__progress { height: auto !important; min-height: auto !important; display: block !important; overflow: visible !important; }
+
         /* CUSTOM DROPDOWN STYLES */
         .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
         .custom-select { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; font-size: 16px; cursor: pointer; transition: border-color 0.3s; }
@@ -374,14 +378,15 @@
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4 or KNDM24AH6P7XXXXXX">
                     </div>
                     
-                    <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: flow-root; overflow: hidden;">
+                    <!-- EXPLICIT OVERFLOW FIX IMPLEMENTED HERE -->
+                    <div class="form-group direct-upload-box">
                         <label>Asset URL (Google Drive / Dropbox Folder)</label>
                         <input type="text" id="f-source" placeholder="Paste link here...">
                         
                         <div style="text-align: center; margin: 25px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
                         
                         <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;">
                             <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
                             <div id="staging-gallery" style="width: 100%;"></div>
                         </div>
@@ -769,7 +774,7 @@
                 const urls = rawUrl.split(',').filter(u => u.trim() !== "");
                 thumb = urls[0].trim();
                 html = `<div class="listing-gallery">${urls.map(url => `
-                    <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${url.trim()}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
+                    <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${url.trim}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
                 return { html: html, thumb: thumb };
             }
 
@@ -812,10 +817,9 @@
                     if (item.staged && isComplete) {
                         let stagedData = parseGalleryUrls(item.staged, listingName + '_Staged');
                         stagedGallery = stagedData.html;
-                        stagedThumb = stagedData.thumb; // Grab the beautiful exterior staged shot
+                        stagedThumb = stagedData.thumb; 
                     }
 
-                    // Smart Thumbnail Priority: 1. Staged AI exterior 2. Explicit thumbnail 3. First original photo
                     let thumbSource = stagedThumb || item.thumbnail || origData.thumb;
 
                     return `
@@ -868,7 +872,6 @@
             }
         }
 
-        // ACCORDION LOGIC FIX (Closes the sibling when one opens)
         function toggleAccordion(type, idx) {
             const uploaded = document.getElementById(`uploaded-${idx}`);
             const upgraded = document.getElementById(`upgraded-${idx}`);
@@ -884,7 +887,6 @@
             }
         }
 
-        // NEW PROFILE NAME UPDATE FUNCTION (Initial Setup)
         async function updateProfileName() {
             const newName = document.getElementById('profile-name').value.trim();
             const btn = document.getElementById('save-name-btn');
@@ -917,7 +919,7 @@
                     btn.style.backgroundColor = '';
                     btn.style.color = '';
                     btn.disabled = false;
-                    refreshUI(); // Triggers the UI to swap to the populated state instantly
+                    refreshUI(); 
                 }, 1000);
             } catch (err) {
                 console.error(err);
@@ -926,7 +928,6 @@
             }
         }
 
-        // PROMPT EDIT FUNCTION (For existing names)
         async function editProfileNamePrompt() {
             const currentName = userData.name || "";
             const newName = prompt("Edit Account Holder Name:", currentName);
@@ -948,10 +949,10 @@
                     });
 
                     userData.name = newName.trim();
-                    refreshUI(); // Instantly displays the new name
+                    refreshUI(); 
                 } catch (err) {
                     console.error("Rename failed", err);
-                    displayEl.innerText = currentName.toUpperCase(); // Reverts visual change on failure
+                    displayEl.innerText = currentName.toUpperCase(); 
                     alert("Failed to update name. Please try again.");
                 }
             }
@@ -1032,7 +1033,6 @@
                         
                         document.getElementById('staging-gallery').innerHTML = '';
                         
-                        // Reset Custom Dropdown visual
                         fColorInput.value = 'Crisp White';
                         selectedColorText.innerText = 'Crisp White';
                         selectedColorSwatch.style.backgroundColor = '#ffffff';
