@@ -93,6 +93,19 @@
         
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
+        /* CUSTOM DROPDOWN STYLES */
+        .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
+        .custom-select { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; font-size: 16px; cursor: pointer; transition: border-color 0.3s; }
+        .custom-select:hover { border-color: #333; }
+        .custom-select-options { position: absolute; top: 100%; left: 0; right: 0; background: #0a0a0a; border: 1px solid #222; border-radius: 10px; margin-top: 8px; z-index: 100; overflow: hidden; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        .custom-select-options.open { display: block; }
+        .custom-option { padding: 15px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #111; }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: #151515; }
+        .color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); background-size: cover; background-position: center; }
+        .dropdown-arrow { font-size: 12px; color: #888; transition: transform 0.3s; }
+        .custom-select.open .dropdown-arrow { transform: rotate(180deg); }
+
         .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .btn-main:disabled { cursor: not-allowed; opacity: 0.5; }
         .btn-gold { background: var(--accent-gold); color: #000; }
@@ -361,7 +374,7 @@
                         <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4 or KNDM24AH6P7XXXXXX">
                     </div>
                     
-                    <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a;">
+                    <div class="form-group" style="background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: flow-root; overflow: hidden;">
                         <label>Asset URL (Google Drive / Dropbox Folder)</label>
                         <input type="text" id="f-source" placeholder="Paste link here...">
                         
@@ -375,16 +388,39 @@
                     </div>
 
                     <div class="split-row">
+                        <!-- CUSTOM DROPDOWN -->
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Wall Color</label>
-                            <select id="f-color">
-                                <option value="White" selected>Crisp White</option>
-                                <option value="Black">Pitch Black</option>
-                                <option value="Light Grey">Light Grey</option>
-                                <option value="Dark Charcoal">Dark Charcoal</option>
-                                <option value="Warm Beige">Warm Beige</option>
-                            </select>
+                            <div class="custom-select-wrapper" id="color-select-wrapper">
+                                <div class="custom-select" id="color-trigger">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div class="color-swatch" id="selected-color-swatch" style="background-color: #ffffff;"></div>
+                                        <span id="selected-color-text">Crisp White</span>
+                                    </div>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="custom-select-options" id="color-options">
+                                    <div class="custom-option" data-value="Crisp White" data-color="#ffffff">
+                                        <div class="color-swatch" style="background-color: #ffffff;"></div> Crisp White
+                                    </div>
+                                    <div class="custom-option" data-value="Pitch Black" data-color="#0a0a0a">
+                                        <div class="color-swatch" style="background-color: #0a0a0a;"></div> Pitch Black
+                                    </div>
+                                    <div class="custom-option" data-value="Light Grey" data-color="#d3d3d3">
+                                        <div class="color-swatch" style="background-color: #d3d3d3;"></div> Light Grey
+                                    </div>
+                                    <div class="custom-option" data-value="Dark Charcoal" data-color="#333333">
+                                        <div class="color-swatch" style="background-color: #333333;"></div> Dark Charcoal
+                                    </div>
+                                    <div class="custom-option" data-value="Warm Beige" data-color="#e8dcc8">
+                                        <div class="color-swatch" style="background-color: #e8dcc8;"></div> Warm Beige
+                                    </div>
+                                </div>
+                                <!-- Hidden input for form payload -->
+                                <input type="hidden" id="f-color" value="Crisp White">
+                            </div>
                         </div>
+
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label id="logo-label-text">Logo Placement</label>
                             <select id="f-logo">
@@ -393,7 +429,6 @@
                                 <option value="Bottom Right">Bottom Right</option>
                                 <option value="Top Right">Top Right</option>
                                 <option value="Top Left">Top Left</option>
-                                <option value="Showroom Wall">Showroom Wall</option>
                             </select>
                         </div>
                     </div>
@@ -410,6 +445,39 @@
     <script>
         let userData = { listings: [], history: [] };
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
+
+        // CUSTOM DROPDOWN LOGIC
+        const colorTrigger = document.getElementById('color-trigger');
+        const colorOptions = document.getElementById('color-options');
+        const fColorInput = document.getElementById('f-color');
+        const selectedColorText = document.getElementById('selected-color-text');
+        const selectedColorSwatch = document.getElementById('selected-color-swatch');
+
+        colorTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            colorTrigger.classList.toggle('open');
+            colorOptions.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.custom-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const val = option.getAttribute('data-value');
+                const color = option.getAttribute('data-color');
+                
+                fColorInput.value = val;
+                selectedColorText.innerText = val;
+                selectedColorSwatch.style.backgroundColor = color;
+                
+                colorTrigger.classList.remove('open');
+                colorOptions.classList.remove('open');
+            });
+        });
+
+        window.addEventListener('click', () => {
+            colorTrigger.classList.remove('open');
+            colorOptions.classList.remove('open');
+        });
+
 
         function setCustomWidgetLabels() {
             setTimeout(() => {
@@ -740,11 +808,15 @@
                     let originalGallery = origData.html;
                     
                     let stagedGallery = '<p style="font-size: 11px; color: #444; text-align: center; padding:20px;">Final staged assets will appear here once processing is complete.</p>';
+                    let stagedThumb = '';
                     if (item.staged && isComplete) {
-                        stagedGallery = parseGalleryUrls(item.staged, listingName + '_Staged').html;
+                        let stagedData = parseGalleryUrls(item.staged, listingName + '_Staged');
+                        stagedGallery = stagedData.html;
+                        stagedThumb = stagedData.thumb; // Grab the beautiful exterior staged shot
                     }
 
-                    let thumbSource = item.thumbnail || origData.thumb;
+                    // Smart Thumbnail Priority: 1. Staged AI exterior 2. Explicit thumbnail 3. First original photo
+                    let thumbSource = stagedThumb || item.thumbnail || origData.thumb;
 
                     return `
                     <div class="listing-card">
@@ -936,7 +1008,7 @@
             formData.append('accountId', userData.accountId || userData.accountID || '');
             formData.append('vehicleName', document.getElementById('f-name').value.trim());
             formData.append('assetSource', document.getElementById('f-source').value.trim());
-            formData.append('showroomColor', document.getElementById('f-color').value || "White");
+            formData.append('showroomColor', document.getElementById('f-color').value || "Crisp White");
             formData.append('logoPlacement', document.getElementById('f-logo').value);
             
             const ucareUrl = document.getElementById('ucare-uploader').value;
@@ -960,6 +1032,12 @@
                         
                         document.getElementById('staging-gallery').innerHTML = '';
                         
+                        // Reset Custom Dropdown visual
+                        fColorInput.value = 'Crisp White';
+                        selectedColorText.innerText = 'Crisp White';
+                        selectedColorSwatch.style.backgroundColor = '#ffffff';
+                        selectedColorSwatch.style.backgroundImage = 'none';
+
                         btn.innerText = originalText;
                         btn.style.backgroundColor = '';
                         btn.style.color = '';
