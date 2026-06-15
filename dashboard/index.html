@@ -93,9 +93,16 @@
         
         select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
 
-        /* UPLOAD CONTAINER HEIGHT & OVERFLOW LOCK FIX */
-        .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; height: auto !important; min-height: 180px; display: block !important; overflow: visible !important; }
-        .uploadcare--page-container, .uploadcare--widget, .uploadcare--widget__progress { height: auto !important; min-height: auto !important; display: block !important; overflow: visible !important; }
+        /* UPLOAD CONTAINER HEIGHT, OVERFLOW LOCK, & GALLERY FIX */
+        .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: block; overflow: hidden; padding-bottom: 35px; }
+        .uploadcare--files, .uploadcare--widget__text { display: none !important; }
+
+        #staging-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
+        .thumb-wrapper { width: calc(20% - 8px); aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; position: relative; transition: 0.2s ease-in-out; cursor: pointer; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .thumb-wrapper.selected-hero { border: 2px solid var(--accent-gold); transform: scale(0.95); box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
+        .hero-badge { display: none; position: absolute; top: 5px; left: 5px; background: var(--accent-gold); color: #000; font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 4px; z-index: 10; letter-spacing: 1px; }
+        .thumb-wrapper.selected-hero .hero-badge { display: block; }
 
         /* CUSTOM DROPDOWN STYLES */
         .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
@@ -140,15 +147,6 @@
         .gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #000; }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
         .gallery-item img:hover { opacity: 0.7; }
-
-        #staging-gallery { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
-        
-        /* NEW INTERACTIVE HERO THUMBNAIL CSS */
-        .thumb-wrapper { position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; width: 100%; box-sizing: border-box; transition: 0.2s ease-in-out; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-wrapper.selected-hero { border: 2px solid var(--accent-gold); transform: scale(0.95); box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
-        .hero-badge { display: none; position: absolute; top: 5px; left: 5px; background: var(--accent-gold); color: #000; font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 4px; z-index: 10; letter-spacing: 1px; }
-        .thumb-wrapper.selected-hero .hero-badge { display: block; }
 
         .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #0a0a0a 4%, #151515 25%, #0a0a0a 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #111; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
@@ -200,7 +198,7 @@
             .dash-menu { width: 100%; display: flex; border-radius: 12px; }
             .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
-            #staging-gallery { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+            .thumb-wrapper { width: calc(33.333% - 6px); }
         }
 
         @media (min-width: 768px) {
@@ -297,7 +295,6 @@
             <div class="card">
                 <h3>Account Details</h3>
                 
-                <!-- ACCOUNT HOLDER -->
                 <div id="profile-name-empty" style="margin-bottom: 25px;">
                     <label>Account Holder Name</label>
                     <input type="text" id="profile-name" placeholder="Enter your full name">
@@ -312,19 +309,16 @@
                     </div>
                 </div>
 
-                <!-- EMAIL -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
                     <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Email</span>
                     <span id="profile-email-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span>
                 </div>
 
-                <!-- ACTIVE PLAN -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
                     <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Active Plan</span>
                     <span id="profile-tier" style="font-size: 16px; font-weight: 900; color: var(--accent-gold);">---</span>
                 </div>
 
-                <!-- CREDITS -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Listings Remaining</span>
                     <span id="profile-credits-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span>
@@ -393,13 +387,11 @@
                         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;">
                             <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
                             <div id="staging-gallery" style="width: 100%;"></div>
-                            <!-- HIDDEN HERO THUMB INPUT -->
                             <input type="hidden" id="f-hero-thumb" value="">
                         </div>
                     </div>
 
                     <div class="split-row">
-                        <!-- CUSTOM DROPDOWN -->
                         <div class="form-group" style="flex: 1; margin-bottom: 0;">
                             <label>Showroom Wall Color</label>
                             <div class="custom-select-wrapper" id="color-select-wrapper">
@@ -531,9 +523,8 @@
                             const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/';
                             const fullUrl = fileInfo.cdnUrl;
                             
-                            // Make first image the default hero thumbnail
                             if (index === 0) { document.getElementById('f-hero-thumb').value = fullUrl; }
-
+                            
                             gallery.innerHTML += `<div class="thumb-wrapper ${index === 0 ? 'selected-hero' : ''}" onclick="selectHeroThumb(this, '${fullUrl}')" style="cursor:pointer;" title="Click to set as cover image">
                                 <div class="hero-badge">COVER</div>
                                 <img src="${thumbUrl}" loading="lazy">
@@ -841,7 +832,7 @@
                         stagedThumb = stagedData.thumb; 
                     }
 
-                    let thumbSource = stagedThumb || item.thumbnail || origData.thumb;
+                    let thumbSource = item.thumbnail || stagedThumb || origData.thumb;
 
                     return `
                     <div class="listing-card">
@@ -1032,7 +1023,7 @@
             formData.append('assetSource', document.getElementById('f-source').value.trim());
             formData.append('showroomColor', document.getElementById('f-color').value || "Crisp White");
             formData.append('logoPlacement', document.getElementById('f-logo').value);
-            formData.append('thumbnail', document.getElementById('f-hero-thumb').value); // SENDS COVER SELECTION TO MAKE.COM
+            formData.append('thumbnail', document.getElementById('f-hero-thumb').value);
             
             const ucareUrl = document.getElementById('ucare-uploader').value;
             if (ucareUrl) {
