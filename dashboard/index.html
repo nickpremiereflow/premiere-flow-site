@@ -95,7 +95,10 @@
 
         /* UPLOAD CONTAINER HEIGHT, OVERFLOW LOCK, & GALLERY FIX */
         .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: block; overflow: hidden; padding-bottom: 35px; }
-        .uploadcare--files, .uploadcare--widget__text { display: none !important; }
+        
+        /* THIS FIXES THE BLANK PREVIEW ISSUE */
+        .direct-upload-box .uploadcare--files { display: none !important; }
+        .direct-upload-box .uploadcare--widget__text { display: none !important; }
 
         #staging-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
         .thumb-wrapper { width: calc(20% - 8px); aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; position: relative; transition: 0.2s ease-in-out; cursor: pointer; }
