@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <script>
-        UPLOADCARE_PUBLIC_KEY = '64387322e1e85c547e9c';
+        UPLOADCARE_PUBLIC_KEY = '198f4d864f9d1ec57f5d';
         UPLOADCARE_TABS = 'file gdrive dropbox onedrive';
     </script>
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
@@ -141,6 +141,7 @@
         .listing-accordion-row { display: flex; border-top: 1px solid #111; background: #050505;}
         .accordion-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .accordion-btn:hover { color: #fff; background: #0a0a0a; }
+        .accordion-btn.active { color: var(--accent-gold); background: #111; }
         .accordion-btn:first-child { border-right: 1px solid #111; }
         .accordion-btn.disabled { opacity: 0.3; pointer-events: none; }
 
@@ -386,7 +387,7 @@
                         
                         <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;">
-                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
+                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-accept="image/*, .heic" />
                             <div id="staging-gallery" style="width: 100%;"></div>
                             <input type="hidden" id="f-hero-thumb" value="">
                         </div>
@@ -884,7 +885,6 @@
                         stagedThumb = stagedData.thumb; 
                     }
 
-                    // THIS IS THE FIX: Will catch capitalization discrepancies from Make/Google Sheets
                     let thumbSource = item.thumbnail || item.Thumbnail || item.THUMBNAIL || stagedThumb || origData.thumb;
 
                     return `
@@ -903,8 +903,8 @@
                             </div>
                         </div>
                         <div class="listing-accordion-row">
-                            <button class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button>
-                            <button class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button>
+                            <button id="btn-uploaded-${idx}" class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button>
+                            <button id="btn-upgraded-${idx}" class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button>
                         </div>
                         <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${originalGallery}</div>
                         <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${stagedGallery}</div>
@@ -938,17 +938,31 @@
         }
 
         function toggleAccordion(type, idx) {
-            const uploaded = document.getElementById(`uploaded-${idx}`);
-            const upgraded = document.getElementById(`upgraded-${idx}`);
+            const uploadedContent = document.getElementById(`uploaded-${idx}`);
+            const upgradedContent = document.getElementById(`upgraded-${idx}`);
+            const btnUploaded = document.getElementById(`btn-uploaded-${idx}`);
+            const btnUpgraded = document.getElementById(`btn-upgraded-${idx}`);
             
             if (type === 'uploaded') {
-                const isOpening = uploaded.style.display === "none";
-                uploaded.style.display = isOpening ? "block" : "none";
-                if (isOpening && upgraded) upgraded.style.display = "none";
+                const isOpening = uploadedContent.style.display === "none";
+                uploadedContent.style.display = isOpening ? "block" : "none";
+                if (isOpening) {
+                    if (upgradedContent) upgradedContent.style.display = "none";
+                    if (btnUploaded) btnUploaded.classList.add('active');
+                    if (btnUpgraded) btnUpgraded.classList.remove('active');
+                } else {
+                    if (btnUploaded) btnUploaded.classList.remove('active');
+                }
             } else {
-                const isOpening = upgraded.style.display === "none";
-                upgraded.style.display = isOpening ? "block" : "none";
-                if (isOpening && uploaded) uploaded.style.display = "none";
+                const isOpening = upgradedContent.style.display === "none";
+                upgradedContent.style.display = isOpening ? "block" : "none";
+                if (isOpening) {
+                    if (uploadedContent) uploadedContent.style.display = "none";
+                    if (btnUpgraded) btnUpgraded.classList.add('active');
+                    if (btnUploaded) btnUploaded.classList.remove('active');
+                } else {
+                    if (btnUpgraded) btnUpgraded.classList.remove('active');
+                }
             }
         }
 
