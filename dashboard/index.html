@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
     
     <script>
-        UPLOADCARE_PUBLIC_KEY = '198f4d864f9d1ec57f5d';
+        UPLOADCARE_PUBLIC_KEY = '64387322e1e85c547e9c';
         UPLOADCARE_TABS = 'file gdrive dropbox onedrive';
     </script>
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
@@ -387,7 +387,7 @@
                         
                         <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
                         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;">
-                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-accept="image/*, .heic" />
+                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-images-only="true" />
                             <div id="staging-gallery" style="width: 100%;"></div>
                             <input type="hidden" id="f-hero-thumb" value="">
                         </div>
@@ -442,7 +442,6 @@
         </section>
     </div>
 
-    <!-- CUSTOM EDIT MODAL OVERLAY -->
     <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
         <div class="card" id="custom-modal-card" style="width: 90%; max-width: 420px; margin: 0; transform: translateY(20px); transition: transform 0.3s ease; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
             <h3 id="modal-title" style="margin-bottom: 20px; color: #fff;">Edit</h3>
@@ -885,6 +884,7 @@
                         stagedThumb = stagedData.thumb; 
                     }
 
+                    // THIS IS THE FIX: Will catch capitalization discrepancies from Make/Google Sheets
                     let thumbSource = item.thumbnail || item.Thumbnail || item.THUMBNAIL || stagedThumb || origData.thumb;
 
                     return `
