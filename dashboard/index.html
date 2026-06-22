@@ -105,6 +105,30 @@
         .hero-badge { display: none; position: absolute; top: 5px; left: 5px; background: var(--accent-gold); color: #000; font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 4px; z-index: 10; letter-spacing: 1px; }
         .thumb-wrapper.selected-hero .hero-badge { display: block; }
 
+        /* REMOVE BUTTON STYLES */
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .thumb-wrapper:hover .remove-btn { opacity: 1; }
+        .remove-btn:hover { background: #ef4444; border-color: #ef4444; }
+
         /* CUSTOM DROPDOWN STYLES */
         .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
         .custom-select { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; font-size: 16px; cursor: pointer; transition: border-color 0.3s; }
@@ -141,7 +165,6 @@
         .listing-accordion-row { display: flex; border-top: 1px solid #111; background: #050505;}
         .accordion-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .accordion-btn:hover { color: #fff; background: #0a0a0a; }
-        .accordion-btn.active { color: var(--accent-gold); background: #111; }
         .accordion-btn:first-child { border-right: 1px solid #111; }
         .accordion-btn.disabled { opacity: 0.3; pointer-events: none; }
 
@@ -201,6 +224,7 @@
             .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
             
             .thumb-wrapper { width: calc(33.333% - 6px); }
+            .remove-btn { opacity: 0.85; width: 24px; height: 24px; font-size: 11px; }
         }
 
         @media (min-width: 768px) {
@@ -462,6 +486,20 @@
         let userData = { listings: [], history: [] };
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
 
+        // UPLOADCARE REACTIVE GROUP MANAGEMENT
+        let currentFileUUIDs = [];
+        let mainUcareWidget = null;
+
+        function removeUploadedImage(event, index) {
+            event.stopPropagation();
+            currentFileUUIDs.splice(index, 1);
+            if (currentFileUUIDs.length === 0) {
+                mainUcareWidget.value(null);
+            } else {
+                mainUcareWidget.value(currentFileUUIDs);
+            }
+        }
+
         // CUSTOM PROMPT MODAL LOGIC
         function openCustomPrompt(title, defaultValue, placeholder) {
             return new Promise((resolve) => {
@@ -565,21 +603,25 @@
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
             }, 500);
 
-            const ucareWidget = uploadcare.Widget('#ucare-uploader');
-            ucareWidget.onChange(function(group) {
+            mainUcareWidget = uploadcare.Widget('#ucare-uploader');
+            mainUcareWidget.onChange(function(group) {
                 const gallery = document.getElementById('staging-gallery');
                 gallery.innerHTML = ''; 
                 document.getElementById('f-hero-thumb').value = '';
+                currentFileUUIDs = [];
+                
                 if (group) {
                     Promise.all(group.files()).then(function(files) {
                         files.forEach(function(fileInfo, index) {
                             const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/';
                             const fullUrl = fileInfo.cdnUrl;
+                            currentFileUUIDs.push(fileInfo.uuid);
                             
                             if (index === 0) { document.getElementById('f-hero-thumb').value = fullUrl; }
                             
                             gallery.innerHTML += `<div class="thumb-wrapper ${index === 0 ? 'selected-hero' : ''}" onclick="selectHeroThumb(this, '${fullUrl}')" style="cursor:pointer;" title="Click to set as cover image">
                                 <div class="hero-badge">COVER</div>
+                                <div class="remove-btn" onclick="removeUploadedImage(event, ${index})" title="Remove image">✕</div>
                                 <img src="${thumbUrl}" loading="lazy">
                             </div>`;
                         });
