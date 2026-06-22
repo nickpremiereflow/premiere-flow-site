@@ -885,8 +885,7 @@
                         stagedThumb = stagedData.thumb; 
                     }
 
-                    // THIS IS THE FIX: Priority logic changed. It will now pull from the Original Assets first before ever falling back to the Staged thumbnail.
-                    let thumbSource = item.Thumbnail || item.thumbnail || item.THUMBNAIL || origData.thumb || stagedThumb || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
+                    let thumbSource = origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || stagedThumb || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
 
                     return `
                     <div class="listing-card">
