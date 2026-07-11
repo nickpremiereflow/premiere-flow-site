@@ -1,1253 +1,1270 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Account Dashboard | Premiere Flow</title>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>Account Dashboard | Premiere Flow</title> 
     
-    <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap">
+    <link rel="icon" type="image/png" href="../premiereflowfavicon.png"> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap"> 
     
-    <script>
-        UPLOADCARE_PUBLIC_KEY = '64387322e1e85c547e9c';
-        UPLOADCARE_TABS = 'file gdrive dropbox onedrive';
-    </script>
-    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script>
+    <script> 
+        UPLOADCARE_PUBLIC_KEY = '64387322e1e85c547e9c'; 
+        UPLOADCARE_TABS = 'file gdrive dropbox onedrive'; 
+    </script> 
+    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script> 
     
-    <style>
-        :root {
-            --primary-black: #000000;
-            --accent-gold: #c5a059;
-            --bg-dark: #000000;
-            --card-bg: #0a0a0a;
-            --text-white: #ffffff;
-            --text-dim: #888;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+    <style> 
+        :root { 
+            --primary-black: #000000; 
+            --accent-gold: #c5a059; 
+            --bg-dark: #000000; 
+            --card-bg: #0a0a0a; 
+            --text-white: #ffffff; 
+            --text-dim: #888; 
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+        } 
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            margin: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-            font-size: 16px; 
-        }
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-white); 
+            margin: 0; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent; 
+            font-size: 16px;  
+        } 
 
-        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; }
-        input:focus::placeholder, textarea:focus::placeholder { opacity: 0.1; }
+        ::placeholder { color: #ffffff; opacity: 0.3; transition: opacity 0.3s; } 
+        input:focus::placeholder, textarea:focus::placeholder { opacity: 0.1; } 
 
-        header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 75px;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
-            border-bottom: 1px solid #111; display: flex; align-items: center;
-            justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000;
-        }
+        header { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 75px; 
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); 
+            border-bottom: 1px solid #111; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 40px; box-sizing: border-box; z-index: 1000; 
+        } 
 
-        .header-left { display: flex; align-items: center; height: 100%; position: relative; z-index: 2000; pointer-events: auto; }
-        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; cursor: pointer; position: relative; z-index: 2001; }
-        .logo-img { height: 22px; width: auto; transition: 0.3s; display: block; margin: auto 0; }
-        .logo-img:hover { opacity: 0.7; }
+        .header-left { display: flex; align-items: center; height: 100%; position: relative; z-index: 2000; pointer-events: auto; } 
+        .header-left a { display: flex; align-items: center; height: 100%; text-decoration: none; cursor: pointer; position: relative; z-index: 2001; } 
+        .logo-img { height: 22px; width: auto; transition: 0.3s; display: block; margin: auto 0; } 
+        .logo-img:hover { opacity: 0.7; } 
 
-        .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; pointer-events: none; }
-        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; white-space: nowrap; pointer-events: auto; }
-        .nav-link:hover, .nav-link.active { color: #fff; }
+        .header-nav { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 30px; align-items: center; pointer-events: none; } 
+        .nav-link { color: #666; text-decoration: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; cursor: pointer; line-height: 1; white-space: nowrap; pointer-events: auto; } 
+        .nav-link:hover, .nav-link.active { color: #fff; } 
 
-        .contact-wrapper { display: flex; align-items: center; position: relative; pointer-events: auto; }
-        .contact-bubble { visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: absolute; z-index: 100; top: 40px; left: 50%; transform: translateX(-50%); border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif; }
-        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; }
-        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; }
-        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .contact-wrapper { display: flex; align-items: center; position: relative; pointer-events: auto; } 
+        .contact-bubble { visibility: hidden; background-color: #111; color: #fff; text-align: center; border-radius: 8px; padding: 15px; position: absolute; z-index: 100; top: 40px; left: 50%; transform: translateX(-50%); border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); width: max-content; opacity: 0; transition: 0.3s; font-family: sans-serif; } 
+        .contact-bubble.show { visibility: visible; opacity: 1; top: 50px; } 
+        .contact-email { color: var(--accent-gold); text-decoration: none; font-size: 12px; font-weight: 600; margin-right: 10px; } 
+        .copy-btn { background: none; border: none; color: #555; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; } 
 
-        .header-right { display: flex; align-items: center; gap: 15px; height: 100%; position: relative; z-index: 2000; }
-        .user-info-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; max-width: 300px; }
+        .header-right { display: flex; align-items: center; gap: 15px; height: 100%; position: relative; z-index: 2000; } 
+        .user-info-stack { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 3px; max-width: 300px; } 
         
-        .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
-        .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; }
-        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; }
+        .user-email { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; display: block; line-height: 1; margin: 0; padding: 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; } 
+        .user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; line-height: 1; margin: 0; padding: 0; } 
+        .log-out-text { font-size: 10px; color: var(--accent-gold); text-transform: uppercase; cursor: pointer; font-weight: 800; } 
 
-        .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; pointer-events: auto; }
-        .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
-        .mobile-user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+        .mobile-account-info { display: none; flex-direction: column; align-items: center; gap: 5px; padding: 15px 0; border-bottom: 1px solid #1a1a1a; width: 100%; margin-bottom: 10px; pointer-events: auto; } 
+        .mobile-user-email { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; } 
+        .mobile-user-credits { font-size: 12px; color: var(--accent-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; } 
 
-        .dash-menu-container { width: 100%; display: flex; justify-content: center; margin-bottom: 40px; }
-        .dash-menu { display: inline-flex; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #222; border-radius: 100px; padding: 6px; gap: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .tab-link { position: relative; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #777; cursor: pointer; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 12px 24px; border-radius: 100px; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
-        .tab-link:hover { color: #fff; }
-        .tab-link.active { background: #222; color: var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .notification-dot { display: none; width: 6px; height: 6px; background-color: var(--accent-gold); border-radius: 50%; margin-left: 6px; box-shadow: 0 0 8px var(--accent-gold); }
+        .dash-menu-container { width: 100%; display: flex; justify-content: center; margin-bottom: 40px; } 
+        .dash-menu { display: inline-flex; background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid #222; border-radius: 100px; padding: 6px; gap: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); } 
+        .tab-link { position: relative; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #777; cursor: pointer; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 12px 24px; border-radius: 100px; display: flex; align-items: center; justify-content: center; white-space: nowrap; } 
+        .tab-link:hover { color: #fff; } 
+        .tab-link.active { background: #222; color: var(--accent-gold); box-shadow: 0 4px 15px rgba(0,0,0,0.3); } 
+        .notification-dot { display: none; width: 6px; height: 6px; background-color: var(--accent-gold); border-radius: 50%; margin-left: 6px; box-shadow: 0 0 8px var(--accent-gold); } 
 
-        #app-container { margin-top: 120px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #app-container { margin-top: 120px; margin-bottom: 60px; padding: 0 20px; max-width: 650px; margin-left: auto; margin-right: auto; animation: fadeIn 0.6s ease-out; min-height: 60vh; } 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } 
 
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
-        h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 2.5px; color: #666; margin-bottom: 25px; font-weight: 900; }
+        .view-section { display: none; } 
+        .view-section.active { display: block; } 
+        .card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); } 
+        h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 2.5px; color: #666; margin-bottom: 25px; font-weight: 900; } 
         
-        .form-group { margin-bottom: 30px; text-align: left; }
-        label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; }
+        .form-group { margin-bottom: 30px; text-align: left; } 
+        label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 12px; font-weight: 700; } 
         
-        input[type="text"], textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        input[type="text"], textarea, select { width: 100%; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; box-sizing: border-box; font-size: 16px; font-family: inherit; } 
         
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 40px; } 
 
-        /* UPLOAD CONTAINER HEIGHT, OVERFLOW LOCK, & GALLERY FIX */
-        .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: block; overflow: hidden; padding-bottom: 35px; }
-        .direct-upload-box .uploadcare--files { display: none !important; }
-        .direct-upload-box .uploadcare--widget__text { display: none !important; }
+        /* UPLOAD CONTAINER HEIGHT, OVERFLOW LOCK, & GALLERY FIX */ 
+        .direct-upload-box { background: #050505; padding: 25px; border-radius: 12px; border: 1px solid #1a1a1a; display: block; overflow: hidden; padding-bottom: 35px; } 
+        .direct-upload-box .uploadcare--files { display: none !important; } 
+        .direct-upload-box .uploadcare--widget__text { display: none !important; } 
 
-        #staging-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; }
-        .thumb-wrapper { width: calc(20% - 8px); aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; position: relative; transition: 0.2s ease-in-out; cursor: pointer; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .thumb-wrapper.selected-hero { border: 2px solid var(--accent-gold); transform: scale(0.95); box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); }
-        .hero-badge { display: none; position: absolute; top: 5px; left: 5px; background: var(--accent-gold); color: #000; font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 4px; z-index: 10; letter-spacing: 1px; }
-        .thumb-wrapper.selected-hero .hero-badge { display: block; }
+        #staging-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; width: 100%; box-sizing: border-box; } 
+        .thumb-wrapper { width: calc(20% - 8px); aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #222; background: #050505; position: relative; transition: 0.2s ease-in-out; cursor: pointer; } 
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; } 
+        .thumb-wrapper.selected-hero { border: 2px solid var(--accent-gold); transform: scale(0.95); box-shadow: 0 0 15px rgba(197, 160, 89, 0.3); } 
+        .hero-badge { display: none; position: absolute; top: 5px; left: 5px; background: var(--accent-gold); color: #000; font-size: 8px; font-weight: 900; padding: 3px 6px; border-radius: 4px; z-index: 10; letter-spacing: 1px; } 
+        .thumb-wrapper.selected-hero .hero-badge { display: block; } 
 
-        /* REMOVE BUTTON STYLES */
-        .remove-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            border: 1px solid #333;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 20;
-            opacity: 0;
-            transition: 0.2s;
+        /* REMOVE BUTTON STYLES */ 
+        .remove-btn { 
+            position: absolute; 
+            top: 5px; 
+            right: 5px; 
+            background: rgba(0,0,0,0.8); 
+            color: #fff; 
+            border: 1px solid #333; 
+            border-radius: 50%; 
+            width: 22px; 
+            height: 22px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            z-index: 20; 
+            opacity: 0; 
+            transition: 0.2s; 
+        } 
+        .thumb-wrapper:hover .remove-btn { opacity: 1; } 
+        .remove-btn:hover { background: #ef4444; border-color: #ef4444; } 
+
+        /* CUSTOM DROPDOWN STYLES */ 
+        .custom-select-wrapper { position: relative; user-select: none; width: 100%; } 
+        .custom-select { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; font-size: 16px; cursor: pointer; transition: border-color 0.3s; } 
+        .custom-select:hover { border-color: #333; } 
+        .custom-select-options { position: absolute; top: 100%; left: 0; right: 0; background: #0a0a0a; border: 1px solid #222; border-radius: 10px; margin-top: 8px; z-index: 100; overflow: hidden; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.8); } 
+        .custom-select-options.open { display: block; } 
+        .custom-option { padding: 15px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #111; } 
+        .custom-option:last-child { border-bottom: none; } 
+        .custom-option:hover { background: #151515; } 
+        .color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); background-size: cover; background-position: center; } 
+        .dropdown-arrow { font-size: 12px; color: #888; transition: transform 0.3s; } 
+        .custom-select.open .dropdown-arrow { transform: rotate(180deg); } 
+
+        .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; } 
+        .btn-main:disabled { cursor: not-allowed; opacity: 0.5; } 
+        .btn-gold { background: var(--accent-gold); color: #000; } 
+        .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; transition: 0.3s; } 
+        .btn-split:hover { background: #1a1a1a; border-color: #444; } 
+        .split-row { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; } 
+
+        /* UPDATED LISTING CARD FOR BETTER CONTRAST */
+        .listing-card { 
+            background: #111; 
+            border: 1px solid #333; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            margin-bottom: 30px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.3s ease;
+        } 
+        .listing-card:hover {
+            border-color: #555;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
         }
-        .thumb-wrapper:hover .remove-btn { opacity: 1; }
-        .remove-btn:hover { background: #ef4444; border-color: #ef4444; }
-
-        /* CUSTOM DROPDOWN STYLES */
-        .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
-        .custom-select { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px; background: #000; border: 1px solid #1a1a1a; border-radius: 10px; color: #fff; font-size: 16px; cursor: pointer; transition: border-color 0.3s; }
-        .custom-select:hover { border-color: #333; }
-        .custom-select-options { position: absolute; top: 100%; left: 0; right: 0; background: #0a0a0a; border: 1px solid #222; border-radius: 10px; margin-top: 8px; z-index: 100; overflow: hidden; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
-        .custom-select-options.open { display: block; }
-        .custom-option { padding: 15px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #111; }
-        .custom-option:last-child { border-bottom: none; }
-        .custom-option:hover { background: #151515; }
-        .color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); background-size: cover; background-position: center; }
-        .dropdown-arrow { font-size: 12px; color: #888; transition: transform 0.3s; }
-        .custom-select.open .dropdown-arrow { transform: rotate(180deg); }
-
-        .btn-main { position: relative; overflow: hidden; width: 100%; padding: 22px; background: #fff; color: #000; border: none; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .btn-main:disabled { cursor: not-allowed; opacity: 0.5; }
-        .btn-gold { background: var(--accent-gold); color: #000; }
-        .btn-split { flex: 1; padding: 18px; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-size: 12px; text-transform: uppercase; font-weight: 800; transition: 0.3s; }
-        .btn-split:hover { background: #1a1a1a; border-color: #444; }
-        .split-row { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; }
-
-        .listing-card { background: var(--card-bg); border: 1px solid #111; border-radius: 16px; overflow: hidden; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.4); display: flex; flex-direction: column; }
-        .listing-main-row { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; }
-        .listing-info-left { display: flex; align-items: center; gap: 15px; flex: 1;}
-        .listing-status-right { display: flex; align-items: center; gap: 15px; }
-        .listing-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #222; }
-        .listing-thumb-placeholder { width: 55px; height: 55px; background: #000; border: 1px solid #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #333; font-weight: 900; }
-        .listing-title { margin: 0 0 4px 0; font-weight: 800; font-size: 15px; color: #fff; }
-        .listing-date { font-size: 10px; color: #555; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .listing-main-row { padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; } 
+        .listing-info-left { display: flex; align-items: center; gap: 15px; flex: 1;} 
+        .listing-status-right { display: flex; align-items: center; gap: 15px; } 
+        .listing-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #333; } 
+        .listing-thumb-placeholder { width: 55px; height: 55px; background: #050505; border: 1px solid #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #444; font-weight: 900; } 
+        .listing-title { margin: 0 0 4px 0; font-weight: 800; font-size: 15px; color: #fff; } 
+        .listing-date { font-size: 10px; color: #777; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; } 
         
-        .status-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 4px; text-align: center; }
-        .status-progress { color: #888; background: #111; border: 1px solid #222; }
-        .status-completed { color: var(--bg-dark); background: var(--accent-gold); }
+        .status-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 4px; text-align: center; } 
+        .status-progress { color: #aaa; background: #222; border: 1px solid #444; } 
+        .status-completed { color: var(--bg-dark); background: var(--accent-gold); } 
 
-        .listing-accordion-row { display: flex; border-top: 1px solid #111; background: #050505;}
-        .accordion-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .accordion-btn:hover { color: #fff; background: #0a0a0a; }
-        .accordion-btn.active { color: var(--accent-gold); background: #111; }
-        .accordion-btn:first-child { border-right: 1px solid #111; }
-        .accordion-btn.disabled { opacity: 0.3; pointer-events: none; }
+        .listing-accordion-row { display: flex; border-top: 1px solid #222; background: #0a0a0a;} 
+        .accordion-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; } 
+        .accordion-btn:hover { color: #fff; background: #111; } 
+        .accordion-btn.active { color: var(--accent-gold); background: #151515; } 
+        .accordion-btn:first-child { border-right: 1px solid #222; } 
+        .accordion-btn.disabled { opacity: 0.3; pointer-events: none; } 
 
-        .listing-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
-        .gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #222; background: #000; }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
-        .gallery-item img:hover { opacity: 0.7; }
+        .listing-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; } 
+        .gallery-item { position: relative; aspect-ratio: 1/1; border-radius: 6px; overflow: hidden; border: 1px solid #333; background: #000; } 
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; } 
+        .gallery-item img:hover { opacity: 0.7; } 
 
-        .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #0a0a0a 4%, #151515 25%, #0a0a0a 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #111; box-shadow: 0 4px 25px rgba(0,0,0,0.4); }
-        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+        .shimmer-wrapper { animation: shimmer 2s infinite linear; background: linear-gradient(to right, #111 4%, #1a1a1a 25%, #111 36%); background-size: 1000px 100%; height: 95px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #222; box-shadow: 0 4px 25px rgba(0,0,0,0.4); } 
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } } 
 
-        .btn-loading { pointer-events: none; color: transparent !important; position: relative; }
-        .btn-loading::after {
-            content: ''; position: absolute; left: 50%; top: 50%;
-            width: 22px; height: 22px; margin: -11px 0 0 -11px;
-            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        .btn-gold.btn-loading::after { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .btn-loading { pointer-events: none; color: transparent !important; position: relative; } 
+        .btn-loading::after { 
+            content: ''; position: absolute; left: 50%; top: 50%; 
+            width: 22px; height: 22px; margin: -11px 0 0 -11px; 
+            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; 
+            border-radius: 50%; animation: spin 0.8s linear infinite; 
+        } 
+        .btn-gold.btn-loading::after { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; } 
+        @keyframes spin { 100% { transform: rotate(360deg); } } 
 
-        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        #transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 3000; display: flex; opacity: 1; align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); } 
+        .pulse-logo { animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); } 
 
-        footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; width: 100%; box-sizing: border-box; }
-        .footer-copyright { color: #ffffff; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
+        footer { margin-top: 40px; padding: 40px 20px; border-top: 1px solid #1a1a1a; text-align: center; position: relative; width: 100%; box-sizing: border-box; } 
+        .footer-copyright { color: #ffffff; opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; } 
 
-        .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; }
-        .listing-menu-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; }
-        .listing-menu-btn:hover { color: var(--accent-gold); }
+        .hamburger { display: none; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0 0 0 15px; line-height: 1; } 
+        .listing-menu-btn { background: none; border: none; color: #666; font-size: 20px; cursor: pointer; padding: 5px; transition: 0.3s; display: flex; align-items: center; justify-content: center; line-height: 1; } 
+        .listing-menu-btn:hover { color: var(--accent-gold); } 
 
-        .uploadcare--widget { width: 100%; }
-        .uploadcare--widget__button_type_open { background: #111 !important; color: #fff !important; border: 1px dashed #444 !important; border-radius: 10px !important; padding: 18px !important; font-family: 'Inter', sans-serif !important; font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: 0.3s !important; width: 100%; box-sizing: border-box; }
-        .uploadcare--widget__button_type_open:hover { background: #1a1a1a !important; border-color: var(--accent-gold) !important; color: var(--accent-gold) !important; }
+        .uploadcare--widget { width: 100%; } 
+        .uploadcare--widget__button_type_open { background: #111 !important; color: #fff !important; border: 1px dashed #444 !important; border-radius: 10px !important; padding: 18px !important; font-family: 'Inter', sans-serif !important; font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 2px !important; transition: 0.3s !important; width: 100%; box-sizing: border-box; } 
+        .uploadcare--widget__button_type_open:hover { background: #1a1a1a !important; border-color: var(--accent-gold) !important; color: var(--accent-gold) !important; } 
 
-        @media (max-width: 768px) {
-            header { padding: 0 15px; justify-content: center; }
-            .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; z-index: 2005; pointer-events: auto; }
-            .logo-img { height: 20px; }
-            .header-right { width: 100%; justify-content: flex-end; }
+        @media (max-width: 768px) { 
+            header { padding: 0 15px; justify-content: center; } 
+            .header-left { position: absolute; left: 50%; transform: translateX(-50%); min-width: auto; z-index: 2005; pointer-events: auto; } 
+            .logo-img { height: 20px; } 
+            .header-right { width: 100%; justify-content: flex-end; } 
             
-            .desktop-auth-el { display: none !important; }
-            .mobile-account-info { display: flex; }
+            .desktop-auth-el { display: none !important; } 
+            .mobile-account-info { display: flex; } 
             
-            .contact-wrapper { width: 100%; display: flex; justify-content: center; }
+            .contact-wrapper { width: 100%; display: flex; justify-content: center; } 
             
-            .hamburger { display: block; pointer-events: auto; }
-            .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .listing-status-right { width: 100%; justify-content: space-between; }
+            .hamburger { display: block; pointer-events: auto; } 
+            .listing-main-row { flex-direction: column; align-items: flex-start; gap: 20px; } 
+            .listing-status-right { width: 100%; justify-content: space-between; } 
             
-            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; }
-            .header-nav.mobile-active { display: flex !important; }
+            .header-nav { display: none !important; position: fixed; top: 75px; left: 0; width: 100%; height: calc(100vh - 75px); background: rgba(0,0,0,0.98); backdrop-filter: blur(15px); flex-direction: column; padding: 30px 0; gap: 25px; border-bottom: 1px solid #111; z-index: 999; transform: none; overflow-y: auto; pointer-events: auto; } 
+            .header-nav.mobile-active { display: flex !important; } 
             
-            .dash-menu-container { justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-            .dash-menu-container::-webkit-scrollbar { display: none; }
-            .dash-menu { width: 100%; display: flex; border-radius: 12px; }
-            .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; }
+            .dash-menu-container { justify-content: flex-start; padding-bottom: 10px; margin-bottom: 30px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; } 
+            .dash-menu-container::-webkit-scrollbar { display: none; } 
+            .dash-menu { width: 100%; display: flex; border-radius: 12px; } 
+            .tab-link { flex: 1; padding: 12px 2px; font-size: 9px; letter-spacing: 0.5px; border-radius: 8px; } 
             
-            .thumb-wrapper { width: calc(33.333% - 6px); }
-            .remove-btn { opacity: 0.85; width: 26px; height: 26px; font-size: 12px; } /* Always visible and larger on touchscreens */
-        }
+            .thumb-wrapper { width: calc(33.333% - 6px); } 
+            .remove-btn { opacity: 0.85; width: 26px; height: 26px; font-size: 12px; } 
+        } 
 
-        @media (min-width: 768px) {
-            .split-row { flex-direction: row; }
-        }
-    </style>
-</head>
-<body style="display: none;"> 
-    <div id="transition-overlay">
-        <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);">
-    </div>
+        @media (min-width: 768px) { 
+            .split-row { flex-direction: row; } 
+        } 
+    </style> 
+</head> 
+<body style="display: none;">  
+    <div id="transition-overlay"> 
+        <img src="https://premiereflow.com/logo.png" class="pulse-logo" style="width: 180px; filter: brightness(0);"> 
+    </div> 
 
-    <header id="main-header">
-        <div class="header-left">
-            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a>
-        </div>
+    <header id="main-header"> 
+        <div class="header-left"> 
+            <a href="/"><img src="https://premiereflow.com/logo.png" alt="Premiere Flow" class="logo-img"></a> 
+        </div> 
 
-        <nav class="header-nav" id="global-header-nav">
-            <div class="mobile-account-info" id="mobile-auth-container">
-                <span id="mobile-email-display" class="mobile-user-email"></span>
-                <span id="mobile-credits-display" class="mobile-user-credits">---</span>
-                <span onclick="signOut()" class="log-out-text" style="margin-top: 15px; font-size: 11px;">Log Out</span>
-            </div>
+        <nav class="header-nav" id="global-header-nav"> 
+            <div class="mobile-account-info" id="mobile-auth-container"> 
+                <span id="mobile-email-display" class="mobile-user-email"></span> 
+                <span id="mobile-credits-display" class="mobile-user-credits">---</span> 
+                <span onclick="signOut()" class="log-out-text" style="margin-top: 15px; font-size: 11px;">Log Out</span> 
+            </div> 
 
-            <a href="/" class="nav-link">Home</a>
-            <a href="/about/" class="nav-link">About</a>
-            <div class="contact-wrapper">
-                <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span>
-                <div id="contactBubble" class="contact-bubble">
-                    <span style="font-size: 9px; display: block; margin-bottom: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span>
-                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a>
-                    <button class="copy-btn" onclick="copyEmail()">COPY</button>
-                </div>
-            </div>
-            <a href="/terms/" class="nav-link">Terms</a>
-        </nav>
+            <a href="/" class="nav-link">Home</a> 
+            <a href="/about/" class="nav-link">About</a> 
+            <div class="contact-wrapper"> 
+                <span class="nav-link" id="contactBtn" onclick="toggleContact(event)">Contact</span> 
+                <div id="contactBubble" class="contact-bubble"> 
+                    <span style="font-size: 9px; display: block; margin-bottom: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase;">Direct Line</span> 
+                    <a href="mailto:info@premiereflow.com" class="contact-email">info@premiereflow.com</a> 
+                    <button class="copy-btn" onclick="copyEmail()">COPY</button> 
+                </div> 
+            </div> 
+            <a href="/terms/" class="nav-link">Terms</a> 
+        </nav> 
 
-        <div class="header-right">
-            <div class="user-info-stack desktop-auth-el">
-                <span class="user-email" id="header-email">---</span>
-                <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span>
-                <span onclick="signOut()" class="log-out-text" style="font-size: 9px; margin-top: 2px;">Log Out</span>
-            </div>
-            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button>
-        </div>
-    </header>
+        <div class="header-right"> 
+            <div class="user-info-stack desktop-auth-el"> 
+                <span class="user-email" id="header-email">---</span> 
+                <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span> 
+                <span onclick="signOut()" class="log-out-text" style="font-size: 9px; margin-top: 2px;">Log Out</span> 
+            </div> 
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button> 
+        </div> 
+    </header> 
 
-    <div id="app-container">
+    <div id="app-container"> 
         
-        <div class="dash-menu-container">
-            <nav class="dash-menu">
-                <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span>
-                <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')">
-                    Alerts <span id="alert-dot" class="notification-dot"></span>
-                </span>
-                <span class="tab-link" id="tab-profile" onclick="showTab('profile')">Account</span>
-                <span class="tab-link" id="tab-support" onclick="showTab('support')">Support</span>
-            </nav>
-        </div>
+        <div class="dash-menu-container"> 
+            <nav class="dash-menu"> 
+                <span class="tab-link active" id="tab-dashboard" onclick="showTab('dashboard')">Listings</span> 
+                <span class="tab-link" id="tab-notifications" onclick="showTab('notifications')"> 
+                    Alerts <span id="alert-dot" class="notification-dot"></span> 
+                </span> 
+                <span class="tab-link" id="tab-profile" onclick="showTab('profile')">Account</span> 
+                <span class="tab-link" id="tab-support" onclick="showTab('support')">Support</span> 
+            </nav> 
+        </div> 
 
-        <section id="view-dashboard" class="view-section active">
-            <div style="margin-bottom: 40px;">
-                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Listing</button>
+        <section id="view-dashboard" class="view-section active"> 
+            <div style="margin-bottom: 40px;"> 
+                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Listing</button> 
                 
-                <div id="upgrade-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; text-align: center;">
-                    <p style="color: #ff4d4d; font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px;">Out of Credits</p>
-                    <a href="/#pricing" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: bold; cursor: pointer;" onclick="window.location.href='/#pricing'">Upgrade or buy more listings to continue</a>
-                </div>
+                <div id="upgrade-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; text-align: center;"> 
+                    <p style="color: #ff4d4d; font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px;">Out of Credits</p> 
+                    <a href="/#pricing" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: bold; cursor: pointer;" onclick="window.location.href='/#pricing'">Upgrade or buy more listings to continue</a> 
+                </div> 
                 
-                <div id="low-credit-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;">
-                    <p style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p>
-                    <p style="color: #aaa; font-size: 11px; margin: 0;">You are running low on your Partner Pack. Top up soon to avoid delays.</p>
-                </div>
-            </div>
+                <div id="low-credit-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;"> 
+                    <p style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p> 
+                    <p style="color: #aaa; font-size: 11px; margin: 0;">You are running low on your Partner Pack. Top up soon to avoid delays.</p> 
+                </div> 
+            </div> 
             
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
-                <h3 style="margin-bottom: 0;">Active Listings</h3>
-            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;"> 
+                <h3 style="margin-bottom: 0;">Active Listings</h3> 
+            </div> 
 
-            <div id="submissions-list">
-                <div class="shimmer-wrapper"></div>
-                <div class="shimmer-wrapper"></div>
-            </div>
-        </section>
+            <div id="submissions-list"> 
+                <div class="shimmer-wrapper"></div> 
+                <div class="shimmer-wrapper"></div> 
+            </div> 
+        </section> 
 
-        <section id="view-notifications" class="view-section">
-            <h3>Recent activity</h3>
-            <div id="notif-list">
-                <div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">Loading activity...</p></div>
-            </div>
-        </section>
+        <section id="view-notifications" class="view-section"> 
+            <h3>Recent activity</h3> 
+            <div id="notif-list"> 
+                <div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">Loading activity...</p></div> 
+            </div> 
+        </section> 
 
-        <section id="view-profile" class="view-section">
-            <div class="card">
-                <h3>Account Details</h3>
+        <section id="view-profile" class="view-section"> 
+            <div class="card"> 
+                <h3>Account Details</h3> 
                 
-                <div id="profile-name-empty" style="margin-bottom: 25px;">
-                    <label>Account Holder Name</label>
-                    <input type="text" id="profile-name" placeholder="Enter your full name">
-                    <button id="save-name-btn" onclick="updateProfileName()" class="btn-split" style="margin-top: 15px; width: 100%;">Save Name Update</button>
-                </div>
+                <div id="profile-name-empty" style="margin-bottom: 25px;"> 
+                    <label>Account Holder Name</label> 
+                    <input type="text" id="profile-name" placeholder="Enter your full name"> 
+                    <button id="save-name-btn" onclick="updateProfileName()" class="btn-split" style="margin-top: 15px; width: 100%;">Save Name Update</button> 
+                </div> 
 
-                <div id="profile-name-populated" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
-                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Account Holder</span>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span id="display-profile-name" style="font-size: 16px; font-weight: 900; color: #fff;"></span>
-                        <button class="listing-menu-btn" onclick="editProfileNamePrompt()" style="margin: 0; padding: 0;">⋮</button>
-                    </div>
-                </div>
+                <div id="profile-name-populated" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;"> 
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Account Holder</span> 
+                    <div style="display: flex; align-items: center; gap: 10px;"> 
+                        <span id="display-profile-name" style="font-size: 16px; font-weight: 900; color: #fff;"></span> 
+                        <button class="listing-menu-btn" onclick="editProfileNamePrompt()" style="margin: 0; padding: 0;">⋮</button> 
+                    </div> 
+                </div> 
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
-                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Email</span>
-                    <span id="profile-email-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;"> 
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Email</span> 
+                    <span id="profile-email-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span> 
+                </div> 
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;">
-                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Active Plan</span>
-                    <span id="profile-tier" style="font-size: 16px; font-weight: 900; color: var(--accent-gold);">---</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; padding-bottom: 15px;"> 
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Active Plan</span> 
+                    <span id="profile-tier" style="font-size: 16px; font-weight: 900; color: var(--accent-gold);">---</span> 
+                </div> 
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Listings Remaining</span>
-                    <span id="profile-credits-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;"> 
+                    <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Listings Remaining</span> 
+                    <span id="profile-credits-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span> 
+                </div> 
 
-                <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button>
-            </div>
+                <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button> 
+            </div> 
             
-            <div class="card">
-                <h3>Account Logo</h3>
-                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0 25px 0; background-color: #050505; overflow: hidden; padding: 15px;">
-                    <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span>
-                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;">
-                </div>
+            <div class="card"> 
+                <h3>Account Logo</h3> 
+                <div id="logo-preview" style="width: 140px; height: 140px; border: 1px dashed #222; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 15px 0 25px 0; background-color: #050505; overflow: hidden; padding: 15px;"> 
+                    <span id="no-logo-text" style="font-size: 10px; color: #333; font-weight: 900; text-transform: uppercase;">No Logo Set</span> 
+                    <img id="actual-logo-img" src="" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain;"> 
+                </div> 
                 
-                <div style="margin-bottom: 20px; text-align: center;">
-                    <input type="hidden" role="uploadcare-uploader" id="ucare-logo-uploader" data-images-only="true" data-crop="free, 1:1" />
-                </div>
+                <div style="margin-bottom: 20px; text-align: center;"> 
+                    <input type="hidden" role="uploadcare-uploader" id="ucare-logo-uploader" data-images-only="true" data-crop="free, 1:1" /> 
+                </div> 
                 
-                <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; margin-top: 15px;" class="btn-main btn-gold">Save Logo to Profile</button>
-            </div>
-        </section>
+                <button id="save-logo-btn" onclick="uploadNewLogo()" style="display: none; margin-top: 15px;" class="btn-main btn-gold">Save Logo to Profile</button> 
+            </div> 
+        </section> 
 
-        <section id="view-support" class="view-section">
-            <div class="card">
-                <div id="support-form-container">
-                    <h3>Contact Support</h3>
-                    <form id="support-form">
-                        <div class="form-group">
-                            <label>Subject</label>
-                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my listing">
-                        </div>
-                        <div class="form-group">
-                            <label>Inquiry</label>
-                            <textarea id="sup-inquiry" required placeholder="How can we help you?" style="min-height: 120px; resize: vertical;"></textarea>
-                        </div>
-                        <button type="submit" id="support-submit-btn" class="btn-main btn-gold">Send Message</button>
-                    </form>
-                </div>
-                <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;">
-                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3>
-                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible.</p>
-                    <button class="btn-split" onclick="showTab('dashboard')" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button>
-                </div>
-            </div>
-        </section>
+        <section id="view-support" class="view-section"> 
+            <div class="card"> 
+                <div id="support-form-container"> 
+                    <h3>Contact Support</h3> 
+                    <form id="support-form"> 
+                        <div class="form-group"> 
+                            <label>Subject</label> 
+                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my listing"> 
+                        </div> 
+                        <div class="form-group"> 
+                            <label>Inquiry</label> 
+                            <textarea id="sup-inquiry" required placeholder="How can we help you?" style="min-height: 120px; resize: vertical;"></textarea> 
+                        </div> 
+                        <button type="submit" id="support-submit-btn" class="btn-main btn-gold">Send Message</button> 
+                    </form> 
+                </div> 
+                <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;"> 
+                    <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3> 
+                    <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">We've received your message. We'll get back to you as soon as possible.</p> 
+                    <button class="btn-split" onclick="showTab('dashboard')" style="margin: 0 auto; max-width: 250px; display: block;">Back to Dashboard</button> 
+                </div> 
+            </div> 
+        </section> 
 
-        <section id="view-submit" class="view-section">
-            <div style="margin-bottom: 30px;">
-                <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Production</button>
-            </div>
-            <div class="card">
-                <form id="inventory-form">
-                    <div class="form-group">
-                        <label>Vehicle Name (Year Make Model) or VIN</label>
-                        <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4 or KNDM24AH6P7XXXXXX">
-                    </div>
+        <section id="view-submit" class="view-section"> 
+            <div style="margin-bottom: 30px;"> 
+                <button onclick="showTab('dashboard')" style="background:none; border:none; color:var(--accent-gold); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">← Cancel Production</button> 
+            </div> 
+            <div class="card"> 
+                <form id="inventory-form"> 
+                    <div class="form-group"> 
+                        <label>Vehicle Name (Year Make Model) or VIN</label> 
+                        <input type="text" id="f-name" required placeholder="e.g. 2024 Kia K4 or KNDM24AH6P7XXXXXX"> 
+                    </div> 
                     
-                    <div class="form-group direct-upload-box">
-                        <label>Asset URL (Google Drive / Dropbox Folder)</label>
-                        <input type="text" id="f-source" placeholder="Paste link here...">
+                    <div class="form-group direct-upload-box"> 
+                        <label>Asset URL (Google Drive / Dropbox Folder)</label> 
+                        <input type="text" id="f-source" placeholder="Paste link here..."> 
                         
-                        <div style="text-align: center; margin: 25px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div>
+                        <div style="text-align: center; margin: 25px 0; color: #333; font-size: 10px; font-weight: 900;">OR</div> 
                         
-                        <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label>
-                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;">
-                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-input-accept-types="image/*, .heic" />
-                            <div id="staging-gallery" style="width: 100%;"></div>
-                            <input type="hidden" id="f-hero-thumb" value="">
-                        </div>
-                    </div>
+                        <label style="text-align: center; margin-bottom: 15px;">Direct High-Res Upload (Max 10)</label> 
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; overflow: visible;"> 
+                            <input type="hidden" role="uploadcare-uploader" id="ucare-uploader" name="ucare" data-multiple="true" data-multiple-max="10" data-input-accept-types="image/*, .heic" /> 
+                            <div id="staging-gallery" style="width: 100%;"></div> 
+                            <input type="hidden" id="f-hero-thumb" value=""> 
+                        </div> 
+                    </div> 
 
-                    <div class="split-row">
-                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label>Showroom Wall Color</label>
-                            <div class="custom-select-wrapper" id="color-select-wrapper">
-                                <div class="custom-select" id="color-trigger">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <div class="color-swatch" id="selected-color-swatch" style="background-color: #ffffff;"></div>
-                                        <span id="selected-color-text">Crisp White</span>
-                                    </div>
-                                    <span class="dropdown-arrow">▼</span>
-                                </div>
-                                <div class="custom-select-options" id="color-options">
-                                    <div class="custom-option" data-value="Crisp White" data-color="#ffffff">
-                                        <div class="color-swatch" style="background-color: #ffffff;"></div> Crisp White
-                                    </div>
-                                    <div class="custom-option" data-value="Pitch Black" data-color="#0a0a0a">
-                                        <div class="color-swatch" style="background-color: #0a0a0a;"></div> Pitch Black
-                                    </div>
-                                    <div class="custom-option" data-value="Light Grey" data-color="#d3d3d3">
-                                        <div class="color-swatch" style="background-color: #d3d3d3;"></div> Light Grey
-                                    </div>
-                                    <div class="custom-option" data-value="Dark Charcoal" data-color="#333333">
-                                        <div class="color-swatch" style="background-color: #333333;"></div> Dark Charcoal
-                                    </div>
-                                    <div class="custom-option" data-value="Warm Beige" data-color="#e8dcc8">
-                                        <div class="color-swatch" style="background-color: #e8dcc8;"></div> Warm Beige
-                                    </div>
-                                </div>
-                                <input type="hidden" id="f-color" value="Crisp White">
-                            </div>
-                        </div>
+                    <div class="split-row"> 
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;"> 
+                            <label>Showroom Wall Color</label> 
+                            <div class="custom-select-wrapper" id="color-select-wrapper"> 
+                                <div class="custom-select" id="color-trigger"> 
+                                    <div style="display: flex; align-items: center; gap: 12px;"> 
+                                        <div class="color-swatch" id="selected-color-swatch" style="background-color: #ffffff;"></div> 
+                                        <span id="selected-color-text">Crisp White (default)</span> 
+                                    </div> 
+                                    <span class="dropdown-arrow">▼</span> 
+                                </div> 
+                                <div class="custom-select-options" id="color-options"> 
+                                    <div class="custom-option" data-value="Crisp White (default)" data-color="#ffffff"> 
+                                        <div class="color-swatch" style="background-color: #ffffff;"></div> Crisp White (default) 
+                                    </div> 
+                                    <div class="custom-option" data-value="Pitch Black" data-color="#0a0a0a"> 
+                                        <div class="color-swatch" style="background-color: #0a0a0a;"></div> Pitch Black 
+                                    </div> 
+                                    <div class="custom-option" data-value="Champagne Gold" data-color="#d4c3a3"> 
+                                        <div class="color-swatch" style="background-color: #d4c3a3;"></div> Champagne Gold 
+                                    </div> 
+                                    <div class="custom-option" data-value="Crimson Red" data-color="#8b0000"> 
+                                        <div class="color-swatch" style="background-color: #8b0000;"></div> Crimson Red 
+                                    </div> 
+                                    <div class="custom-option" data-value="Solar Yellow" data-color="#ffcc00"> 
+                                        <div class="color-swatch" style="background-color: #ffcc00;"></div> Solar Yellow 
+                                    </div> 
+                                    <div class="custom-option" data-value="Emerald Green" data-color="#004b23"> 
+                                        <div class="color-swatch" style="background-color: #004b23;"></div> Emerald Green 
+                                    </div> 
+                                </div> 
+                                <input type="hidden" id="f-color" value="Crisp White (default)"> 
+                            </div> 
+                        </div> 
 
-                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                            <label id="logo-label-text">Logo Placement</label>
-                            <select id="f-logo">
-                                <option value="No Logo" selected>No Logo</option>
-                                <option value="Bottom Left">Bottom Left</option>
-                                <option value="Bottom Right">Bottom Right</option>
-                                <option value="Top Right">Top Right</option>
-                                <option value="Top Left">Top Left</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" id="submit-btn" class="btn-main btn-gold">Initialize Staging</button>
-                </form>
-            </div>
-        </section>
-    </div>
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;"> 
+                            <label id="logo-label-text">Logo Placement</label> 
+                            <select id="f-logo"> 
+                                <option value="No Logo" selected>No Logo</option> 
+                                <option value="Bottom Left">Bottom Left</option> 
+                                <option value="Bottom Right">Bottom Right</option> 
+                                <option value="Top Right">Top Right</option> 
+                                <option value="Top Left">Top Left</option> 
+                            </select> 
+                        </div> 
+                    </div> 
+                    <button type="submit" id="submit-btn" class="btn-main btn-gold">Initialize Staging</button> 
+                </form> 
+            </div> 
+        </section> 
+    </div> 
 
-    <!-- CUSTOM EDIT MODAL OVERLAY -->
-    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
-        <div class="card" id="custom-modal-card" style="width: 90%; max-width: 420px; margin: 0; transform: translateY(20px); transition: transform 0.3s ease; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
-            <h3 id="modal-title" style="margin-bottom: 20px; color: #fff;">Edit</h3>
-            <input type="text" id="modal-input" style="margin-bottom: 25px;">
-            <div style="display: flex; gap: 15px;">
-                <button id="modal-cancel-btn" class="btn-split" style="margin: 0;">Cancel</button>
-                <button id="modal-save-btn" class="btn-main btn-gold" style="margin: 0; flex: 1; padding: 18px;">Save Update</button>
-            </div>
-        </div>
-    </div>
+    <div id="custom-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;"> 
+        <div class="card" id="custom-modal-card" style="width: 90%; max-width: 420px; margin: 0; transform: translateY(20px); transition: transform 0.3s ease; border: 1px solid #222; box-shadow: 0 20px 50px rgba(0,0,0,0.8);"> 
+            <h3 id="modal-title" style="margin-bottom: 20px; color: #fff;">Edit</h3> 
+            <input type="text" id="modal-input" style="margin-bottom: 25px;"> 
+            <div style="display: flex; gap: 15px;"> 
+                <button id="modal-cancel-btn" class="btn-split" style="margin: 0;">Cancel</button> 
+                <button id="modal-save-btn" class="btn-main btn-gold" style="margin: 0; flex: 1; padding: 18px;">Save Update</button> 
+            </div> 
+        </div> 
+    </div> 
 
-    <footer id="dashboard-footer">
-        <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p>
-    </footer>
+    <footer id="dashboard-footer"> 
+        <p class="footer-copyright">© 2026 Premiere Flow. All Rights Reserved.</p> 
+    </footer> 
 
-    <script>
-        let userData = { listings: [], history: [] };
-        const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa'; 
+    <script> 
+        let userData = { listings: [], history: [] }; 
+        const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa';  
 
-        // UPLOADCARE REACTIVE GROUP MANAGEMENT
-        let currentFileUUIDs = [];
-        let mainUcareWidget = null;
+        // UPLOADCARE REACTIVE GROUP MANAGEMENT 
+        let currentFileUUIDs = []; 
+        let mainUcareWidget = null; 
 
-        function removeUploadedImage(event, index) {
-            event.stopPropagation();
-            currentFileUUIDs.splice(index, 1);
-            if (currentFileUUIDs.length === 0) {
-                mainUcareWidget.value(null);
-            } else {
-                mainUcareWidget.value(currentFileUUIDs);
-            }
-        }
+        function removeUploadedImage(event, index) { 
+            event.stopPropagation(); 
+            currentFileUUIDs.splice(index, 1); 
+            if (currentFileUUIDs.length === 0) { 
+                mainUcareWidget.value(null); 
+            } else { 
+                mainUcareWidget.value(currentFileUUIDs); 
+            } 
+        } 
 
-        // CUSTOM PROMPT MODAL LOGIC
-        function openCustomPrompt(title, defaultValue, placeholder) {
-            return new Promise((resolve) => {
-                const overlay = document.getElementById('custom-modal-overlay');
-                const card = document.getElementById('custom-modal-card');
-                const titleEl = document.getElementById('modal-title');
-                const inputEl = document.getElementById('modal-input');
-                const cancelBtn = document.getElementById('modal-cancel-btn');
-                const saveBtn = document.getElementById('modal-save-btn');
+        // CUSTOM PROMPT MODAL LOGIC 
+        function openCustomPrompt(title, defaultValue, placeholder) { 
+            return new Promise((resolve) => { 
+                const overlay = document.getElementById('custom-modal-overlay'); 
+                const card = document.getElementById('custom-modal-card'); 
+                const titleEl = document.getElementById('modal-title'); 
+                const inputEl = document.getElementById('modal-input'); 
+                const cancelBtn = document.getElementById('modal-cancel-btn'); 
+                const saveBtn = document.getElementById('modal-save-btn'); 
 
-                titleEl.innerText = title;
-                inputEl.value = defaultValue || '';
-                inputEl.placeholder = placeholder || '';
+                titleEl.innerText = title; 
+                inputEl.value = defaultValue || ''; 
+                inputEl.placeholder = placeholder || ''; 
 
-                overlay.style.display = 'flex';
-                void overlay.offsetWidth; // trigger reflow
-                overlay.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
+                overlay.style.display = 'flex'; 
+                void overlay.offsetWidth; // trigger reflow 
+                overlay.style.opacity = '1'; 
+                card.style.transform = 'translateY(0)'; 
 
-                inputEl.focus();
+                inputEl.focus(); 
 
-                const cleanup = () => {
-                    overlay.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    setTimeout(() => { overlay.style.display = 'none'; }, 300);
-                    cancelBtn.removeEventListener('click', onCancel);
-                    saveBtn.removeEventListener('click', onSave);
-                    inputEl.removeEventListener('keydown', onEnter);
-                };
+                const cleanup = () => { 
+                    overlay.style.opacity = '0'; 
+                    card.style.transform = 'translateY(20px)'; 
+                    setTimeout(() => { overlay.style.display = 'none'; }, 300); 
+                    cancelBtn.removeEventListener('click', onCancel); 
+                    saveBtn.removeEventListener('click', onSave); 
+                    inputEl.removeEventListener('keydown', onEnter); 
+                }; 
 
-                const onCancel = () => { cleanup(); resolve(null); };
-                const onSave = () => { cleanup(); resolve(inputEl.value); };
-                const onEnter = (e) => { if(e.key === 'Enter') onSave(); };
+                const onCancel = () => { cleanup(); resolve(null); }; 
+                const onSave = () => { cleanup(); resolve(inputEl.value); }; 
+                const onEnter = (e) => { if(e.key === 'Enter') onSave(); }; 
 
-                cancelBtn.addEventListener('click', onCancel);
-                saveBtn.addEventListener('click', onSave);
-                inputEl.addEventListener('keydown', onEnter);
-            });
-        }
+                cancelBtn.addEventListener('click', onCancel); 
+                saveBtn.addEventListener('click', onSave); 
+                inputEl.addEventListener('keydown', onEnter); 
+            }); 
+        } 
 
-        // HERO THUMBNAIL SELECTOR LOGIC
-        function selectHeroThumb(element, fullUrl) {
-            document.querySelectorAll('.thumb-wrapper').forEach(el => el.classList.remove('selected-hero'));
-            element.classList.add('selected-hero');
-            document.getElementById('f-hero-thumb').value = fullUrl;
-        }
+        // HERO THUMBNAIL SELECTOR LOGIC 
+        function selectHeroThumb(element, fullUrl) { 
+            document.querySelectorAll('.thumb-wrapper').forEach(el => el.classList.remove('selected-hero')); 
+            element.classList.add('selected-hero'); 
+            document.getElementById('f-hero-thumb').value = fullUrl; 
+        } 
 
-        // CUSTOM DROPDOWN LOGIC
-        const colorTrigger = document.getElementById('color-trigger');
-        const colorOptions = document.getElementById('color-options');
-        const fColorInput = document.getElementById('f-color');
-        const selectedColorText = document.getElementById('selected-color-text');
-        const selectedColorSwatch = document.getElementById('selected-color-swatch');
+        // CUSTOM DROPDOWN LOGIC 
+        const colorTrigger = document.getElementById('color-trigger'); 
+        const colorOptions = document.getElementById('color-options'); 
+        const fColorInput = document.getElementById('f-color'); 
+        const selectedColorText = document.getElementById('selected-color-text'); 
+        const selectedColorSwatch = document.getElementById('selected-color-swatch'); 
 
-        colorTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            colorTrigger.classList.toggle('open');
-            colorOptions.classList.toggle('open');
-        });
+        colorTrigger.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            colorTrigger.classList.toggle('open'); 
+            colorOptions.classList.toggle('open'); 
+        }); 
 
-        document.querySelectorAll('.custom-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                const val = option.getAttribute('data-value');
-                const color = option.getAttribute('data-color');
+        document.querySelectorAll('.custom-option').forEach(option => { 
+            option.addEventListener('click', (e) => { 
+                const val = option.getAttribute('data-value'); 
+                const color = option.getAttribute('data-color'); 
                 
-                fColorInput.value = val;
-                selectedColorText.innerText = val;
-                selectedColorSwatch.style.backgroundColor = color;
+                fColorInput.value = val; 
+                selectedColorText.innerText = val; 
+                selectedColorSwatch.style.backgroundColor = color; 
                 
-                colorTrigger.classList.remove('open');
-                colorOptions.classList.remove('open');
-            });
-        });
+                colorTrigger.classList.remove('open'); 
+                colorOptions.classList.remove('open'); 
+            }); 
+        }); 
 
-        window.addEventListener('click', () => {
-            colorTrigger.classList.remove('open');
-            colorOptions.classList.remove('open');
-        });
+        window.addEventListener('click', () => { 
+            colorTrigger.classList.remove('open'); 
+            colorOptions.classList.remove('open'); 
+        }); 
 
-        function setCustomWidgetLabels() {
-            setTimeout(() => {
-                const mainBtns = document.querySelectorAll('#view-submit .uploadcare--widget__button_type_open');
-                mainBtns.forEach(btn => btn.textContent = 'UPLOAD HIGH-RES PHOTOS');
-
-                const logoBtns = document.querySelectorAll('#view-profile .uploadcare--widget__button_type_open');
-                logoBtns.forEach(btn => {
-                    const hasLogo = (userData.logo && userData.logo !== "" && userData.logo !== "undefined");
-                    btn.textContent = hasLogo ? 'UPDATE LOGO' : 'UPLOAD LOGO';
-                });
-            }, 300); 
-        }
-
-        window.onload = function() {
-            const savedEmail = localStorage.getItem('pf_email');
-            const savedPass = localStorage.getItem('pf_pass');
-            if (!savedEmail || !savedPass) { window.location.href = '/login/'; return; }
-            document.body.style.display = 'block';
-            fetchDashboardData(savedEmail);
+        function setCustomWidgetLabels() { 
             setTimeout(() => { 
-                document.getElementById('transition-overlay').style.opacity = '0';
-                setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800);
-            }, 500);
+                const mainBtns = document.querySelectorAll('#view-submit .uploadcare--widget__button_type_open'); 
+                mainBtns.forEach(btn => btn.textContent = 'UPLOAD HIGH-RES PHOTOS'); 
 
-            mainUcareWidget = uploadcare.Widget('#ucare-uploader');
-            mainUcareWidget.onChange(function(group) {
-                const gallery = document.getElementById('staging-gallery');
-                gallery.innerHTML = ''; 
-                document.getElementById('f-hero-thumb').value = '';
-                currentFileUUIDs = [];
+                const logoBtns = document.querySelectorAll('#view-profile .uploadcare--widget__button_type_open'); 
+                logoBtns.forEach(btn => { 
+                    const hasLogo = (userData.logo && userData.logo !== "" && userData.logo !== "undefined"); 
+                    btn.textContent = hasLogo ? 'UPDATE LOGO' : 'UPLOAD LOGO'; 
+                }); 
+            }, 300);  
+        } 
+
+        window.onload = function() { 
+            const savedEmail = localStorage.getItem('pf_email'); 
+            const savedPass = localStorage.getItem('pf_pass'); 
+            if (!savedEmail || !savedPass) { window.location.href = '/login/'; return; } 
+            document.body.style.display = 'block'; 
+            fetchDashboardData(savedEmail); 
+            setTimeout(() => {  
+                document.getElementById('transition-overlay').style.opacity = '0'; 
+                setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800); 
+            }, 500); 
+
+            mainUcareWidget = uploadcare.Widget('#ucare-uploader'); 
+            mainUcareWidget.onChange(function(group) { 
+                const gallery = document.getElementById('staging-gallery'); 
+                gallery.innerHTML = '';  
+                document.getElementById('f-hero-thumb').value = ''; 
+                currentFileUUIDs = []; 
                 
-                if (group) {
-                    Promise.all(group.files()).then(function(files) {
-                        files.forEach(function(fileInfo, index) {
-                            const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/';
-                            const fullUrl = fileInfo.cdnUrl;
-                            currentFileUUIDs.push(fileInfo.uuid);
+                if (group) { 
+                    Promise.all(group.files()).then(function(files) { 
+                        files.forEach(function(fileInfo, index) { 
+                            const thumbUrl = fileInfo.cdnUrl + '-/scale_crop/200x200/center/'; 
+                            const fullUrl = fileInfo.cdnUrl; 
+                            currentFileUUIDs.push(fileInfo.uuid); 
                             
-                            if (index === 0) { document.getElementById('f-hero-thumb').value = fullUrl; }
+                            if (index === 0) { document.getElementById('f-hero-thumb').value = fullUrl; } 
                             
-                            gallery.innerHTML += `<div class="thumb-wrapper ${index === 0 ? 'selected-hero' : ''}" onclick="selectHeroThumb(this, '${fullUrl}')" style="cursor:pointer;" title="Click to set as cover image">
-                                <div class="hero-badge">COVER</div>
-                                <div class="remove-btn" onclick="removeUploadedImage(event, ${index})" title="Remove image">✕</div>
-                                <img src="${thumbUrl}" loading="lazy">
-                            </div>`;
-                        });
-                    });
-                }
-            });
-
-            const logoWidget = uploadcare.Widget('#ucare-logo-uploader');
-            logoWidget.onChange(function(file) {
-                if (file) {
-                    const noLogoText = document.getElementById('no-logo-text');
-                    noLogoText.innerText = 'PROCESSING...';
-                    noLogoText.style.display = 'block';
-                    
-                    file.done(function(fileInfo) {
-                        const actualImg = document.getElementById('actual-logo-img');
-                        actualImg.src = fileInfo.cdnUrl;
-                        actualImg.style.display = 'block';
-                        noLogoText.style.display = 'none';
-                        document.getElementById('save-logo-btn').style.display = 'block';
-                    }).fail(function() {
-                        noLogoText.innerText = 'UPLOAD FAILED';
-                    });
-                }
-            });
-            
-            setCustomWidgetLabels();
-        };
-
-        async function fetchDashboardData(email) {
-            try {
-                const res = await fetch(dataFetchWebhook, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email: email })
-                });
-                const data = await res.json();
-                
-                if (data.listings) {
-                    data.listings = data.listings.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ }));
-                }
-                if (data.history) {
-                    data.history = data.history.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ }));
-                }
-
-                userData = { ...userData, ...data }; 
-                refreshUI();
-            } catch (err) { 
-                console.error("Dashboard data load failed", err); 
-                refreshUI();
-                document.getElementById('submissions-list').innerHTML = '<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>';
-            }
-        }
-
-        function checkNotifications() {
-            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
-            
-            if (validHistory.length > 0) {
-                let latestStamp = 0;
-                validHistory.forEach(item => {
-                    const d = new Date(item.date).getTime();
-                    if (d > latestStamp) latestStamp = d;
-                });
-                
-                if (latestStamp > lastViewed) {
-                    document.getElementById('alert-dot').style.display = 'inline-block';
-                }
-            }
-        }
-
-        function renderNotifications() {
-            const list = document.getElementById('notif-list');
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name));
-            
-            if (validHistory.length === 0) {
-                list.innerHTML = `<div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">No recent activity</p></div>`;
-                return;
-            }
-
-            let notifs = [];
-            validHistory.forEach(item => {
-                const name = item.vehicle || item.name || 'Listing';
-                const date = new Date(item.date).getTime() || 0;
-                const status = (item.status || '').toUpperCase();
-                
-                notifs.push({
-                    text: `<b>${name}:</b> Submission received. Processing started.`,
-                    time: date,
-                    formattedTime: formatDate(item.date)
-                });
-
-                if (status === 'COMPLETED') {
-                    notifs.push({
-                        text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`,
-                        time: date + 1000, 
-                        formattedTime: formatDate(item.date)
-                    });
-                }
-            });
-
-            notifs.sort((a,b) => b.time - a.time);
-
-            list.innerHTML = notifs.map(n => `
-                <div class="card" style="border-left: 4px solid var(--accent-gold); padding: 20px;">
-                    <p style="font-size: 13px; margin: 0; line-height: 1.6; color: #eee;">${n.text}</p>
-                    <span style="font-size: 10px; color: #555; display: block; margin-top: 8px; font-weight: 800;">${n.formattedTime}</span>
-                </div>
-            `).join('');
-            
-            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0');
-            if (notifs.length > 0 && notifs[0].time > lastViewed) {
-                document.getElementById('alert-dot').style.display = 'inline-block';
-            }
-        }
-
-        function refreshUI() {
-            const currentEmail = localStorage.getItem('pf_email') || 'Authorized';
-            document.getElementById('header-email').innerText = currentEmail.toLowerCase();
-            if(document.getElementById('mobile-email-display')) {
-                document.getElementById('mobile-email-display').innerText = currentEmail.toLowerCase();
-            }
-            
-            const profileEmailDisplay = document.getElementById('profile-email-display');
-            if (profileEmailDisplay) profileEmailDisplay.innerText = currentEmail.toLowerCase();
-            
-            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED';
-            const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER'));
-            const creditsNum = Math.round(userData.credits || 0);
-
-            const profileCreditsDisplay = document.getElementById('profile-credits-display');
-            if (profileCreditsDisplay) {
-                profileCreditsDisplay.innerText = isUnlimited ? 'UNLIMITED' : creditsNum;
-            }
-
-            const actionBtn = document.getElementById('action-btn');
-            const upgradePrompt = document.getElementById('upgrade-prompt');
-            const lowCreditPrompt = document.getElementById('low-credit-prompt');
-            const mobileCreditsDisplay = document.getElementById('mobile-credits-display');
-            
-            if (isUnlimited) {
-                document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS';
-                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = 'UNLIMITED LISTINGS';
-                
-                actionBtn.disabled = false;
-                actionBtn.innerText = 'New Listing';
-                actionBtn.style.opacity = '1';
-                actionBtn.style.cursor = 'pointer';
-                if (upgradePrompt) upgradePrompt.style.display = 'none';
-                if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
-            } else {
-                document.getElementById('header-credits').innerText = creditsNum + ' LISTINGS REMAINING';
-                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = creditsNum + ' LISTINGS REMAINING';
-                
-                if (creditsNum <= 0) {
-                    actionBtn.disabled = true;
-                    actionBtn.innerText = 'OUT OF CREDITS';
-                    actionBtn.style.opacity = '0.5';
-                    actionBtn.style.cursor = 'not-allowed';
-                    if (upgradePrompt) upgradePrompt.style.display = 'block';
-                    if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
-                } else {
-                    actionBtn.disabled = false;
-                    actionBtn.innerText = 'New Listing';
-                    actionBtn.style.opacity = '1';
-                    actionBtn.style.cursor = 'pointer';
-                    if (upgradePrompt) upgradePrompt.style.display = 'none';
-                    
-                    if (isPartner && creditsNum <= 2) {
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'block';
-                    } else {
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'none';
-                    }
-                }
-            }
-
-            document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase();
-            
-            // Populates the Name input or toggles the populated UI state
-            const nameEmptyState = document.getElementById('profile-name-empty');
-            const namePopulatedState = document.getElementById('profile-name-populated');
-            const displayProfileName = document.getElementById('display-profile-name');
-
-            if (userData.name && userData.name.trim() !== "") {
-                nameEmptyState.style.display = 'none';
-                namePopulatedState.style.display = 'flex';
-                displayProfileName.innerText = userData.name.toUpperCase();
-            } else {
-                nameEmptyState.style.display = 'block';
-                namePopulatedState.style.display = 'none';
-                document.getElementById('profile-name').value = '';
-            }
-            
-            const actualImg = document.getElementById('actual-logo-img');
-            const noLogoText = document.getElementById('no-logo-text');
-            
-            if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") {
-                actualImg.src = userData.logo;
-                actualImg.style.display = 'block';
-                noLogoText.style.display = 'none';
-            } else {
-                noLogoText.innerText = 'NO LOGO SET';
-            }
-
-            setCustomWidgetLabels();
-            renderSubmissions();
-            renderNotifications();
-        }
-
-        function parseGalleryUrls(urlsRaw, listingName = 'Assets') {
-            if (!urlsRaw) return { html: '<p style="color:#444; font-size:10px; padding:10px;">No images available</p>', thumb: '' };
-            
-            let html = '';
-            let thumb = '';
-            let rawUrl = urlsRaw.trim();
-
-            if (rawUrl.includes('ucare')) {
-                if (rawUrl.includes('~')) {
-                    let groupBase = rawUrl.split('~')[0];
-                    let countStr = rawUrl.split('~')[1].replace('/', '');
-                    let count = parseInt(countStr);
-                    
-                    for(let i = 0; i < count; i++) {
-                        let singleImgUrl = `${groupBase}~${count}/nth/${i}/`;
-                        html += `<div class="gallery-item"><a href="${singleImgUrl}" target="_blank"><img src="${singleImgUrl}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`;
-                    }
-                    thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`;
-                    
-                    let safeName = encodeURIComponent(listingName.replace(/[^a-z0-9]/gi, '_').toLowerCase());
-                    let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`;
-
-                    html = `<div class="listing-gallery">${html}</div>
-                            <a href="${zipUrl}" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
-                    
-                    return { html: html, thumb: thumb };
+                            gallery.innerHTML += `<div class="thumb-wrapper ${index === 0 ? 'selected-hero' : ''}" onclick="selectHeroThumb(this, '${fullUrl}')" style="cursor:pointer;" title="Click to set as cover image"> 
+                                <div class="hero-badge">COVER</div> 
+                                <div class="remove-btn" onclick="removeUploadedImage(event, ${index})" title="Remove image">✕</div> 
+                                <img src="${thumbUrl}" loading="lazy"> 
+                            </div>`; 
+                        }); 
+                    }); 
                 } 
-                else {
-                    let cleanUrl = rawUrl.endsWith('/') ? rawUrl : rawUrl + '/';
-                    thumb = `${cleanUrl}-/scale_crop/400x400/center/`;
-                    html = `<div class="listing-gallery">
-                                <div class="gallery-item"><a href="${cleanUrl}" target="_blank"><img src="${thumb}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>
-                            </div>`;
-                    return { html: html, thumb: thumb };
-                }
-            }
-            
-            if (rawUrl.includes('drive.google.com')) {
-                const id = rawUrl.split('id=')[1] || rawUrl.split('/d/')[1]?.split('/')[0];
-                if (id) {
-                    thumb = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
-                    html = `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Google Drive Folder ↗</a></p>`;
-                    return { html: html, thumb: thumb };
-                }
-            }
+            }); 
 
-            if (rawUrl.includes('.jpg') || rawUrl.includes('.png') || rawUrl.includes('.jpeg') || rawUrl.includes('.webp')) {
-                const urls = rawUrl.split(',').filter(u => u.trim() !== "");
-                thumb = urls[0].trim();
-                html = `<div class="listing-gallery">${urls.map(url => `
-                    <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${url.trim()}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
-                return { html: html, thumb: thumb };
-            }
-
-            return { html: `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' };
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr || dateStr === '---') return '---';
-            try {
-                const d = new Date(dateStr);
-                if (isNaN(d.getTime())) return dateStr; 
-                return d.toLocaleString('en-US', {
-                    month: 'numeric',
-                    day: 'numeric',
-                    year: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                });
-            } catch(e) {
-                return dateStr;
-            }
-        }
-
-        function renderSubmissions() {
-            const list = document.getElementById('submissions-list');
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse();
-            
-            if(validHistory.length > 0) {
-                list.innerHTML = validHistory.map((item, idx) => {
-                    const rawStatus = (item.status || 'Received').toUpperCase();
-                    const isComplete = rawStatus === 'COMPLETED';
-                    const listingName = item.vehicle || item.name || 'Listing';
+            const logoWidget = uploadcare.Widget('#ucare-logo-uploader'); 
+            logoWidget.onChange(function(file) { 
+                if (file) { 
+                    const noLogoText = document.getElementById('no-logo-text'); 
+                    noLogoText.innerText = 'PROCESSING...'; 
+                    noLogoText.style.display = 'block'; 
                     
-                    let origData = parseGalleryUrls(item.originals, listingName + '_Originals');
-                    let originalGallery = origData.html;
-                    
-                    let stagedGallery = '<p style="font-size: 11px; color: #444; text-align: center; padding:20px;">Final staged assets will appear here once processing is complete.</p>';
-                    let stagedThumb = '';
-                    if (item.staged && isComplete) {
-                        let stagedData = parseGalleryUrls(item.staged, listingName + '_Staged');
-                        stagedGallery = stagedData.html;
-                        stagedThumb = stagedData.thumb; 
-                    }
-
-                    let thumbSource = origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || stagedThumb || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
-
-                    return `
-                    <div class="listing-card">
-                        <div class="listing-main-row">
-                            <div class="listing-info-left">
-                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
-                                <div>
-                                    <p class="listing-title" id="name-text-${idx}">${listingName}</p>
-                                    <span class="listing-date">Submitted: ${formatDate(item.date)}</span>
-                                </div>
-                            </div>
-                            <div class="listing-status-right">
-                                <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span>
-                                <button class="listing-menu-btn" onclick="editListingName(${idx}, '${item.rowId || item.id}')">⋮</button>
-                            </div>
-                        </div>
-                        <div class="listing-accordion-row">
-                            <button id="btn-uploaded-${idx}" class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button>
-                            <button id="btn-upgraded-${idx}" class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button>
-                        </div>
-                        <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${originalGallery}</div>
-                        <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${stagedGallery}</div>
-                    </div>`;
-                }).join('');
-            } else {
-                list.innerHTML = `<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>`;
-            }
-        }
-
-        async function editListingName(index, rowId) {
-            const nameEl = document.getElementById(`name-text-${index}`);
-            const currentName = nameEl.innerText;
-            const newName = await openCustomPrompt("Edit Vehicle Name or VIN", currentName, "e.g. 2024 Porsche 911");
-
-            if (newName && newName.trim() !== "" && newName !== currentName) {
-                nameEl.innerText = newName.toUpperCase();
-                try {
-                    await fetch(dataFetchWebhook, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'rename_listing',
-                            rowId: rowId,
-                            newName: newName,
-                            email: localStorage.getItem('pf_email')
-                        })
-                    });
-                } catch (err) { console.error("Rename failed", err); }
-            }
-        }
-
-        function toggleAccordion(type, idx) {
-            const uploadedContent = document.getElementById(`uploaded-${idx}`);
-            const upgradedContent = document.getElementById(`upgraded-${idx}`);
-            const btnUploaded = document.getElementById(`btn-uploaded-${idx}`);
-            const btnUpgraded = document.getElementById(`btn-upgraded-${idx}`);
+                    file.done(function(fileInfo) { 
+                        const actualImg = document.getElementById('actual-logo-img'); 
+                        actualImg.src = fileInfo.cdnUrl; 
+                        actualImg.style.display = 'block'; 
+                        noLogoText.style.display = 'none'; 
+                        document.getElementById('save-logo-btn').style.display = 'block'; 
+                    }).fail(function() { 
+                        noLogoText.innerText = 'UPLOAD FAILED'; 
+                    }); 
+                } 
+            }); 
             
-            if (type === 'uploaded') {
-                const isOpening = uploadedContent.style.display === "none";
-                uploadedContent.style.display = isOpening ? "block" : "none";
-                if (isOpening) {
-                    if (upgradedContent) upgradedContent.style.display = "none";
-                    if (btnUploaded) btnUploaded.classList.add('active');
-                    if (btnUpgraded) btnUpgraded.classList.remove('active');
-                } else {
-                    if (btnUploaded) btnUploaded.classList.remove('active');
-                }
-            } else {
-                const isOpening = upgradedContent.style.display === "none";
-                upgradedContent.style.display = isOpening ? "block" : "none";
-                if (isOpening) {
-                    if (uploadedContent) uploadedContent.style.display = "none";
-                    if (btnUpgraded) btnUpgraded.classList.add('active');
-                    if (btnUploaded) btnUploaded.classList.remove('active');
-                } else {
-                    if (btnUpgraded) btnUpgraded.classList.remove('active');
-                }
-            }
-        }
+            setCustomWidgetLabels(); 
+        }; 
 
-        async function updateProfileName() {
-            const newName = document.getElementById('profile-name').value.trim();
-            const btn = document.getElementById('save-name-btn');
-            
-            if (!newName) return;
-            
-            btn.disabled = true;
-            const originalText = btn.innerText;
-            btn.innerText = 'SAVING...';
-            
-            try {
-                await fetch(dataFetchWebhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'update_name',
-                        email: localStorage.getItem('pf_email'),
-                        accountId: userData.accountId || userData.accountID,
-                        newName: newName
-                    })
-                });
-                
-                userData.name = newName;
-                btn.innerText = 'SAVED';
-                btn.style.backgroundColor = '#c5a059';
-                btn.style.color = '#000';
-                
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
-                    refreshUI(); 
-                }, 1000);
-            } catch (err) {
-                console.error(err);
-                btn.innerText = 'ERROR';
-                setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000);
-            }
-        }
-
-        async function editProfileNamePrompt() {
-            const currentName = userData.name || "";
-            const newName = await openCustomPrompt("Edit Account Holder Name", currentName, "Enter full name");
-
-            if (newName && newName.trim() !== "" && newName !== currentName) {
-                const displayEl = document.getElementById('display-profile-name');
-                displayEl.innerText = "UPDATING...";
-
-                try {
-                    await fetch(dataFetchWebhook, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'update_name',
-                            email: localStorage.getItem('pf_email'),
-                            accountId: userData.accountId || userData.accountID,
-                            newName: newName.trim()
-                        })
-                    });
-
-                    userData.name = newName.trim();
-                    refreshUI(); 
-                } catch (err) {
-                    console.error("Rename failed", err);
-                    displayEl.innerText = currentName.toUpperCase(); 
-                    alert("Failed to update name. Please try again.");
-                }
-            }
-        }
-
-        function signOut() {
-            localStorage.removeItem('pf_email');
-            localStorage.removeItem('pf_pass');
-            window.location.href = '/login/'; 
-        }
-
-        function showTab(t) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
-            document.getElementById('view-' + t).classList.add('active');
-            const tabBtn = document.getElementById('tab-' + t);
-            if(tabBtn) tabBtn.classList.add('active');
-            
-            if (t === 'notifications') {
-                document.getElementById('alert-dot').style.display = 'none';
-                localStorage.setItem('pf_alerts_viewed', Date.now().toString());
-            }
-            window.scrollTo(0,0);
-        }
-
-        function toggleMobileMenu(event) {
-            if(event) event.stopPropagation();
-            document.querySelector('.header-nav').classList.toggle('mobile-active'); 
-        }
-        
-        window.addEventListener('click', function(event) {
-            const nav = document.querySelector('.header-nav');
-            const hamburger = document.getElementById('hamburger-btn');
-            if (nav && nav.classList.contains('mobile-active') && !nav.contains(event.target) && event.target !== hamburger) {
-                nav.classList.remove('mobile-active');
-            }
-        });
-
-        function openSubmit() { showTab('submit'); }
-
-        document.getElementById('inventory-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            
-            if (btn.disabled) return; 
-            btn.disabled = true;
-
-            const originalText = btn.innerText;
-            btn.innerText = 'INITIALIZING...';
-            btn.classList.add('btn-loading');
-            
-            const formData = new FormData();
-            formData.append('email', localStorage.getItem('pf_email')); 
-            formData.append('accountId', userData.accountId || userData.accountID || '');
-            formData.append('vehicleName', document.getElementById('f-name').value.trim());
-            formData.append('assetSource', document.getElementById('f-source').value.trim());
-            formData.append('showroomColor', document.getElementById('f-color').value || "Crisp White");
-            formData.append('logoPlacement', document.getElementById('f-logo').value);
-            formData.append('thumbnail', document.getElementById('f-hero-thumb').value);
-            
-            const ucareUrl = document.getElementById('ucare-uploader').value;
-            if (ucareUrl) {
-                formData.append('uploadcareUrl', ucareUrl);
-            }
-            
-            try {
-                const res = await fetch('https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p', { method: 'POST', body: formData });
-                
-                if (res.ok) {
-                    btn.classList.remove('btn-loading'); 
-                    btn.innerText = 'SUCCESS. EVALUATING IMAGES...';
-                    btn.style.backgroundColor = '#c5a059'; 
-                    btn.style.color = '#000';
-                    
-                    setTimeout(() => {
-                        document.getElementById('inventory-form').reset();
-                        const widget = uploadcare.Widget('#ucare-uploader');
-                        if(widget) widget.value(null);
-                        
-                        document.getElementById('staging-gallery').innerHTML = '';
-                        
-                        fColorInput.value = 'Crisp White';
-                        selectedColorText.innerText = 'Crisp White';
-                        selectedColorSwatch.style.backgroundColor = '#ffffff';
-                        selectedColorSwatch.style.backgroundImage = 'none';
-
-                        btn.innerText = originalText;
-                        btn.style.backgroundColor = '';
-                        btn.style.color = '';
-                        btn.disabled = false; 
-                        
-                        document.getElementById('submissions-list').innerHTML = '<div class="shimmer-wrapper"></div><div class="shimmer-wrapper"></div>';
-                        
-                        showTab('dashboard');
-                        fetchDashboardData(localStorage.getItem('pf_email'));
-                    }, 1500);
-                } else {
-                    throw new Error("Bad response");
-                }
-            } catch (err) { 
-                btn.classList.remove('btn-loading'); 
-                btn.innerText = 'ERROR. TRY AGAIN.';
-                btn.style.backgroundColor = '#ff4d4d';
-                btn.style.color = '#fff';
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.style.color = '';
-                    btn.disabled = false; 
-                }, 3000);
-            }
-        });
-
-        async function uploadNewLogo() {
-            const ucareUrl = document.getElementById('ucare-logo-uploader').value;
-            const btn = document.getElementById('save-logo-btn');
-            
-            if (!ucareUrl || btn.disabled) return;
-            
-            btn.disabled = true;
-            const originalText = btn.innerText;
-            btn.innerText = 'SAVING...';
-            btn.classList.add('btn-loading');
-            
-            try {
-                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', { 
+        async function fetchDashboardData(email) { 
+            try { 
+                const res = await fetch(dataFetchWebhook, { 
                     method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: localStorage.getItem('pf_email'),
-                        accountId: userData.accountId || userData.accountID,
-                        logoUrl: ucareUrl
-                    })
-                });
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ email: email }) 
+                }); 
+                const data = await res.json(); 
                 
-                if (res.ok) {
-                    userData.logo = ucareUrl;
-                    refreshUI(); 
+                if (data.listings) { 
+                    data.listings = data.listings.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ })); 
+                } 
+                if (data.history) { 
+                    data.history = data.history.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ })); 
+                } 
+
+                userData = { ...userData, ...data };  
+                refreshUI(); 
+            } catch (err) {  
+                console.error("Dashboard data load failed", err);  
+                refreshUI(); 
+                document.getElementById('submissions-list').innerHTML = '<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>'; 
+            } 
+        } 
+
+        function checkNotifications() { 
+            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0'); 
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)); 
+            
+            if (validHistory.length > 0) { 
+                let latestStamp = 0; 
+                validHistory.forEach(item => { 
+                    const d = new Date(item.date).getTime(); 
+                    if (d > latestStamp) latestStamp = d; 
+                }); 
+                
+                if (latestStamp > lastViewed) { 
+                    document.getElementById('alert-dot').style.display = 'inline-block'; 
+                } 
+            } 
+        } 
+
+        function renderNotifications() { 
+            const list = document.getElementById('notif-list'); 
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)); 
+            
+            if (validHistory.length === 0) { 
+                list.innerHTML = `<div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">No recent activity</p></div>`; 
+                return; 
+            } 
+
+            let notifs = []; 
+            validHistory.forEach(item => { 
+                const name = item.vehicle || item.name || 'Listing'; 
+                const date = new Date(item.date).getTime() || 0; 
+                const status = (item.status || '').toUpperCase(); 
+                
+                notifs.push({ 
+                    text: `<b>${name}:</b> Submission received. Processing started.`, 
+                    time: date, 
+                    formattedTime: formatDate(item.date) 
+                }); 
+
+                if (status === 'COMPLETED') { 
+                    notifs.push({ 
+                        text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`, 
+                        time: date + 1000,  
+                        formattedTime: formatDate(item.date) 
+                    }); 
+                } 
+            }); 
+
+            notifs.sort((a,b) => b.time - a.time); 
+
+            list.innerHTML = notifs.map(n => ` 
+                <div class="card" style="border-left: 4px solid var(--accent-gold); padding: 20px;"> 
+                    <p style="font-size: 13px; margin: 0; line-height: 1.6; color: #eee;">${n.text}</p> 
+                    <span style="font-size: 10px; color: #555; display: block; margin-top: 8px; font-weight: 800;">${n.formattedTime}</span> 
+                </div> 
+            `).join(''); 
+            
+            const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0'); 
+            if (notifs.length > 0 && notifs[0].time > lastViewed) { 
+                document.getElementById('alert-dot').style.display = 'inline-block'; 
+            } 
+        } 
+
+        function refreshUI() { 
+            const currentEmail = localStorage.getItem('pf_email') || 'Authorized'; 
+            document.getElementById('header-email').innerText = currentEmail.toLowerCase(); 
+            if(document.getElementById('mobile-email-display')) { 
+                document.getElementById('mobile-email-display').innerText = currentEmail.toLowerCase(); 
+            } 
+            
+            const profileEmailDisplay = document.getElementById('profile-email-display'); 
+            if (profileEmailDisplay) profileEmailDisplay.innerText = currentEmail.toLowerCase(); 
+            
+            const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED'; 
+            const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER')); 
+            const creditsNum = Math.round(userData.credits || 0); 
+
+            const profileCreditsDisplay = document.getElementById('profile-credits-display'); 
+            if (profileCreditsDisplay) { 
+                profileCreditsDisplay.innerText = isUnlimited ? 'UNLIMITED' : creditsNum; 
+            } 
+
+            const actionBtn = document.getElementById('action-btn'); 
+            const upgradePrompt = document.getElementById('upgrade-prompt'); 
+            const lowCreditPrompt = document.getElementById('low-credit-prompt'); 
+            const mobileCreditsDisplay = document.getElementById('mobile-credits-display'); 
+            
+            if (isUnlimited) { 
+                document.getElementById('header-credits').innerText = 'UNLIMITED LISTINGS'; 
+                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = 'UNLIMITED LISTINGS'; 
+                
+                actionBtn.disabled = false; 
+                actionBtn.innerText = 'New Listing'; 
+                actionBtn.style.opacity = '1'; 
+                actionBtn.style.cursor = 'pointer'; 
+                if (upgradePrompt) upgradePrompt.style.display = 'none'; 
+                if (lowCreditPrompt) lowCreditPrompt.style.display = 'none'; 
+            } else { 
+                document.getElementById('header-credits').innerText = creditsNum + ' LISTINGS REMAINING'; 
+                if (mobileCreditsDisplay) mobileCreditsDisplay.innerText = creditsNum + ' LISTINGS REMAINING'; 
+                
+                if (creditsNum <= 0) { 
+                    actionBtn.disabled = true; 
+                    actionBtn.innerText = 'OUT OF CREDITS'; 
+                    actionBtn.style.opacity = '0.5'; 
+                    actionBtn.style.cursor = 'not-allowed'; 
+                    if (upgradePrompt) upgradePrompt.style.display = 'block'; 
+                    if (lowCreditPrompt) lowCreditPrompt.style.display = 'none'; 
+                } else { 
+                    actionBtn.disabled = false; 
+                    actionBtn.innerText = 'New Listing'; 
+                    actionBtn.style.opacity = '1'; 
+                    actionBtn.style.cursor = 'pointer'; 
+                    if (upgradePrompt) upgradePrompt.style.display = 'none'; 
                     
-                    btn.classList.remove('btn-loading');
-                    btn.innerText = 'SAVED';
-                    btn.style.backgroundColor = '#c5a059';
-                    btn.style.color = '#000';
+                    if (isPartner && creditsNum <= 2) { 
+                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'block'; 
+                    } else { 
+                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'none'; 
+                    } 
+                } 
+            } 
+
+            document.getElementById('profile-tier').innerText = (userData.tier || '---').toUpperCase(); 
+            
+            // Populates the Name input or toggles the populated UI state 
+            const nameEmptyState = document.getElementById('profile-name-empty'); 
+            const namePopulatedState = document.getElementById('profile-name-populated'); 
+            const displayProfileName = document.getElementById('display-profile-name'); 
+
+            if (userData.name && userData.name.trim() !== "") { 
+                nameEmptyState.style.display = 'none'; 
+                namePopulatedState.style.display = 'flex'; 
+                displayProfileName.innerText = userData.name.toUpperCase(); 
+            } else { 
+                nameEmptyState.style.display = 'block'; 
+                namePopulatedState.style.display = 'none'; 
+                document.getElementById('profile-name').value = ''; 
+            } 
+            
+            const actualImg = document.getElementById('actual-logo-img'); 
+            const noLogoText = document.getElementById('no-logo-text'); 
+            
+            if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") { 
+                actualImg.src = userData.logo; 
+                actualImg.style.display = 'block'; 
+                noLogoText.style.display = 'none'; 
+            } else { 
+                noLogoText.innerText = 'NO LOGO SET'; 
+            } 
+
+            setCustomWidgetLabels(); 
+            renderSubmissions(); 
+            renderNotifications(); 
+        } 
+
+        function parseGalleryUrls(urlsRaw, listingName = 'Assets') { 
+            if (!urlsRaw) return { html: '<p style="color:#444; font-size:10px; padding:10px;">No images available</p>', thumb: '' }; 
+            
+            let html = ''; 
+            let thumb = ''; 
+            let rawUrl = urlsRaw.trim(); 
+
+            if (rawUrl.includes('ucare')) { 
+                if (rawUrl.includes('~')) { 
+                    let groupBase = rawUrl.split('~')[0]; 
+                    let countStr = rawUrl.split('~')[1].replace('/', ''); 
+                    let count = parseInt(countStr); 
+                    
+                    for(let i = 0; i < count; i++) { 
+                        let singleImgUrl = `${groupBase}~${count}/nth/${i}/`; 
+                        html += `<div class="gallery-item"><a href="${singleImgUrl}" target="_blank"><img src="${singleImgUrl}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`; 
+                    } 
+                    thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`; 
+                    
+                    let safeName = encodeURIComponent(listingName.replace(/[^a-z0-9]/gi, '_').toLowerCase()); 
+                    let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`; 
+
+                    html = `<div class="listing-gallery">${html}</div> 
+                            <a href="${zipUrl}" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`; 
+                    
+                    return { html: html, thumb: thumb }; 
+                }  
+                else { 
+                    let cleanUrl = rawUrl.endsWith('/') ? rawUrl : rawUrl + '/'; 
+                    thumb = `${cleanUrl}-/scale_crop/400x400/center/`; 
+                    html = `<div class="listing-gallery"> 
+                                <div class="gallery-item"><a href="${cleanUrl}" target="_blank"><img src="${thumb}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div> 
+                            </div>`; 
+                    return { html: html, thumb: thumb }; 
+                } 
+            } 
+            
+            if (rawUrl.includes('drive.google.com')) { 
+                const id = rawUrl.split('id=')[1] || rawUrl.split('/d/')[1]?.split('/')[0]; 
+                if (id) { 
+                    thumb = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`; 
+                    html = `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Google Drive Folder ↗</a></p>`; 
+                    return { html: html, thumb: thumb }; 
+                } 
+            } 
+
+            if (rawUrl.includes('.jpg') || rawUrl.includes('.png') || rawUrl.includes('.jpeg') || rawUrl.includes('.webp')) { 
+                const urls = rawUrl.split(',').filter(u => u.trim() !== ""); 
+                thumb = urls[0].trim(); 
+                html = `<div class="listing-gallery">${urls.map(url => ` 
+                    <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${url.trim()}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`; 
+                return { html: html, thumb: thumb }; 
+            } 
+
+            return { html: `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' }; 
+        } 
+
+        function formatDate(dateStr) { 
+            if (!dateStr || dateStr === '---') return '---'; 
+            try { 
+                const d = new Date(dateStr); 
+                if (isNaN(d.getTime())) return dateStr;  
+                return d.toLocaleString('en-US', { 
+                    month: 'numeric', 
+                    day: 'numeric', 
+                    year: 'numeric', 
+                    hour: 'numeric', 
+                    minute: '2-digit', 
+                    hour12: true 
+                }); 
+            } catch(e) { 
+                return dateStr; 
+            } 
+        } 
+
+        function renderSubmissions() { 
+            const list = document.getElementById('submissions-list'); 
+            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse(); 
+            
+            if(validHistory.length > 0) { 
+                list.innerHTML = validHistory.map((item, idx) => { 
+                    const rawStatus = (item.status || 'Received').toUpperCase(); 
+                    const isComplete = rawStatus === 'COMPLETED'; 
+                    const listingName = item.vehicle || item.name || 'Listing'; 
+                    
+                    let origData = parseGalleryUrls(item.originals, listingName + '_Originals'); 
+                    let originalGallery = origData.html; 
+                    
+                    let stagedGallery = '<p style="font-size: 11px; color: #444; text-align: center; padding:20px;">Final staged assets will appear here once processing is complete.</p>'; 
+                    let stagedThumb = ''; 
+                    if (item.staged && isComplete) { 
+                        let stagedData = parseGalleryUrls(item.staged, listingName + '_Staged'); 
+                        stagedGallery = stagedData.html; 
+                        stagedThumb = stagedData.thumb;  
+                    } 
+
+                    let thumbSource = origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || stagedThumb || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'; 
+
+                    return ` 
+                    <div class="listing-card"> 
+                        <div class="listing-main-row"> 
+                            <div class="listing-info-left"> 
+                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`} 
+                                <div> 
+                                    <p class="listing-title" id="name-text-${idx}">${listingName}</p> 
+                                    <span class="listing-date">Submitted: ${formatDate(item.date)}</span> 
+                                </div> 
+                            </div> 
+                            <div class="listing-status-right"> 
+                                <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span> 
+                                <button class="listing-menu-btn" onclick="editListingName(${idx}, '${item.rowId || item.id}')">⋮</button> 
+                            </div> 
+                        </div> 
+                        <div class="listing-accordion-row"> 
+                            <button id="btn-uploaded-${idx}" class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button> 
+                            <button id="btn-upgraded-${idx}" class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button> 
+                        </div> 
+                        <div id="uploaded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${originalGallery}</div> 
+                        <div id="upgraded-${idx}" style="display: none; padding: 25px; background: #050505; border-top: 1px solid #111;">${stagedGallery}</div> 
+                    </div>`; 
+                }).join(''); 
+            } else { 
+                list.innerHTML = `<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>`; 
+            } 
+        } 
+
+        async function editListingName(index, rowId) { 
+            const nameEl = document.getElementById(`name-text-${index}`); 
+            const currentName = nameEl.innerText; 
+            const newName = await openCustomPrompt("Edit Vehicle Name or VIN", currentName, "e.g. 2024 Porsche 911"); 
+
+            if (newName && newName.trim() !== "" && newName !== currentName) { 
+                nameEl.innerText = newName.toUpperCase(); 
+                try { 
+                    await fetch(dataFetchWebhook, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ 
+                            action: 'rename_listing', 
+                            rowId: rowId, 
+                            newName: newName, 
+                            email: localStorage.getItem('pf_email') 
+                        }) 
+                    }); 
+                } catch (err) { console.error("Rename failed", err); } 
+            } 
+        } 
+
+        function toggleAccordion(type, idx) { 
+            const uploadedContent = document.getElementById(`uploaded-${idx}`); 
+            const upgradedContent = document.getElementById(`upgraded-${idx}`); 
+            const btnUploaded = document.getElementById(`btn-uploaded-${idx}`); 
+            const btnUpgraded = document.getElementById(`btn-upgraded-${idx}`); 
+            
+            if (type === 'uploaded') { 
+                const isOpening = uploadedContent.style.display === "none"; 
+                uploadedContent.style.display = isOpening ? "block" : "none"; 
+                if (isOpening) { 
+                    if (upgradedContent) upgradedContent.style.display = "none"; 
+                    if (btnUploaded) btnUploaded.classList.add('active'); 
+                    if (btnUpgraded) btnUpgraded.classList.remove('active'); 
+                } else { 
+                    if (btnUploaded) btnUploaded.classList.remove('active'); 
+                } 
+            } else { 
+                const isOpening = upgradedContent.style.display === "none"; 
+                upgradedContent.style.display = isOpening ? "block" : "none"; 
+                if (isOpening) { 
+                    if (uploadedContent) uploadedContent.style.display = "none"; 
+                    if (btnUpgraded) btnUpgraded.classList.add('active'); 
+                    if (btnUploaded) btnUploaded.classList.remove('active'); 
+                } else { 
+                    if (btnUpgraded) btnUpgraded.classList.remove('active'); 
+                } 
+            } 
+        } 
+
+        async function updateProfileName() { 
+            const newName = document.getElementById('profile-name').value.trim(); 
+            const btn = document.getElementById('save-name-btn'); 
+            
+            if (!newName) return; 
+            
+            btn.disabled = true; 
+            const originalText = btn.innerText; 
+            btn.innerText = 'SAVING...'; 
+            
+            try { 
+                await fetch(dataFetchWebhook, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        action: 'update_name', 
+                        email: localStorage.getItem('pf_email'), 
+                        accountId: userData.accountId || userData.accountID, 
+                        newName: newName 
+                    }) 
+                }); 
+                
+                userData.name = newName; 
+                btn.innerText = 'SAVED'; 
+                btn.style.backgroundColor = '#c5a059'; 
+                btn.style.color = '#000'; 
+                
+                setTimeout(() => { 
+                    btn.innerText = originalText; 
+                    btn.style.backgroundColor = ''; 
+                    btn.style.color = ''; 
+                    btn.disabled = false; 
+                    refreshUI();  
+                }, 1000); 
+            } catch (err) { 
+                console.error(err); 
+                btn.innerText = 'ERROR'; 
+                setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000); 
+            } 
+        } 
+
+        async function editProfileNamePrompt() { 
+            const currentName = userData.name || ""; 
+            const newName = await openCustomPrompt("Edit Account Holder Name", currentName, "Enter full name"); 
+
+            if (newName && newName.trim() !== "" && newName !== currentName) { 
+                const displayEl = document.getElementById('display-profile-name'); 
+                displayEl.innerText = "UPDATING..."; 
+
+                try { 
+                    await fetch(dataFetchWebhook, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ 
+                            action: 'update_name', 
+                            email: localStorage.getItem('pf_email'), 
+                            accountId: userData.accountId || userData.accountID, 
+                            newName: newName.trim() 
+                        }) 
+                    }); 
+
+                    userData.name = newName.trim(); 
+                    refreshUI();  
+                } catch (err) { 
+                    console.error("Rename failed", err); 
+                    displayEl.innerText = currentName.toUpperCase();  
+                    alert("Failed to update name. Please try again."); 
+                } 
+            } 
+        } 
+
+        function signOut() { 
+            localStorage.removeItem('pf_email'); 
+            localStorage.removeItem('pf_pass'); 
+            window.location.href = '/login/';  
+        } 
+
+        function showTab(t) { 
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
+            document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active')); 
+            document.getElementById('view-' + t).classList.add('active'); 
+            const tabBtn = document.getElementById('tab-' + t); 
+            if(tabBtn) tabBtn.classList.add('active'); 
+            
+            if (t === 'notifications') { 
+                document.getElementById('alert-dot').style.display = 'none'; 
+                localStorage.setItem('pf_alerts_viewed', Date.now().toString()); 
+            } 
+            window.scrollTo(0,0); 
+        } 
+
+        function toggleMobileMenu(event) { 
+            if(event) event.stopPropagation(); 
+            document.querySelector('.header-nav').classList.toggle('mobile-active');  
+        } 
+        
+        window.addEventListener('click', function(event) { 
+            const nav = document.querySelector('.header-nav'); 
+            const hamburger = document.getElementById('hamburger-btn'); 
+            if (nav && nav.classList.contains('mobile-active') && !nav.contains(event.target) && event.target !== hamburger) { 
+                nav.classList.remove('mobile-active'); 
+            } 
+        }); 
+
+        function openSubmit() { showTab('submit'); } 
+
+        document.getElementById('inventory-form').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            const btn = document.getElementById('submit-btn'); 
+            
+            if (btn.disabled) return;  
+            btn.disabled = true; 
+
+            const originalText = btn.innerText; 
+            btn.innerText = 'INITIALIZING...'; 
+            btn.classList.add('btn-loading'); 
+            
+            const formData = new FormData(); 
+            formData.append('email', localStorage.getItem('pf_email'));  
+            formData.append('accountId', userData.accountId || userData.accountID || ''); 
+            formData.append('vehicleName', document.getElementById('f-name').value.trim()); 
+            formData.append('assetSource', document.getElementById('f-source').value.trim()); 
+            formData.append('showroomColor', document.getElementById('f-color').value || "Crisp White (default)"); 
+            formData.append('logoPlacement', document.getElementById('f-logo').value); 
+            formData.append('thumbnail', document.getElementById('f-hero-thumb').value); 
+            
+            const ucareUrl = document.getElementById('ucare-uploader').value; 
+            if (ucareUrl) { 
+                formData.append('uploadcareUrl', ucareUrl); 
+            } 
+            
+            try { 
+                const res = await fetch('https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p', { method: 'POST', body: formData }); 
+                
+                if (res.ok) { 
+                    btn.classList.remove('btn-loading');  
+                    btn.innerText = 'SUCCESS. EVALUATING IMAGES...'; 
+                    btn.style.backgroundColor = '#c5a059';  
+                    btn.style.color = '#000'; 
                     
                     setTimeout(() => { 
-                        btn.style.display = 'none'; 
-                        btn.disabled = false;
-                        btn.innerText = originalText;
-                        btn.style.backgroundColor = '';
-                        btn.style.color = '';
-                        uploadcare.Widget('#ucare-logo-uploader').value(null);
-                        setCustomWidgetLabels();
-                    }, 2000);
-                } else {
-                    throw new Error("Bad response");
-                }
-            } catch (err) { 
-                btn.classList.remove('btn-loading'); 
-                btn.innerText = 'ERROR';
-                btn.style.backgroundColor = '#ff4d4d';
-                btn.style.color = '#fff';
-                
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
-                }, 2000);
-            }
-        }
+                        document.getElementById('inventory-form').reset(); 
+                        const widget = uploadcare.Widget('#ucare-uploader'); 
+                        if(widget) widget.value(null); 
+                        
+                        document.getElementById('staging-gallery').innerHTML = ''; 
+                        
+                        fColorInput.value = 'Crisp White (default)'; 
+                        selectedColorText.innerText = 'Crisp White (default)'; 
+                        selectedColorSwatch.style.backgroundColor = '#ffffff'; 
+                        selectedColorSwatch.style.backgroundImage = 'none'; 
 
-        function toggleContact(event) { event.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); }
-        function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); }
-    </script>
-</body>
+                        btn.innerText = originalText; 
+                        btn.style.backgroundColor = ''; 
+                        btn.style.color = ''; 
+                        btn.disabled = false;  
+                        
+                        document.getElementById('submissions-list').innerHTML = '<div class="shimmer-wrapper"></div><div class="shimmer-wrapper"></div>'; 
+                        
+                        showTab('dashboard'); 
+                        fetchDashboardData(localStorage.getItem('pf_email')); 
+                    }, 1500); 
+                } else { 
+                    throw new Error("Bad response"); 
+                } 
+            } catch (err) {  
+                btn.classList.remove('btn-loading');  
+                btn.innerText = 'ERROR. TRY AGAIN.'; 
+                btn.style.backgroundColor = '#ff4d4d'; 
+                btn.style.color = '#fff'; 
+                setTimeout(() => { 
+                    btn.innerText = originalText; 
+                    btn.style.backgroundColor = ''; 
+                    btn.style.color = ''; 
+                    btn.disabled = false;  
+                }, 3000); 
+            } 
+        }); 
+
+        async function uploadNewLogo() { 
+            const ucareUrl = document.getElementById('ucare-logo-uploader').value; 
+            const btn = document.getElementById('save-logo-btn'); 
+            
+            if (!ucareUrl || btn.disabled) return; 
+            
+            btn.disabled = true; 
+            const originalText = btn.innerText; 
+            btn.innerText = 'SAVING...'; 
+            btn.classList.add('btn-loading'); 
+            
+            try { 
+                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', {  
+                    method: 'POST',  
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        email: localStorage.getItem('pf_email'), 
+                        accountId: userData.accountId || userData.accountID, 
+                        logoUrl: ucareUrl 
+                    }) 
+                }); 
+                
+                if (res.ok) { 
+                    userData.logo = ucareUrl; 
+                    refreshUI();  
+                    
+                    btn.classList.remove('btn-loading'); 
+                    btn.innerText = 'SAVED'; 
+                    btn.style.backgroundColor = '#c5a059'; 
+                    btn.style.color = '#000'; 
+                    
+                    setTimeout(() => {  
+                        btn.style.display = 'none';  
+                        btn.disabled = false; 
+                        btn.innerText = originalText; 
+                        btn.style.backgroundColor = ''; 
+                        btn.style.color = ''; 
+                        uploadcare.Widget('#ucare-logo-uploader').value(null); 
+                        setCustomWidgetLabels(); 
+                    }, 2000); 
+                } else { 
+                    throw new Error("Bad response"); 
+                } 
+            } catch (err) {  
+                btn.classList.remove('btn-loading');  
+                btn.innerText = 'ERROR'; 
+                btn.style.backgroundColor = '#ff4d4d'; 
+                btn.style.color = '#fff'; 
+                
+                setTimeout(() => { 
+                    btn.innerText = originalText; 
+                    btn.style.backgroundColor = ''; 
+                    btn.style.color = ''; 
+                    btn.disabled = false; 
+                }, 2000); 
+            } 
+        } 
+
+        function toggleContact(event) { event.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); } 
+        function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); } 
+    </script> 
+</body> 
 </html>
