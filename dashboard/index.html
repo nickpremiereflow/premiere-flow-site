@@ -440,31 +440,31 @@
                                 <div class="custom-select" id="color-trigger"> 
                                     <div style="display: flex; align-items: center; gap: 12px;"> 
                                         <div class="color-swatch" id="selected-color-swatch" style="background-color: #ffffff;"></div> 
-                                        <span id="selected-color-text">Crisp White (default)</span> 
+                                        <span id="selected-color-text">White (default)</span> 
                                     </div> 
                                     <span class="dropdown-arrow">▼</span> 
                                 </div> 
                                 <div class="custom-select-options" id="color-options"> 
-                                    <div class="custom-option" data-value="Crisp White (default)" data-color="#ffffff"> 
-                                        <div class="color-swatch" style="background-color: #ffffff;"></div> Crisp White (default) 
+                                    <div class="custom-option" data-value="White (default)" data-color="#ffffff"> 
+                                        <div class="color-swatch" style="background-color: #ffffff;"></div> White (default) 
                                     </div> 
-                                    <div class="custom-option" data-value="Pitch Black" data-color="#0a0a0a"> 
-                                        <div class="color-swatch" style="background-color: #0a0a0a;"></div> Pitch Black 
+                                    <div class="custom-option" data-value="Black" data-color="#0a0a0a"> 
+                                        <div class="color-swatch" style="background-color: #0a0a0a;"></div> Black 
                                     </div> 
-                                    <div class="custom-option" data-value="Champagne Gold" data-color="#d4c3a3"> 
-                                        <div class="color-swatch" style="background-color: #d4c3a3;"></div> Champagne Gold 
+                                    <div class="custom-option" data-value="Gold" data-color="#d4c3a3"> 
+                                        <div class="color-swatch" style="background-color: #d4c3a3;"></div> Gold 
                                     </div> 
-                                    <div class="custom-option" data-value="Crimson Red" data-color="#8b0000"> 
-                                        <div class="color-swatch" style="background-color: #8b0000;"></div> Crimson Red 
+                                    <div class="custom-option" data-value="Red" data-color="#8b0000"> 
+                                        <div class="color-swatch" style="background-color: #8b0000;"></div> Red 
                                     </div> 
-                                    <div class="custom-option" data-value="Solar Yellow" data-color="#ffcc00"> 
-                                        <div class="color-swatch" style="background-color: #ffcc00;"></div> Solar Yellow 
+                                    <div class="custom-option" data-value="Yellow" data-color="#ffcc00"> 
+                                        <div class="color-swatch" style="background-color: #ffcc00;"></div> Yellow 
                                     </div> 
-                                    <div class="custom-option" data-value="Emerald Green" data-color="#004b23"> 
-                                        <div class="color-swatch" style="background-color: #004b23;"></div> Emerald Green 
+                                    <div class="custom-option" data-value="Green" data-color="#004b23"> 
+                                        <div class="color-swatch" style="background-color: #004b23;"></div> Green 
                                     </div> 
                                 </div> 
-                                <input type="hidden" id="f-color" value="Crisp White (default)"> 
+                                <input type="hidden" id="f-color" value="White (default)"> 
                             </div> 
                         </div> 
 
@@ -1148,7 +1148,7 @@
             formData.append('accountId', userData.accountId || userData.accountID || ''); 
             formData.append('vehicleName', document.getElementById('f-name').value.trim()); 
             formData.append('assetSource', document.getElementById('f-source').value.trim()); 
-            formData.append('showroomColor', document.getElementById('f-color').value || "Crisp White (default)"); 
+            formData.append('showroomColor', document.getElementById('f-color').value || "White (default)"); 
             formData.append('logoPlacement', document.getElementById('f-logo').value); 
             formData.append('thumbnail', document.getElementById('f-hero-thumb').value); 
             
@@ -1173,8 +1173,8 @@
                         
                         document.getElementById('staging-gallery').innerHTML = ''; 
                         
-                        fColorInput.value = 'Crisp White (default)'; 
-                        selectedColorText.innerText = 'Crisp White (default)'; 
+                        fColorInput.value = 'White (default)'; 
+                        selectedColorText.innerText = 'White (default)'; 
                         selectedColorSwatch.style.backgroundColor = '#ffffff'; 
                         selectedColorSwatch.style.backgroundImage = 'none'; 
 
