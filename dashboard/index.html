@@ -174,6 +174,8 @@
         .listing-date { font-size: 10px; color: #777; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; } 
         
         .status-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 6px 12px; border-radius: 4px; text-align: center; } 
+        .status-failed { color: #ffb4b4; background: #2b1717; border: 1px solid #784444; }
+        .job-details { padding: 12px 20px; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
         .status-progress { color: #aaa; background: #222; border: 1px solid #444; } 
         .status-completed { color: var(--bg-dark); background: var(--accent-gold); } 
 
@@ -288,7 +290,10 @@
         </div> 
     </header> 
 
-    <div id="app-container"> 
+    <div id="app-container">
+        <p id="engine-message" role="status" aria-live="polite" hidden style="padding:16px;border:1px solid #444;line-height:1.6;font-size:13px;"></p>
+        <button id="engine-refresh" type="button" class="btn-split" hidden>Check job status</button>
+        <button id="engine-resend" type="button" class="btn-split" hidden>Resend saved job safely</button> 
         
         <div class="dash-menu-container"> 
             <nav class="dash-menu"> 
@@ -504,6 +509,130 @@
         let userData = { listings: [], history: [] }; 
         const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa';  
 
+
+        const submissionWebhook = 'https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p';
+        const JOB_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const ACTIVE_JOB_STATES = new Set(['PROCESSING', 'RETRYING']);
+        const FAILED_JOB_STATES = new Set(['FAILED', 'RETRY_REQUIRED']);
+        let dashboardRequest = null;
+        let enginePollTimer = null;
+        let enginePollStarted = 0;
+        let engineActionInFlight = false;
+        let lastDashboardSnapshot = '';
+        let trackedJobId = '';
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function getListings() {
+            return Array.isArray(userData.listings) && userData.listings.length ? userData.listings : (Array.isArray(userData.history) ? userData.history : []);
+        }
+        function pendingJobKey() { return 'pf_pending_job:' + (localStorage.getItem('pf_email') || '').toLowerCase(); }
+        function getPendingJob() {
+            try { const p = JSON.parse(localStorage.getItem(pendingJobKey()) || 'null'); return p && JOB_ID_PATTERN.test(p.jobId) ? p : null; }
+            catch { return null; }
+        }
+        function setEngineMessage(message) {
+            const el = document.getElementById('engine-message');
+            el.textContent = message;
+            el.hidden = !message;
+            document.getElementById('engine-refresh').hidden = !message;
+            document.getElementById('engine-resend').hidden = !getPendingJob();
+            document.getElementById('engine-resend').disabled = engineActionInFlight;
+        }
+        function jobState(item) { return String(item.status || 'RECEIVED').trim().toUpperCase(); }
+        function jobRetryState(item, now = Date.now()) {
+            const attempts = Number(item.attemptCount || 0);
+            const retryAt = item.nextRetryAt ? Date.parse(item.nextRetryAt) : 0;
+            const validTiming = !item.nextRetryAt || Number.isFinite(retryAt);
+            const hasCredit = userData.tier === 'Unlimited' || Number(userData.credits) > 0;
+            return {attempts, retryAt, allowed: JOB_ID_PATTERN.test(item.jobId || '') && FAILED_JOB_STATES.has(jobState(item)) && attempts < 3 && validTiming && retryAt <= now && hasCredit && !engineActionInFlight && !getPendingJob()};
+        }
+        function showTrackedJobStatus() {
+            const item = getListings().find(item => item.jobId === trackedJobId);
+            if (!item) return;
+            setEngineMessage(jobState(item) === 'COMPLETED' ? 'Your staged assets are ready. One listing credit was used.' : FAILED_JOB_STATES.has(jobState(item)) ? 'This job failed. Its reserved credit was released. See the listing for details.' : 'Job accepted. One credit is reserved while it processes. Your dashboard will update automatically.');
+        }
+        function reconcilePendingJob() {
+            const pending = getPendingJob();
+            if (!pending) { showTrackedJobStatus(); return; }
+            const item = getListings().find(item => item.jobId === pending.jobId);
+            const accepted = item && (pending.action !== 'retry' || Number(item.attemptCount || 0) > pending.previousAttempt);
+            if (accepted) {
+                trackedJobId = pending.jobId;
+                localStorage.removeItem(pendingJobKey());
+                if (pending.action === 'submit') resetAcceptedSubmissionForm();
+                setEngineMessage(jobState(item) === 'COMPLETED' ? 'Your staged assets are ready. One listing credit was used.' : FAILED_JOB_STATES.has(jobState(item)) ? 'This job failed. Its credit is available again. See the listing for details.' : 'Job accepted. One credit is reserved while it processes. Your dashboard will update automatically.');
+            } else {
+                setEngineMessage('Submission queued; waiting to confirm job ' + pending.jobId + '. Do not create another submission. Check status or resend this same job safely.');
+            }
+        }
+        function scheduleEnginePoll() {
+            clearTimeout(enginePollTimer);
+            const hasWork = getPendingJob() || getListings().some(item => ACTIVE_JOB_STATES.has(jobState(item)));
+            if (!hasWork) { enginePollStarted = 0; return; }
+            if (!enginePollStarted) enginePollStarted = Date.now();
+            if (Date.now() - enginePollStarted > 15 * 60 * 1000) {
+                setEngineMessage('Automatic status checks paused. Check job status before submitting again; the existing Job ID is preserved.');
+                return;
+            }
+            if (!document.hidden) enginePollTimer = setTimeout(() => fetchDashboardData(localStorage.getItem('pf_email')), 15000);
+        }
+        async function sendEngineJob(payload, pending) {
+            // Persist before sending, so a timeout or reload reuses the same identity.
+            localStorage.setItem(pendingJobKey(), JSON.stringify(pending));
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 25000);
+            try {
+                const form = new FormData();
+                Object.entries({...payload, jobId: pending.jobId, action: pending.action, ...(pending.action === 'retry' ? {expectedAttempt: pending.previousAttempt} : {})}).forEach(([key, value]) => form.append(key, value ?? ''));
+                const res = await fetch(submissionWebhook, {method: 'POST', body: form, signal: controller.signal});
+                const text = await res.text();
+                let ack = null;
+                try { ack = JSON.parse(text); } catch {}
+                if (!res.ok || ack?.status === 'rejected') throw new Error(res.status === 429 ? 'The service is busy. Wait before resending this same job.' : 'The submission was not confirmed. Check status before retrying.');
+                if (ack?.jobId && ack.jobId !== pending.jobId) throw new Error('The returned Job ID did not match. Check status before retrying.');
+                if (!ack && text.trim() !== 'Accepted') throw new Error('The service did not acknowledge this job. Check status before retrying.');
+                setEngineMessage('Submission queued. Confirming your existing Job ID…');
+                enginePollStarted = Date.now();
+                await fetchDashboardData(payload.email);
+            } finally { clearTimeout(timeout); scheduleEnginePoll(); }
+        }
+        function resetAcceptedSubmissionForm() {
+            document.getElementById('inventory-form').reset();
+            const widget = uploadcare.Widget('#ucare-uploader');
+            if (widget) widget.value(null);
+            document.getElementById('staging-gallery').innerHTML = '';
+            fColorInput.value = 'White (default)'; selectedColorText.innerText = 'White (default)';
+            selectedColorSwatch.style.backgroundColor = '#ffffff'; selectedColorSwatch.style.backgroundImage = 'none';
+            document.getElementById('submit-btn').innerText = 'Initialize Staging';
+        }
+        async function resendPendingJob() {
+            const pending = getPendingJob();
+            if (!pending || engineActionInFlight) return;
+            const payload = pending.action === 'submit' ? JSON.parse(pending.fingerprint) : {email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID};
+            if (payload.email !== localStorage.getItem('pf_email') || payload.accountId !== (userData.accountId || userData.accountID)) { setEngineMessage('Refresh your account before resending the saved job.'); return; }
+            engineActionInFlight = true;
+            document.getElementById('engine-resend').disabled = true;
+            try { await sendEngineJob(payload, pending); }
+            catch (err) { setEngineMessage('The saved job is still unconfirmed. Check status before trying again.'); }
+            finally { engineActionInFlight = false; document.getElementById('engine-resend').disabled = false; renderSubmissions(); }
+        }
+        document.getElementById('engine-resend').addEventListener('click', resendPendingJob);
+        async function retryJob(jobId) {
+            const item = getListings().find(item => item.jobId === jobId);
+            if (!item || !jobRetryState(item).allowed) return;
+            engineActionInFlight = true;
+            renderSubmissions();
+            try {
+                await sendEngineJob({email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID}, {jobId, action: 'retry', previousAttempt: Number(item.attemptCount || 0), queuedAt: Date.now()});
+            } catch (err) { setEngineMessage((err.name === 'AbortError' ? 'The request timed out.' : err.message) + ' Your Job ID is saved; no new submission will be created.'); }
+            finally { engineActionInFlight = false; document.getElementById('engine-resend').disabled = false; renderSubmissions(); }
+        }
+        document.getElementById('engine-refresh').addEventListener('click', () => { enginePollStarted = Date.now(); fetchDashboardData(localStorage.getItem('pf_email')); });
+        document.getElementById('submissions-list').addEventListener('click', event => { const button = event.target.closest('[data-retry-job]'); if (button && !button.disabled) retryJob(button.dataset.retryJob); });
+        document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(enginePollTimer); else { enginePollStarted = Date.now(); fetchDashboardData(localStorage.getItem('pf_email')); } });
+
         // UPLOADCARE REACTIVE GROUP MANAGEMENT 
         let currentFileUUIDs = []; 
         let mainUcareWidget = null; 
@@ -669,34 +798,38 @@
             setCustomWidgetLabels(); 
         }; 
 
-        async function fetchDashboardData(email) { 
-            try { 
-                const res = await fetch(dataFetchWebhook, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ email: email }) 
-                }); 
-                const data = await res.json(); 
-                
-                if (data.listings) { 
-                    data.listings = data.listings.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ })); 
-                } 
-                if (data.history) { 
-                    data.history = data.history.map(item => ({ ...item, rowId: item.rowId || item.__rowNumber__ })); 
-                } 
-
-                userData = { ...userData, ...data };  
-                refreshUI(); 
-            } catch (err) {  
-                console.error("Dashboard data load failed", err);  
-                refreshUI(); 
-                document.getElementById('submissions-list').innerHTML = '<div class="card" style="text-align:center; padding: 40px 20px;"><p style="color: #555; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">No Listings Found. Create your first submission above.</p></div>'; 
-            } 
-        } 
+        async function fetchDashboardData(email) {
+            if (!email) return false;
+            if (dashboardRequest) return dashboardRequest;
+            dashboardRequest = (async () => {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 20000);
+                try {
+                    const res = await fetch(dataFetchWebhook, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email}), signal: controller.signal});
+                    if (!res.ok) throw new Error('Status service unavailable');
+                    const data = await res.json();
+                    if (data.success === false || !(data.accountId || data.accountID)) throw new Error('Account status was not confirmed');
+                    for (const key of ['listings', 'history']) if (Array.isArray(data[key])) data[key] = data[key].map(item => ({...item, rowId: item.rowId || item.__rowNumber__}));
+                    const snapshot = JSON.stringify(data);
+                    userData = {...userData, ...data};
+                    if (snapshot !== lastDashboardSnapshot) { lastDashboardSnapshot = snapshot; refreshUI(); }
+                    else if (getListings().some(item => FAILED_JOB_STATES.has(jobState(item)))) renderSubmissions();
+                    if (document.getElementById('engine-message').textContent.startsWith('Status could not be refreshed.')) setEngineMessage('Status updated.');
+                    reconcilePendingJob();
+                    return true;
+                } catch (err) {
+                    console.error('Dashboard status refresh failed', err);
+                    setEngineMessage('Status could not be refreshed. Your existing listings and Job ID are preserved. Check status before submitting again.');
+                    return false;
+                } finally { clearTimeout(timeout); }
+            })();
+            try { return await dashboardRequest; }
+            finally { dashboardRequest = null; scheduleEnginePoll(); }
+        }
 
         function checkNotifications() { 
             const lastViewed = parseInt(localStorage.getItem('pf_alerts_viewed') || '0'); 
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)); 
+            const validHistory = getListings().filter(item => item && (item.vehicle || item.name)); 
             
             if (validHistory.length > 0) { 
                 let latestStamp = 0; 
@@ -713,7 +846,7 @@
 
         function renderNotifications() { 
             const list = document.getElementById('notif-list'); 
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)); 
+            const validHistory = getListings().filter(item => item && (item.vehicle || item.name)); 
             
             if (validHistory.length === 0) { 
                 list.innerHTML = `<div class="card" style="text-align:center;"><p style="font-size:11px; color:#555; text-transform:uppercase;">No recent activity</p></div>`; 
@@ -854,7 +987,13 @@
             
             let html = ''; 
             let thumb = ''; 
-            let rawUrl = urlsRaw.trim(); 
+            if (Array.isArray(urlsRaw)) {
+                const galleries = urlsRaw.map(url => parseGalleryUrls(url, listingName));
+                return {html: galleries.map(item => item.html).join(''), thumb: galleries.find(item => item.thumb)?.thumb || ''};
+            }
+            if (typeof urlsRaw !== 'string') return {html: '<p>No images available</p>', thumb: ''};
+            let rawUrl = urlsRaw.trim();
+            if (!/^https:\/\//i.test(rawUrl)) return {html: '<p>Asset link unavailable</p>', thumb: ''}; 
 
             if (rawUrl.includes('ucare')) { 
                 if (rawUrl.includes('~')) { 
@@ -926,11 +1065,15 @@
 
         function renderSubmissions() { 
             const list = document.getElementById('submissions-list'); 
-            const validHistory = (userData.listings || userData.history || []).filter(item => item && (item.vehicle || item.name)).reverse(); 
+            const validHistory = getListings().filter(item => item && (item.vehicle || item.name)).reverse(); 
             
             if(validHistory.length > 0) { 
                 list.innerHTML = validHistory.map((item, idx) => { 
-                    const rawStatus = (item.status || 'Received').toUpperCase(); 
+                    const rawStatus = jobState(item);
+                    const isFailed = FAILED_JOB_STATES.has(rawStatus);
+                    const retry = jobRetryState(item);
+                    const retryDescription = retry.attempts >= 3 ? 'Maximum attempts reached. Contact support with this Job ID.' : item.nextRetryAt && retry.retryAt > Date.now() ? 'Retry available after ' + formatDate(item.nextRetryAt) + '.' : 'Retry uses this same job and source photos.';
+                    const jobDetails = isFailed ? `<div class="job-details"><p>Processing failed. No credit is permanently used for this failed job.</p><p>${escapeHtml(retryDescription)}</p>${item.error ? `<details><summary>Error details</summary><p>${escapeHtml(item.error)}</p></details>` : ''}<button type="button" class="btn-split" data-retry-job="${escapeHtml(item.jobId || '')}" ${retry.allowed ? '' : 'disabled'}>Retry this job</button></div>` : ACTIVE_JOB_STATES.has(rawStatus) ? '<div class="job-details">Processing images. One credit is reserved; status updates automatically.</div>' : ''; 
                     const isComplete = rawStatus === 'COMPLETED'; 
                     const listingName = item.vehicle || item.name || 'Listing'; 
                     
@@ -945,7 +1088,7 @@
                         stagedThumb = stagedData.thumb;  
                     } 
 
-                    let thumbSource = origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || stagedThumb || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'; 
+                    let thumbSource = stagedThumb || origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'; 
 
                     return ` 
                     <div class="listing-card"> 
@@ -953,15 +1096,17 @@
                             <div class="listing-info-left"> 
                                 ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`} 
                                 <div> 
-                                    <p class="listing-title" id="name-text-${idx}">${listingName}</p> 
+                                    <p class="listing-title" id="name-text-${idx}">${escapeHtml(listingName)}</p> 
                                     <span class="listing-date">Submitted: ${formatDate(item.date)}</span> 
                                 </div> 
                             </div> 
                             <div class="listing-status-right"> 
-                                <span class="status-badge ${isComplete ? 'status-completed' : 'status-progress'}">${rawStatus}</span> 
+                                <span class="status-badge ${isComplete ? 'status-completed' : isFailed ? 'status-failed' : 'status-progress'}">${escapeHtml(rawStatus)}</span> 
                                 <button class="listing-menu-btn" onclick="editListingName(${idx}, '${item.rowId || item.id}')">⋮</button> 
                             </div> 
                         </div> 
+                        ${jobDetails}
+                        ${item.jobId ? `<div class="job-details">Job ID: ${escapeHtml(item.jobId)} · Attempt ${Number(item.attemptCount || 0)} of 3</div>` : ''}
                         <div class="listing-accordion-row"> 
                             <button id="btn-uploaded-${idx}" class="accordion-btn" onclick="toggleAccordion('uploaded', ${idx})">Original Assets ▾</button> 
                             <button id="btn-upgraded-${idx}" class="accordion-btn ${isComplete ? '' : 'disabled'}" onclick="toggleAccordion('upgraded', ${idx})">Staged Assets ▾</button> 
@@ -1132,78 +1277,44 @@
 
         function openSubmit() { showTab('submit'); } 
 
-        document.getElementById('inventory-form').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            const btn = document.getElementById('submit-btn'); 
-            
-            if (btn.disabled) return;  
-            btn.disabled = true; 
-
-            const originalText = btn.innerText; 
-            btn.innerText = 'INITIALIZING...'; 
-            btn.classList.add('btn-loading'); 
-            
-            const formData = new FormData(); 
-            formData.append('email', localStorage.getItem('pf_email'));  
-            formData.append('accountId', userData.accountId || userData.accountID || ''); 
-            formData.append('vehicleName', document.getElementById('f-name').value.trim()); 
-            formData.append('assetSource', document.getElementById('f-source').value.trim()); 
-            formData.append('showroomColor', document.getElementById('f-color').value || "White (default)"); 
-            formData.append('logoPlacement', document.getElementById('f-logo').value); 
-            formData.append('thumbnail', document.getElementById('f-hero-thumb').value); 
-            
-            const ucareUrl = document.getElementById('ucare-uploader').value; 
-            if (ucareUrl) { 
-                formData.append('uploadcareUrl', ucareUrl); 
-            } 
-            
-            try { 
-                const res = await fetch('https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p', { method: 'POST', body: formData }); 
-                
-                if (res.ok) { 
-                    btn.classList.remove('btn-loading');  
-                    btn.innerText = 'SUCCESS. EVALUATING IMAGES...'; 
-                    btn.style.backgroundColor = '#c5a059';  
-                    btn.style.color = '#000'; 
-                    
-                    setTimeout(() => { 
-                        document.getElementById('inventory-form').reset(); 
-                        const widget = uploadcare.Widget('#ucare-uploader'); 
-                        if(widget) widget.value(null); 
-                        
-                        document.getElementById('staging-gallery').innerHTML = ''; 
-                        
-                        fColorInput.value = 'White (default)'; 
-                        selectedColorText.innerText = 'White (default)'; 
-                        selectedColorSwatch.style.backgroundColor = '#ffffff'; 
-                        selectedColorSwatch.style.backgroundImage = 'none'; 
-
-                        btn.innerText = originalText; 
-                        btn.style.backgroundColor = ''; 
-                        btn.style.color = ''; 
-                        btn.disabled = false;  
-                        
-                        document.getElementById('submissions-list').innerHTML = '<div class="shimmer-wrapper"></div><div class="shimmer-wrapper"></div>'; 
-                        
-                        showTab('dashboard'); 
-                        fetchDashboardData(localStorage.getItem('pf_email')); 
-                    }, 1500); 
-                } else { 
-                    throw new Error("Bad response"); 
-                } 
-            } catch (err) {  
-                btn.classList.remove('btn-loading');  
-                btn.innerText = 'ERROR. TRY AGAIN.'; 
-                btn.style.backgroundColor = '#ff4d4d'; 
-                btn.style.color = '#fff'; 
-                setTimeout(() => { 
-                    btn.innerText = originalText; 
-                    btn.style.backgroundColor = ''; 
-                    btn.style.color = ''; 
-                    btn.disabled = false;  
-                }, 3000); 
-            } 
-        }); 
+        document.getElementById('inventory-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const button = document.getElementById('submit-btn');
+            if (button.disabled || engineActionInFlight) return;
+            const payload = {
+                email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID || '',
+                vehicleName: document.getElementById('f-name').value.trim(), assetSource: document.getElementById('f-source').value.trim(),
+                showroomColor: document.getElementById('f-color').value || 'White (default)', logoPlacement: document.getElementById('f-logo').value,
+                thumbnail: document.getElementById('f-hero-thumb').value, uploadcareUrl: document.getElementById('ucare-uploader').value
+            };
+            const previous = getPendingJob();
+            if (!payload.accountId || !payload.vehicleName || !payload.uploadcareUrl) { setEngineMessage('Load your account, enter a vehicle name, and upload source photos before submitting.'); return; }
+            if (!previous && userData.tier !== 'Unlimited' && !(Number(userData.credits) > 0)) { setEngineMessage('No available listing credits. Active jobs reserve a credit; failed jobs release it.'); return; }
+            const fingerprint = JSON.stringify(payload);
+            if (previous && (previous.action !== 'submit' || previous.fingerprint !== fingerprint)) { setEngineMessage('An earlier job is awaiting confirmation. Check its status before creating another submission.'); return; }
+            const pending = previous || {jobId: crypto.randomUUID(), action: 'submit', fingerprint, queuedAt: Date.now()};
+            engineActionInFlight = true;
+            button.disabled = true;
+            button.classList.add('btn-loading');
+            button.innerText = 'CONFIRMING SUBMISSION…';
+            try {
+                await sendEngineJob(payload, pending);
+                if (!getPendingJob()) {
+                    document.getElementById('inventory-form').reset();
+                    const widget = uploadcare.Widget('#ucare-uploader');
+                    if (widget) widget.value(null);
+                    document.getElementById('staging-gallery').innerHTML = '';
+                    fColorInput.value = 'White (default)'; selectedColorText.innerText = 'White (default)';
+                    selectedColorSwatch.style.backgroundColor = '#ffffff'; selectedColorSwatch.style.backgroundImage = 'none';
+                }
+                showTab('dashboard');
+            } catch (err) {
+                setEngineMessage((err.name === 'AbortError' ? 'The request timed out.' : err.message) + ' Your Job ID is saved. Check status or resend the same submission safely.');
+            } finally {
+                engineActionInFlight = false; button.disabled = false; document.getElementById('engine-resend').disabled = false; button.classList.remove('btn-loading');
+                button.innerText = getPendingJob() ? 'CHECK / RESEND SAME JOB' : 'Initialize Staging';
+            }
+        });
 
         async function uploadNewLogo() { 
             const ucareUrl = document.getElementById('ucare-logo-uploader').value; 
