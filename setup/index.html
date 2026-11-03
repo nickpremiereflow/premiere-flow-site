@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="/portal.js"></script>
     <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Secure Your Studio | Premiere Flow</title>
     
@@ -117,7 +119,7 @@
         </div>
         
         <div class="pwd-criteria">
-            <span class="crit-item" id="crit-len">8+ Chars</span>
+            <span class="crit-item" id="crit-len">12+ Chars</span>
             <span class="crit-item" id="crit-up">1 Upper</span>
             <span class="crit-item" id="crit-num">1 Number</span>
         </div>
@@ -134,13 +136,15 @@
 
     <script>
         let isPassStrong = false;
+        const setupToken = new URLSearchParams(location.search).get('token');
+        if (setupToken) history.replaceState(null, '', location.pathname);
 
         function validateForm() {
             const p1 = document.getElementById('pass1').value;
             const p2 = document.getElementById('pass2').value;
             const btn = document.getElementById('submit-btn');
 
-            const lenPass = p1.length >= 8;
+            const lenPass = p1.length >= 12 && p1.length <= 128;
             const upPass = /[A-Z]/.test(p1);
             const numSymPass = /[0-9!@#$%^&*()]/.test(p1);
 
@@ -169,62 +173,24 @@
         }
 
         async function submitSetup() {
-            const p1 = document.getElementById('pass1').value;
-            const p2 = document.getElementById('pass2').value;
+            const password = document.getElementById('pass1').value;
+            const confirmation = document.getElementById('pass2').value;
             const msg = document.getElementById('msg');
             const btn = document.getElementById('submit-btn');
             const spinner = document.getElementById('btn-spinner');
-            const token = new URLSearchParams(window.location.search).get('token');
-
-            if (!token) { 
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "Error: Invalid or Missing Token"; 
-                return; 
-            }
-
-            msg.style.color = "#555";
-            msg.innerText = "Securing Studio Assets...";
-            btn.disabled = true;
-            spinner.style.display = "inline-block";
-            
+            if (!setupToken) { msg.innerText = 'Open a new setup or reset link from your email.'; return; }
+            if (!isPassStrong || password !== confirmation) { msg.innerText = 'Check the password requirements and matching confirmation.'; return; }
+            btn.disabled = true; spinner.style.display = 'inline-block'; msg.innerText = 'Saving your password…';
             try {
-                const response = await fetch('https://hook.us2.make.com/1jhtjhiti621wbs45rfz6pqchyhx81u0', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        token: token, 
-                        password: p1,
-                        confirmPassword: p2 
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // Auto-cache credentials if Make returns the email
-                    if (data.email) {
-                        localStorage.setItem('pf_email', data.email);
-                        localStorage.setItem('pf_pass', p1);
-                    }
-
-                    msg.style.color = "#c5a059";
-                    msg.innerText = "Success. Studio Unlocked.";
-                    
-                    setTimeout(() => {
-                        window.location.href = "/login/";
-                    }, 2000);
-                } else {
-                    btn.disabled = false;
-                    spinner.style.display = "none";
-                    msg.style.color = "#ff4d4d";
-                    msg.innerText = "Error: Link Expired or Invalid";
-                }
-            } catch (err) { 
+                const result = await PF.request('/api/auth/reset-password', {token: setupToken, newPassword: password});
+                if (result?.status !== true) throw new Error('The password change was not confirmed.');
+                document.getElementById('pass1').value = ''; document.getElementById('pass2').value = '';
+                msg.style.color = '#c5a059'; msg.innerText = 'Password saved. Sign in to continue.';
+                setTimeout(() => location.replace('/login/'), 1500);
+            } catch (error) {
+                msg.style.color = '#ff4d4d'; msg.innerText = error.status === 400 ? 'The link may have expired or already been used. Request a new reset link from Login.' : error.message;
                 btn.disabled = false;
-                spinner.style.display = "none";
-                msg.style.color = "#ff4d4d";
-                msg.innerText = "Connection Error. Try Again."; 
-            }
+            } finally { spinner.style.display = 'none'; }
         }
     </script>
 </body>
