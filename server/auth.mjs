@@ -79,6 +79,19 @@ export function authOptions({ database, baseURL, secret, sendPasswordReset }) {
 
 export function createAuth(config) { return betterAuth(authOptions(config)); }
 
+// Resolve display identity from the same hashed, expiring token used by reset.
+// Never accept an email/account ID supplied by the setup page as authority.
+export async function setupIdentity(auth, token) {
+  const invalid = () => new HttpError(410,'This link has expired or already been used. Request a new link from Login.','INVALID_SETUP_LINK');
+  if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{24,128}$/.test(token)) throw invalid();
+  const context = await auth.$context;
+  const verification = await context.internalAdapter.findVerificationValue('reset-password:'+token);
+  if (!verification || new Date(verification.expiresAt).getTime() <= Date.now()) throw invalid();
+  const user = await context.internalAdapter.findUserById(verification.value);
+  if (!user) throw invalid();
+  return {email:user.email};
+}
+
 const publicRoutes = new Map([
   ['/api/auth/ok', 'GET'],
   ['/api/auth/get-session', 'GET'],

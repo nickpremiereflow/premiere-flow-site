@@ -12,7 +12,7 @@ export function deliveryService(database,bridge,baseURL,{applicationData=false}=
     if (link.origin!==origin || link.pathname!=='/setup/' || !link.searchParams.get('token')) throw new Error('Invalid setup destination');
     const result=await bridge('services',{
       action:'email',commandId:randomUUID(),email,subject:'Set your PremiereFlow password',
-      html:`<p>Hi ${escapeHtml(name||'there')},</p><p><a href="${escapeHtml(url)}">Set your PremiereFlow password</a></p><p>This link expires in 15 minutes and can be used once. If you did not request it, you can ignore this email.</p><p>PremiereFlow<br>info@premiereflow.com</p>`
+      html:`<p>Hi ${escapeHtml(name||'there')},</p><p>PremiereFlow account: <strong>${escapeHtml(email)}</strong></p><p><a href="${escapeHtml(url)}">Set your PremiereFlow password</a></p><p>Save this exact account email as the username in your password manager.</p><p>This link expires in 15 minutes and can be used once. If you did not request it, you can ignore this email.</p><p>PremiereFlow<br>info@premiereflow.com</p>`
     });
     if (result.delivery!=='sent') throw new Error('Email delivery was not confirmed');
   }

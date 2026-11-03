@@ -1,4 +1,4 @@
-import { isPublicAuthRoute, awaitResetDelivery } from './auth.mjs';
+import { isPublicAuthRoute, awaitResetDelivery, setupIdentity } from './auth.mjs';
 import { requireAccount, rejectForeignIdentity, JOB_ID_PATTERN } from './access.mjs';
 import { HttpError, json, onlyKeys, readJson, requireSameOrigin, safeError, shortText } from './http.mjs';
 
@@ -41,6 +41,13 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
     try {
       const url = new URL(request.url);
       const path = url.pathname.replace(/\/$/,'');
+      if (path === '/api/setup/context' && request.method === 'POST') {
+        requireSameOrigin(request,origin);
+        await repository.rateLimit('setup-context:'+request.headers.get('x-real-ip'),20,60);
+        const body = await readJson(request,1024);
+        onlyKeys(body,['token']);
+        return json(await setupIdentity(auth,body.token));
+      }
       if (path === '/api/stripe/webhook' && request.method === 'POST') {
         if (!payments) throw new HttpError(503,'Payment processing is not ready.');
         return await payments.webhook(request);
