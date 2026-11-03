@@ -18,7 +18,7 @@ function fixture() {
     prices:{retrieve:async id=>{const offer=Object.values(offers).find(value=>value.priceId===id);return {id,active:true,livemode:true,currency:'usd',unit_amount:offer.amount,...(offer.mode==='subscription'?{recurring:{interval:'month',interval_count:1}}:{})};}}
   };
   const store={recordPurchase:async ({purchase})=>{purchases.set(purchase.sessionId,purchase);},recordSubscription:async()=>{},recordFailure:async(...args)=>failures.push(args),receipt:async id=>receipts.get(id)};
-  const payments=createPayments({secretKey:'rk_live_controlled',webhookSecret:secret,accountId,live:true,catalog:offers,baseURL:'https://www.premiereflow.com',client,store,customers:{ensurePaid:async()=>{customerCalls++;return {accountId:'PF-Controlled'};}},deliver:async id=>{receipts.set(id,{ready:true,tier:'Partner Pack'});}});
+  const payments=createPayments({secretKey:'rk_live_controlled',webhookSecret:secret,accountId,live:true,catalog:offers,baseURL:'https://www.premiereflow.com',client,store,customers:{resolvePaidPurchase:async purchase=>{customerCalls++;return {accountId:purchase.accountId||'PF-Controlled'};},checkoutCustomer:async account=>{if(account.accountId!=='PF-Existing')throw new Error('Unexpected account');return 'cus_existing';}},deliver:async id=>{receipts.set(id,{ready:true,tier:'Partner Pack'});}});
   async function webhook(type='checkout.session.completed',id='evt_controlled',signatureValid=true) {
     const payload=JSON.stringify({id,type,livemode:true,data:{object:session}});
     const signature=Stripe.webhooks.generateTestHeaderString({payload,secret:signatureValid?secret:'wrong-secret'});
@@ -71,6 +71,8 @@ test('each existing public offer opens Stripe Checkout with explicit return rout
     assert.equal(input.success_url,'https://www.premiereflow.com/confirmation/?session_id={CHECKOUT_SESSION_ID}');
     assert.equal(input.cancel_url,'https://www.premiereflow.com/sign-up/?checkout=cancelled');
     assert.equal('payment_method_types' in input,false);
+    assert.match(input.integration_identifier,/^premiereflow_[a-z]{8}$/);
+    assert.equal('automatic_tax' in input,false);
   }
   await assert.rejects(f.payments.checkout('unrelated'),error=>error.status===400);
   f.client.accounts.retrieve=async()=>({id:'acct_wrong'});
@@ -104,4 +106,23 @@ test('Make tickets bind every engine input, including retry and email controls',
   const payload=makePayload('engine',{jobId:'controlled',expectedAttempt:1});
   assert.equal(payload.expectedAttempt,'1');assert.equal(payload.sendEmail,'true');assert.equal(payload.vehicleName,'');
   assert.throws(()=>makePayload('engine',{unknown:'unbound'}));
+});
+
+
+test('signed-in repeat Checkout uses a stable customer and server-owned account metadata',async()=>{
+  const f=fixture();
+  const account={accountId:'PF-Existing',userId:'existing-user',email:'owner@example.test'};
+  await f.payments.checkout('partner',account);
+  await f.payments.checkout('upgrade',account);
+  for(const input of f.checkoutRequests){
+    assert.equal(input.customer,'cus_existing');
+    assert.equal(input.metadata.accountId,'PF-Existing');
+    assert.equal('customer_creation' in input,false);
+    assert.equal('customer_email' in input,false);
+  }
+});
+
+test('verified session metadata is retained, while a payment-link client reference cannot select an account',()=>{
+  assert.equal(validatePaidSession({...session,metadata:{integration:'pfsecure',accountId:'PF-Existing'}},lines,offers,true).accountId,'PF-Existing');
+  assert.equal(validatePaidSession({...session,client_reference_id:'PF-Foreign'},lines,offers,true).accountId,null);
 });

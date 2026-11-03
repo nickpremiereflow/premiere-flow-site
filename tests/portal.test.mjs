@@ -9,7 +9,7 @@ import { fixture, origin } from './auth-fixture.mjs';
 const jobA='ee40b0c3-edb7-481a-8dae-003e51c40d33';
 const jobB='be40b0c3-edb7-481a-8dae-003e51c40d33';
 const freshJob='ce40b0c3-edb7-481a-8dae-003e51c40d33';
-async function portalFixture({applicationMode=false}={}) {
+async function portalFixture({applicationMode=false,payments}={}) {
   const f=await fixture();
   await f.setup(); await f.setup('account-b@example.test');
   const cookies={a:await f.signIn(),b:await f.signIn('account-b@example.test')};
@@ -42,7 +42,7 @@ async function portalFixture({applicationMode=false}={}) {
     return {success:true,status:audience==='engine'?'queued':undefined,jobId:payload.jobId};
   };
   const applicationData=applicationMode?{read:async account=>data[account.accountId],write:async(account,action,payload)=>{calls.push({audience:'neon',payload:{...payload,action,accountId:account.accountId}});return {success:true};}}:undefined;
-  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},applicationData,submissionsEnabled:true});
+  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},applicationData,payments,submissionsEnabled:true});
   const call=(path,{body,cookie=cookies.a,method=body?'POST':'GET',requestOrigin=origin}={})=>handler(new Request(origin+path,{
     method,headers:{...(cookie?{cookie}:{}),...(body?{'content-type':'application/json',origin:requestOrigin}:{}),'x-real-ip':'192.0.2.14'},body:body?JSON.stringify(body):undefined
   }));
@@ -162,6 +162,30 @@ test('a lost Make acknowledgement can still confirm delivery through the durable
   assert.equal((await bridge('services',{action:'email',commandId:'same-message'})).delivery,'sent');
 });
 
+test('protected Preview callback identity stays out of durable tickets and other workflows',async()=>{
+  const token='synthetic-short-lived-oidc-identity-for-tests';
+  let stored,wire,identityRequests=0;
+  const repo={issueTicket:async(a,p)=>{stored=p;return {token:'one-use-ticket',hash:'hash',send:true};},ticketResult:async()=>({status:200,body:{success:true,delivery:'sent'}})};
+  const bridge=makeBridge(repo,{services:'https://hook.us2.make.com/controlled',account:'https://hook.us2.make.com/controlled'},async(url,request)=>{wire=JSON.parse(request.body);return Response.json({success:true});},{callbackAuthorization:async()=>{identityRequests++;return token;}});
+  await bridge('services',{action:'email',commandId:'preview-identity'});
+  assert.equal(wire.callbackOidcToken,token);
+  assert.equal(JSON.stringify(stored).includes(token),false);
+  await bridge('account',{action:'read'});
+  assert.equal('callbackOidcToken' in wire,false);
+  assert.equal(identityRequests,1);
+  repo.issueTicket=async()=>({hash:'hash',send:false});
+  await bridge('services',{action:'email',commandId:'preview-identity'});
+  assert.equal(identityRequests,1);
+});
+
+test('missing protected callback identity fails before sending an email request',async()=>{
+  let sends=0;
+  const repo={issueTicket:async()=>({token:'one-use-ticket',hash:'hash',send:true})};
+  const bridge=makeBridge(repo,{services:'https://hook.us2.make.com/controlled'},async()=>{sends++;},{callbackAuthorization:async()=>undefined});
+  await assert.rejects(bridge('services',{action:'email'}),error=>error.status===503);
+  assert.equal(sends,0);
+});
+
 
 test('Neon account path keeps session ownership, preserves empty accounts, and never calls the legacy bridge',async()=>{
   const f=await portalFixture({applicationMode:true});
@@ -180,5 +204,18 @@ test('Neon account path keeps session ownership, preserves empty accounts, and n
   assert.deepEqual(f.calls,[{audience:'neon',payload:{newName:'Verified owner',action:'update_name',accountId:'PF-A'}}]);
   f.data['PF-A']={success:false};
   assert.equal((await f.call('/api/account')).status,503);
+  f.database.close();
+});
+
+
+test('Checkout owner comes from the session and rejects a caller-supplied account',async()=>{
+  const received=[];
+  const f=await portalFixture({payments:{checkout:async(offer,account)=>{received.push({offer,account});return Response.json({success:true});}}});
+  assert.equal((await f.call('/api/checkout',{body:{offer:'partner'}})).status,200);
+  assert.equal(received[0].account.accountId,'PF-A');
+  assert.equal((await f.call('/api/checkout',{body:{offer:'partner',accountId:'PF-B'}})).status,400);
+  assert.equal(received.length,1);
+  assert.equal((await f.call('/api/checkout',{cookie:'',body:{offer:'upgrade'}})).status,200);
+  assert.equal(received[1].account,null);
   f.database.close();
 });
