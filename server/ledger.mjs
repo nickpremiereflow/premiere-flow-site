@@ -8,8 +8,9 @@ export function entitlement(customer,purchases,subscriptions,catalog,now=Date.no
   if (!Number.isSafeInteger(total) || total<0) throw new Error('Credit total is invalid');
   const latest=valid.filter(purchase=>purchase.credits>0).sort((a,b)=>Date.parse(b.paid_at)-Date.parse(a.paid_at))[0];
   const latestOffer=Object.values(catalog).find(offer=>offer.priceId===latest?.price_id);
-  const unlimited=active||customer.baseline_tier==='Unlimited';
-  return {totalCredits:unlimited?'Unlimited':String(total),tier:unlimited?'Unlimited':latestOffer?.tier||customer.baseline_tier};
+  // A migrated plan label is history, not proof of a paid recurring period.
+  const fallbackTier=customer.baseline_tier==='Unlimited'?'No active subscription':customer.baseline_tier;
+  return {totalCredits:active?'Unlimited':String(total),tier:active?'Unlimited':latestOffer?.tier||fallbackTier};
 }
 
 export function paymentLedger(database,bridge,catalog,{applicationData=false}={}) {
