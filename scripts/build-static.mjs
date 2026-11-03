@@ -7,4 +7,9 @@ const target=resolve('public');
 await rm(target,{recursive:true,force:true});
 await mkdir(target,{recursive:true});
 for(const file of publicFiles){await stat(file);await cp(file,resolve(target,file),{recursive:true});}
+// Temporary acceptance UI is never shipped by a Production build.
+if (process.env.VERCEL_ENV==='preview' && process.env.VERCEL_GIT_COMMIT_REF==='codex/secure-customer-access') {
+  await mkdir(resolve(target,'preview-checks'),{recursive:true});
+  await cp('tests/preview-acceptance.html',resolve(target,'preview-checks/index.html'));
+}
 console.log('Public site built. Server code and secrets excluded.');
