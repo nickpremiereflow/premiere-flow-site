@@ -4,7 +4,7 @@
     <script src="/portal.js"></script>
     <meta charset="UTF-8">
     <meta name="referrer" content="no-referrer">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Your Studio | Premiere Flow</title>
     
     <link rel="icon" type="image/png" href="../premiereflowfavicon.png">
@@ -58,6 +58,11 @@
             transition: 0.3s;
         }
         input:focus { border-color: var(--accent-gold); outline: none; }
+        .account-label { display:block; color:#aaa; text-align:left; font-size:12px; }
+        #setup-email { width:100%; box-sizing:border-box; border:1px solid #333; border-radius:8px; padding:14px; margin:8px 0 18px; background:#151515; color:#fff; font-size:16px; }
+        .login-card { box-sizing:border-box; }
+        #msg { line-height:1.5; height:auto; }
+        @media(max-width:480px) { body.login-body { height:auto; min-height:100svh; padding:20px 14px; box-sizing:border-box; } .login-card { padding:28px 20px; } }
         ::placeholder { color: #ffffff; opacity: 0.2; transition: opacity 0.3s; }
 
         /* PASSWORD METER */
@@ -101,7 +106,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #msg { margin-top: 25px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; height: 14px; }
+        #msg { margin-top: 25px; font-size: 12px; font-weight: 600; line-height:1.5; height:auto; }
     </style>
 </head>
 <body class="login-body">
@@ -110,9 +115,12 @@
         <img src="../logo.png" style="width: 160px; margin-bottom: 40px; filter: brightness(1);">
         
         <h2>Set Password</h2>
-        <span class="sub-text">Initialize Studio Credentials</span>
+        <span class="sub-text">Secure your PremiereFlow account</span>
+        <form id="setup-form">
+        <label class="account-label" for="setup-email">Account email · save this username</label>
+        <input type="email" id="setup-email" name="username" autocomplete="username" readonly aria-describedby="msg">
         
-        <input type="password" id="pass1" placeholder="New Password" oninput="validateForm()">
+        <input type="password" id="pass1" name="password" autocomplete="new-password" aria-label="New password" placeholder="New Password" oninput="validateForm()" disabled>
         
         <div class="pwd-meter-container">
             <div class="pwd-meter-fill" id="pwd-fill"></div>
@@ -124,20 +132,37 @@
             <span class="crit-item" id="crit-num">1 Number</span>
         </div>
 
-        <input type="password" id="pass2" placeholder="Confirm Password" oninput="validateForm()">
+        <input type="password" id="pass2" name="password_confirmation" autocomplete="new-password" aria-label="Confirm password" placeholder="Confirm Password" oninput="validateForm()" disabled>
         
-        <button class="btn-main" id="submit-btn" disabled onclick="submitSetup()">
+        <button type="submit" class="btn-main" id="submit-btn" disabled>
             <span>Finish Setup</span>
             <div id="btn-spinner" class="spinner"></div>
         </button>
+        </form>
         
         <p id="msg"></p>
     </div>
 
     <script>
         let isPassStrong = false;
+        let setupIdentityReady = false;
         const setupToken = new URLSearchParams(location.search).get('token');
         if (setupToken) history.replaceState(null, '', location.pathname);
+        document.getElementById('setup-form').addEventListener('submit',event=>{event.preventDefault();submitSetup();});
+        (async()=>{
+            const msg=document.getElementById('msg');
+            if (!setupToken) { msg.textContent='Open a new setup or reset link from your email.'; return; }
+            msg.textContent='Checking your setup link…';
+            try {
+                const identity=await PF.request('/api/setup/context',{token:setupToken});
+                if (!identity?.email) throw new Error('The account could not be confirmed.');
+                document.getElementById('setup-email').value=identity.email;
+                document.getElementById('pass1').disabled=false;
+                document.getElementById('pass2').disabled=false;
+                setupIdentityReady=true;
+                msg.textContent='Use this account email when saving your password.';
+            } catch(error) { msg.textContent=error.message; }
+        })();
 
         function validateForm() {
             const p1 = document.getElementById('pass1').value;
@@ -165,7 +190,7 @@
             else if (score === 2) fill.style.backgroundColor = '#ffa64d'; 
             else if (score === 3) fill.style.backgroundColor = '#c5a059'; 
 
-            if (isPassStrong && p1 === p2 && p1 !== "") {
+            if (setupIdentityReady && isPassStrong && p1 === p2 && p1 !== "") {
                 btn.disabled = false;
             } else {
                 btn.disabled = true;
@@ -178,7 +203,7 @@
             const msg = document.getElementById('msg');
             const btn = document.getElementById('submit-btn');
             const spinner = document.getElementById('btn-spinner');
-            if (!setupToken) { msg.innerText = 'Open a new setup or reset link from your email.'; return; }
+            if (!setupToken || !setupIdentityReady) { msg.innerText = 'Open a new setup or reset link from your email.'; return; }
             if (!isPassStrong || password !== confirmation) { msg.innerText = 'Check the password requirements and matching confirmation.'; return; }
             btn.disabled = true; spinner.style.display = 'inline-block'; msg.innerText = 'Saving your password…';
             try {
