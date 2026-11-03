@@ -72,28 +72,24 @@ function loadUniversalHeader() {
     syncAuthState();
 }
 
-function syncAuthState() {
-    const savedEmail = localStorage.getItem('pf_email');
-    
-    // JS simply checks if logged in, and applies a master class to the body.
-    if (savedEmail) {
-        document.body.classList.add('state-logged-in');
-        document.body.classList.remove('state-logged-out');
-        
-        // Push email text to all display locations dynamically
-        document.querySelectorAll('.global-email-display').forEach(el => {
-            el.innerText = savedEmail.toLowerCase();
-        });
-    } else {
-        document.body.classList.add('state-logged-out');
-        document.body.classList.remove('state-logged-in');
-    }
+async function syncAuthState() {
+    try { localStorage.removeItem('pf_pass'); localStorage.removeItem('pf_email'); sessionStorage.removeItem('pf_pass'); } catch {}
+    let user = null;
+    try {
+        const response = await fetch('/api/auth/get-session', {credentials:'same-origin', cache:'no-store'});
+        if (response.ok) user = (await response.json())?.user || null;
+    } catch {}
+    document.body.classList.toggle('state-logged-in', Boolean(user));
+    document.body.classList.toggle('state-logged-out', !user);
+    document.querySelectorAll('.global-email-display').forEach(element => { element.innerText = user?.email || ''; });
 }
 
-function signOut() {
-    localStorage.removeItem('pf_email');
-    localStorage.removeItem('pf_pass');
-    window.location.href = '/login/';
+async function signOut() {
+    try {
+        const response = await fetch('/api/auth/sign-out', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'},body:'{}'});
+        if (!response.ok || (await response.json())?.success === false) throw new Error('Sign-out was not confirmed.');
+        location.replace('/login/');
+    } catch { alert('Sign-out could not be confirmed. Please check your connection and try again.'); }
 }
 
 function toggleMobileMenu(event) {
