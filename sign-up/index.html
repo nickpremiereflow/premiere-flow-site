@@ -132,6 +132,7 @@
 </head>
 <body>
 
+    <script src="/portal.js"></script>
     <script src="/header.js"></script>
 
     <div id="transition-overlay">
@@ -152,6 +153,7 @@
 
     <div class="signup-form-container">
         <span class="section-label">Select Plan to Secure Staging</span>
+        <p id="checkout-status" role="status" aria-live="polite"></p>
         
         <div class="pkg-card">
             <div class="pkg-header-row">
@@ -213,12 +215,27 @@
     </footer>
 
     <script>
-        function handleSelection(plan) {
+        let checkoutPending = false;
+        if (new URLSearchParams(location.search).get('checkout') === 'cancelled') document.getElementById('checkout-status').textContent = 'Checkout was cancelled. You can choose a plan when you are ready.';
+        async function handleSelection(plan) {
+            if (checkoutPending) return;
             const brandingCheck = document.getElementById('branding-check');
             const brandingChecked = brandingCheck ? brandingCheck.checked : false;
-            let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS (W/ CUSTOMIZATION)" : (plan === 'unlimited' ? "THE UNLIMITED PACK" : plan.toUpperCase());
-            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
-            alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
+            const offer = plan === 'upgrade' && brandingChecked ? 'branding' : plan;
+            const status = document.getElementById('checkout-status');
+            checkoutPending = true;
+            document.querySelectorAll('.select-btn').forEach(button => button.disabled = true);
+            status.textContent = 'Opening secure checkout…';
+            try {
+                const result = await PF.request('/api/checkout', {offer});
+                const destination = new URL(result.url);
+                if (result.success !== true || destination.protocol !== 'https:' || destination.hostname !== 'checkout.stripe.com') throw new Error('Checkout could not be confirmed. Please try again.');
+                location.assign(destination.href);
+            } catch (error) {
+                status.textContent = error.message;
+                checkoutPending = false;
+                document.querySelectorAll('.select-btn').forEach(button => button.disabled = false);
+            }
         }
     </script>
 </body>
