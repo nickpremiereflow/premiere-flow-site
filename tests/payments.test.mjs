@@ -94,6 +94,19 @@ test('Unlimited requires a paid invoice period and expires without granting extr
   assert.equal(entitlement(customer,[{credits:1,price_id:offers.branding.priceId,paid_at:'2026-11-01'}],[],offers).totalCredits,'11');
 });
 
+test('a legacy Unlimited label cannot bypass the verified subscription expiry',()=>{
+  const customer={baseline_total:2,baseline_tier:'Unlimited'};
+  const now=Date.parse('2026-11-03T12:00:00Z');
+  assert.deepEqual(entitlement(customer,[],[],offers,now),{totalCredits:'2',tier:'No active subscription'});
+  for(const status of ['active','past_due','canceled']) {
+    assert.equal(entitlement(customer,[],[{status,paid_through:new Date(now+60000).toISOString()}],offers,now).totalCredits,'Unlimited');
+    assert.equal(entitlement(customer,[],[{status,paid_through:new Date(now-1).toISOString()}],offers,now).totalCredits,'2');
+  }
+  for(const status of ['incomplete','incomplete_expired','unpaid','paused']) {
+    assert.equal(entitlement(customer,[],[{status,paid_through:new Date(now+60000).toISOString()}],offers,now).totalCredits,'2');
+  }
+});
+
 test('legacy migration preserves total credits and identity without importing passwords',()=>{
   const account=validateLegacyAccount({success:true,found:true,count:1,accountId:'PF-TEST-999',email:'existing@example.test',name:'Existing',tier:'Partner Pack',totalCredits:'10.00'},'existing@example.test');
   assert.equal(account.baselineTotal,10);assert.equal(account.accountId,'PF-TEST-999');
