@@ -1,6 +1,7 @@
 <!DOCTYPE html> 
 <html lang="en"> 
 <head> 
+    <script src="/portal.js"></script>
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Account Dashboard | Premiere Flow</title> 
@@ -283,7 +284,7 @@
         <div class="header-right"> 
             <div class="user-info-stack desktop-auth-el"> 
                 <span class="user-email" id="header-email">---</span> 
-                <span class="user-credits" id="header-credits">0 LISTINGS REMAINING</span> 
+                <span class="user-credits" id="header-credits">LOADING CREDITS…</span>
                 <span onclick="signOut()" class="log-out-text" style="font-size: 9px; margin-top: 2px;">Log Out</span> 
             </div> 
             <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu(event)">☰</button> 
@@ -308,7 +309,7 @@
 
         <section id="view-dashboard" class="view-section active"> 
             <div style="margin-bottom: 40px;"> 
-                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()">New Listing</button> 
+                <button class="btn-main btn-gold" id="action-btn" onclick="openSubmit()" disabled>Loading account…</button>
                 
                 <div id="upgrade-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; border-radius: 8px; text-align: center;"> 
                     <p style="color: #ff4d4d; font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px;">Out of Credits</p> 
@@ -396,14 +397,15 @@
                     <form id="support-form"> 
                         <div class="form-group"> 
                             <label>Subject</label> 
-                            <input type="text" id="sup-subject" required placeholder="e.g. Question about my listing"> 
+                            <input type="text" id="sup-subject" maxlength="160" required placeholder="e.g. Question about my listing">
                         </div> 
                         <div class="form-group"> 
                             <label>Inquiry</label> 
-                            <textarea id="sup-inquiry" required placeholder="How can we help you?" style="min-height: 120px; resize: vertical;"></textarea> 
+                            <textarea id="sup-inquiry" maxlength="5000" required placeholder="How can we help you?" style="min-height: 120px; resize: vertical;"></textarea>
                         </div> 
                         <button type="submit" id="support-submit-btn" class="btn-main btn-gold">Send Message</button> 
                     </form> 
+                    <p id="support-error" role="status" aria-live="polite"></p>
                 </div> 
                 <div id="support-confirmation" style="display: none; text-align: center; padding: 40px 20px;"> 
                     <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Message Sent</h3> 
@@ -506,11 +508,14 @@
     </footer> 
 
     <script> 
+        let currentUser = null;
         let userData = { listings: [], history: [] }; 
-        const dataFetchWebhook = 'https://hook.us2.make.com/68lredtt2kjjq3e5qx4ycjevgm4zr3qa';  
+        let dashboardLoaded = false;
+        let dashboardAvailable = false;
+        const dataFetchWebhook = '/api/account';
 
 
-        const submissionWebhook = 'https://hook.us2.make.com/2aojg4pbrggk3pzny75cnl5wcsiq9m5p';
+        const submissionWebhook = '/api/jobs';
         const JOB_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         const ACTIVE_JOB_STATES = new Set(['PROCESSING', 'RETRYING']);
         const FAILED_JOB_STATES = new Set(['FAILED', 'RETRY_REQUIRED']);
@@ -524,10 +529,48 @@
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
-        function getListings() {
-            return Array.isArray(userData.listings) && userData.listings.length ? userData.listings : (Array.isArray(userData.history) ? userData.history : []);
+        function safeAssetUrl(value) {
+            if (typeof value !== 'string' || /[\u0000-\u001f\u007f]/.test(value)) return '';
+            try {
+                const url = new URL(value.trim());
+                return url.protocol === 'https:' && !url.username && !url.password ? url.href : '';
+            } catch { return ''; }
         }
-        function pendingJobKey() { return 'pf_pending_job:' + (localStorage.getItem('pf_email') || '').toLowerCase(); }
+        function getListings() {
+            return Array.isArray(userData.listings) ? userData.listings : (Array.isArray(userData.history) ? userData.history : []);
+        }
+        function validateDashboardData(data) {
+            const accountId = data?.accountId || data?.accountID;
+            if (!data || typeof data !== 'object' || data.success !== true || typeof accountId !== 'string' || !accountId.trim()) throw new Error('Account status was not confirmed');
+            const credits = data.credits;
+            const unlimited = String(credits).trim().toUpperCase() === 'UNLIMITED';
+            const numeric = (typeof credits === 'number' || (typeof credits === 'string' && /^\d+$/.test(credits.trim()))) && Number.isSafeInteger(Number(credits)) && Number(credits) >= 0;
+            if (!unlimited && !numeric) throw new Error('Credit balance was not confirmed');
+            const listings = data.listings ?? data.history;
+            if (!Array.isArray(listings) || listings.some(item => !item || typeof item !== 'object' || Array.isArray(item))) throw new Error('Listing history was not confirmed');
+            return {...data, credits: unlimited ? 'Unlimited' : Number(credits), listings: listings.map(item => ({...item, rowId: item.rowId || item.__rowNumber__}))};
+        }
+        function showAccountUnavailable() {
+            const label = dashboardLoaded ? 'Last confirmed balance: ' + (userData.credits === 'Unlimited' ? 'Unlimited' : userData.credits) : 'CREDITS UNAVAILABLE';
+            for (const id of ['header-credits', 'mobile-credits-display', 'profile-credits-display']) {
+                const element = document.getElementById(id);
+                if (element) element.innerText = label;
+            }
+            const action = document.getElementById('action-btn');
+            action.disabled = true;
+            action.innerText = 'Refresh account to submit';
+            document.getElementById('upgrade-prompt').style.display = 'none';
+            document.getElementById('low-credit-prompt').style.display = 'none';
+            renderSubmissions();
+            renderNotifications();
+        }
+        async function confirmMutation(response) {
+            if (!response.ok) throw new Error('The change could not be saved. Please try again.');
+            const result = await response.json();
+            if (result?.success !== true) throw new Error('The server did not confirm the change. Please refresh before trying again.');
+            return result;
+        }
+        function pendingJobKey() { return 'pf_pending_job:' + ((currentUser?.email || '') || '').toLowerCase(); }
         function getPendingJob() {
             try { const p = JSON.parse(localStorage.getItem(pendingJobKey()) || 'null'); return p && JOB_ID_PATTERN.test(p.jobId) ? p : null; }
             catch { return null; }
@@ -545,7 +588,7 @@
             const attempts = Number(item.attemptCount || 0);
             const retryAt = item.nextRetryAt ? Date.parse(item.nextRetryAt) : 0;
             const validTiming = !item.nextRetryAt || Number.isFinite(retryAt);
-            const hasCredit = userData.tier === 'Unlimited' || Number(userData.credits) > 0;
+            const hasCredit = dashboardAvailable && (userData.tier === 'Unlimited' || Number(userData.credits) > 0);
             return {attempts, retryAt, allowed: JOB_ID_PATTERN.test(item.jobId || '') && FAILED_JOB_STATES.has(jobState(item)) && attempts < 3 && validTiming && retryAt <= now && hasCredit && !engineActionInFlight && !getPendingJob()};
         }
         function showTrackedJobStatus() {
@@ -576,7 +619,7 @@
                 setEngineMessage('Automatic status checks paused. Check job status before submitting again; the existing Job ID is preserved.');
                 return;
             }
-            if (!document.hidden) enginePollTimer = setTimeout(() => fetchDashboardData(localStorage.getItem('pf_email')), 15000);
+            if (!document.hidden) enginePollTimer = setTimeout(() => fetchDashboardData((currentUser?.email || '')), 15000);
         }
         async function sendEngineJob(payload, pending) {
             // Persist before sending, so a timeout or reload reuses the same identity.
@@ -584,9 +627,9 @@
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 25000);
             try {
-                const form = new FormData();
-                Object.entries({...payload, jobId: pending.jobId, action: pending.action, ...(pending.action === 'retry' ? {expectedAttempt: pending.previousAttempt} : {})}).forEach(([key, value]) => form.append(key, value ?? ''));
-                const res = await fetch(submissionWebhook, {method: 'POST', body: form, signal: controller.signal});
+                const {email, accountId, accountID, ...jobFields} = payload;
+                const body = {...jobFields, jobId: pending.jobId, action: pending.action, ...(pending.action === 'retry' ? {expectedAttempt: pending.previousAttempt} : {})};
+                const res = await fetch(submissionWebhook, {method: 'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body), signal:controller.signal});
                 const text = await res.text();
                 let ack = null;
                 try { ack = JSON.parse(text); } catch {}
@@ -595,7 +638,7 @@
                 if (!ack && text.trim() !== 'Accepted') throw new Error('The service did not acknowledge this job. Check status before retrying.');
                 setEngineMessage('Submission queued. Confirming your existing Job ID…');
                 enginePollStarted = Date.now();
-                await fetchDashboardData(payload.email);
+                await fetchDashboardData(currentUser.email);
             } finally { clearTimeout(timeout); scheduleEnginePoll(); }
         }
         function resetAcceptedSubmissionForm() {
@@ -610,8 +653,8 @@
         async function resendPendingJob() {
             const pending = getPendingJob();
             if (!pending || engineActionInFlight) return;
-            const payload = pending.action === 'submit' ? JSON.parse(pending.fingerprint) : {email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID};
-            if (payload.email !== localStorage.getItem('pf_email') || payload.accountId !== (userData.accountId || userData.accountID)) { setEngineMessage('Refresh your account before resending the saved job.'); return; }
+            const payload = pending.action === 'submit' ? JSON.parse(pending.fingerprint) : {email: (currentUser?.email || ''), accountId: userData.accountId || userData.accountID};
+            if ((payload.email && payload.email !== currentUser?.email) || (payload.accountId && payload.accountId !== (userData.accountId || userData.accountID))) { setEngineMessage('Refresh your account before resending the saved job.'); return; }
             engineActionInFlight = true;
             document.getElementById('engine-resend').disabled = true;
             try { await sendEngineJob(payload, pending); }
@@ -625,13 +668,18 @@
             engineActionInFlight = true;
             renderSubmissions();
             try {
-                await sendEngineJob({email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID}, {jobId, action: 'retry', previousAttempt: Number(item.attemptCount || 0), queuedAt: Date.now()});
+                await sendEngineJob({email: (currentUser?.email || ''), accountId: userData.accountId || userData.accountID}, {jobId, action: 'retry', previousAttempt: Number(item.attemptCount || 0), queuedAt: Date.now()});
             } catch (err) { setEngineMessage((err.name === 'AbortError' ? 'The request timed out.' : err.message) + ' Your Job ID is saved; no new submission will be created.'); }
             finally { engineActionInFlight = false; document.getElementById('engine-resend').disabled = false; renderSubmissions(); }
         }
-        document.getElementById('engine-refresh').addEventListener('click', () => { enginePollStarted = Date.now(); fetchDashboardData(localStorage.getItem('pf_email')); });
-        document.getElementById('submissions-list').addEventListener('click', event => { const button = event.target.closest('[data-retry-job]'); if (button && !button.disabled) retryJob(button.dataset.retryJob); });
-        document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(enginePollTimer); else { enginePollStarted = Date.now(); fetchDashboardData(localStorage.getItem('pf_email')); } });
+        document.getElementById('engine-refresh').addEventListener('click', () => { enginePollStarted = Date.now(); fetchDashboardData((currentUser?.email || '')); });
+        document.getElementById('submissions-list').addEventListener('click', event => {
+            const retryButton = event.target.closest('[data-retry-job]');
+            if (retryButton && !retryButton.disabled) retryJob(retryButton.dataset.retryJob);
+            const renameButton = event.target.closest('[data-rename-index]');
+            if (renameButton && !renameButton.disabled) editListingName(Number(renameButton.dataset.renameIndex), renameButton.dataset.renameJob);
+        });
+        document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(enginePollTimer); else { enginePollStarted = Date.now(); fetchDashboardData((currentUser?.email || '')); } });
 
         // UPLOADCARE REACTIVE GROUP MANAGEMENT 
         let currentFileUUIDs = []; 
@@ -739,12 +787,19 @@
             }, 300);  
         } 
 
-        window.onload = function() { 
-            const savedEmail = localStorage.getItem('pf_email'); 
-            const savedPass = localStorage.getItem('pf_pass'); 
-            if (!savedEmail || !savedPass) { window.location.href = '/login/'; return; } 
+        window.onload = async function() {
+            try {
+                currentUser = await PF.getSession();
+                if (!currentUser) { location.replace('/login/'); return; }
+            } catch {
+                document.body.style.display = 'block';
+                document.getElementById('transition-overlay').style.display = 'none';
+                setEngineMessage('Your session could not be verified. Refresh the page to try again.');
+                showAccountUnavailable();
+                return;
+            }
             document.body.style.display = 'block'; 
-            fetchDashboardData(savedEmail); 
+            fetchDashboardData(currentUser.email);
             setTimeout(() => {  
                 document.getElementById('transition-overlay').style.opacity = '0'; 
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800); 
@@ -799,26 +854,30 @@
         }; 
 
         async function fetchDashboardData(email) {
-            if (!email) return false;
+            if (!currentUser) return false;
             if (dashboardRequest) return dashboardRequest;
             dashboardRequest = (async () => {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 20000);
                 try {
-                    const res = await fetch(dataFetchWebhook, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email}), signal: controller.signal});
+                    const res = await fetch(dataFetchWebhook, {credentials: 'same-origin', cache: 'no-store', signal: controller.signal});
+                    if (res.status === 401) { location.replace('/login/'); throw new Error('Session expired'); }
                     if (!res.ok) throw new Error('Status service unavailable');
-                    const data = await res.json();
-                    if (data.success === false || !(data.accountId || data.accountID)) throw new Error('Account status was not confirmed');
-                    for (const key of ['listings', 'history']) if (Array.isArray(data[key])) data[key] = data[key].map(item => ({...item, rowId: item.rowId || item.__rowNumber__}));
+                    const data = validateDashboardData(await res.json());
                     const snapshot = JSON.stringify(data);
+                    const wasUnavailable = !dashboardAvailable;
                     userData = {...userData, ...data};
-                    if (snapshot !== lastDashboardSnapshot) { lastDashboardSnapshot = snapshot; refreshUI(); }
+                    dashboardLoaded = true;
+                    dashboardAvailable = true;
+                    if (wasUnavailable || snapshot !== lastDashboardSnapshot) { lastDashboardSnapshot = snapshot; refreshUI(); }
                     else if (getListings().some(item => FAILED_JOB_STATES.has(jobState(item)))) renderSubmissions();
                     if (document.getElementById('engine-message').textContent.startsWith('Status could not be refreshed.')) setEngineMessage('Status updated.');
                     reconcilePendingJob();
                     return true;
                 } catch (err) {
                     console.error('Dashboard status refresh failed', err);
+                    dashboardAvailable = false;
+                    showAccountUnavailable();
                     setEngineMessage('Status could not be refreshed. Your existing listings and Job ID are preserved. Check status before submitting again.');
                     return false;
                 } finally { clearTimeout(timeout); }
@@ -846,6 +905,10 @@
 
         function renderNotifications() { 
             const list = document.getElementById('notif-list'); 
+            if (!dashboardLoaded) {
+                list.innerHTML = '<div class="card"><p>Activity is unavailable. Use Check job status to try again.</p></div>';
+                return;
+            }
             const validHistory = getListings().filter(item => item && (item.vehicle || item.name)); 
             
             if (validHistory.length === 0) { 
@@ -855,21 +918,21 @@
 
             let notifs = []; 
             validHistory.forEach(item => { 
-                const name = item.vehicle || item.name || 'Listing'; 
+                const name = escapeHtml(item.vehicle || item.name || 'Listing');
                 const date = new Date(item.date).getTime() || 0; 
                 const status = (item.status || '').toUpperCase(); 
                 
                 notifs.push({ 
                     text: `<b>${name}:</b> Submission received. Processing started.`, 
                     time: date, 
-                    formattedTime: formatDate(item.date) 
+                    formattedTime: escapeHtml(formatDate(item.date))
                 }); 
 
                 if (status === 'COMPLETED') { 
                     notifs.push({ 
                         text: `<b>${name}:</b> Staging complete. High-res assets ready for download.`, 
                         time: date + 1000,  
-                        formattedTime: formatDate(item.date) 
+                        formattedTime: escapeHtml(formatDate(item.date))
                     }); 
                 } 
             }); 
@@ -890,7 +953,7 @@
         } 
 
         function refreshUI() { 
-            const currentEmail = localStorage.getItem('pf_email') || 'Authorized'; 
+            const currentEmail = (currentUser?.email || '') || 'Authorized';
             document.getElementById('header-email').innerText = currentEmail.toLowerCase(); 
             if(document.getElementById('mobile-email-display')) { 
                 document.getElementById('mobile-email-display').innerText = currentEmail.toLowerCase(); 
@@ -901,7 +964,7 @@
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED'; 
             const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER')); 
-            const creditsNum = Math.round(userData.credits || 0); 
+            const creditsNum = Number(userData.credits);
 
             const profileCreditsDisplay = document.getElementById('profile-credits-display'); 
             if (profileCreditsDisplay) { 
@@ -969,11 +1032,15 @@
             const actualImg = document.getElementById('actual-logo-img'); 
             const noLogoText = document.getElementById('no-logo-text'); 
             
-            if(userData.logo && userData.logo !== "" && userData.logo !== "undefined") { 
-                actualImg.src = userData.logo; 
+            const logoUrl = safeAssetUrl(userData.logo);
+            if (logoUrl) {
+                actualImg.src = logoUrl;
                 actualImg.style.display = 'block'; 
                 noLogoText.style.display = 'none'; 
             } else { 
+                actualImg.removeAttribute('src');
+                actualImg.style.display = 'none';
+                noLogoText.style.display = 'block';
                 noLogoText.innerText = 'NO LOGO SET'; 
             } 
 
@@ -992,18 +1059,25 @@
                 return {html: galleries.map(item => item.html).join(''), thumb: galleries.find(item => item.thumb)?.thumb || ''};
             }
             if (typeof urlsRaw !== 'string') return {html: '<p>No images available</p>', thumb: ''};
-            let rawUrl = urlsRaw.trim();
-            if (!/^https:\/\//i.test(rawUrl)) return {html: '<p>Asset link unavailable</p>', thumb: ''}; 
+            if (urlsRaw.includes(',')) {
+                const galleries = urlsRaw.split(',').filter(value => value.trim()).map(value => parseGalleryUrls(value, listingName));
+                return {html: galleries.map(item => item.html).join(''), thumb: galleries.find(item => item.thumb)?.thumb || ''};
+            }
+            let rawUrl = safeAssetUrl(urlsRaw);
+            if (!rawUrl) return {html: '<p>Asset link unavailable</p>', thumb: ''};
+            const parsedUrl = new URL(rawUrl);
 
-            if (rawUrl.includes('ucare')) { 
-                if (rawUrl.includes('~')) { 
+            if (/(^|\.)ucarecdn\.com$|(^|\.)ucarecd\.net$/.test(parsedUrl.hostname)) {
+                const groupMatch = parsedUrl.pathname.match(/^\/([0-9a-f-]{36})~(\d+)\/$/i);
+                if (groupMatch && Number(groupMatch[2]) >= 1 && Number(groupMatch[2]) <= 100) {
+                    rawUrl = parsedUrl.origin + parsedUrl.pathname;
                     let groupBase = rawUrl.split('~')[0]; 
                     let countStr = rawUrl.split('~')[1].replace('/', ''); 
                     let count = parseInt(countStr); 
                     
                     for(let i = 0; i < count; i++) { 
                         let singleImgUrl = `${groupBase}~${count}/nth/${i}/`; 
-                        html += `<div class="gallery-item"><a href="${singleImgUrl}" target="_blank"><img src="${singleImgUrl}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`; 
+                        html += `<div class="gallery-item"><a href="${escapeHtml(singleImgUrl)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(singleImgUrl)}-/scale_crop/400x400/center/" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`;
                     } 
                     thumb = `${groupBase}~${count}/nth/0/-/scale_crop/400x400/center/`; 
                     
@@ -1011,7 +1085,7 @@
                     let zipUrl = `${rawUrl}archive/zip/${safeName}.zip`; 
 
                     html = `<div class="listing-gallery">${html}</div> 
-                            <a href="${zipUrl}" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`; 
+                            <a href="${escapeHtml(zipUrl)}" class="btn-split" style="text-align:center; text-decoration:none; display:block; margin-top:20px; background:var(--accent-gold); color:#000; font-size:11px;">Download All Assets (.zip)</a>`;
                     
                     return { html: html, thumb: thumb }; 
                 }  
@@ -1019,17 +1093,17 @@
                     let cleanUrl = rawUrl.endsWith('/') ? rawUrl : rawUrl + '/'; 
                     thumb = `${cleanUrl}-/scale_crop/400x400/center/`; 
                     html = `<div class="listing-gallery"> 
-                                <div class="gallery-item"><a href="${cleanUrl}" target="_blank"><img src="${thumb}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div> 
+                                <div class="gallery-item"><a href="${escapeHtml(cleanUrl)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(thumb)}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>
                             </div>`; 
                     return { html: html, thumb: thumb }; 
                 } 
             } 
             
-            if (rawUrl.includes('drive.google.com')) { 
-                const id = rawUrl.split('id=')[1] || rawUrl.split('/d/')[1]?.split('/')[0]; 
-                if (id) { 
-                    thumb = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`; 
-                    html = `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Google Drive Folder ↗</a></p>`; 
+            if (parsedUrl.hostname === 'drive.google.com') {
+                const id = parsedUrl.searchParams.get('id') || parsedUrl.pathname.split('/d/')[1]?.split('/')[0];
+                if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
+                    thumb = `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1000`;
+                    html = `<p style="padding:10px;"><a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Google Drive Folder ↗</a></p>`;
                     return { html: html, thumb: thumb }; 
                 } 
             } 
@@ -1038,11 +1112,11 @@
                 const urls = rawUrl.split(',').filter(u => u.trim() !== ""); 
                 thumb = urls[0].trim(); 
                 html = `<div class="listing-gallery">${urls.map(url => ` 
-                    <div class="gallery-item"><a href="${url.trim()}" target="_blank"><img src="${url.trim()}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`; 
+                    <div class="gallery-item"><a href="${escapeHtml(url.trim())}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(url.trim())}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;"></a></div>`).join('')}</div>`;
                 return { html: html, thumb: thumb }; 
             } 
 
-            return { html: `<p style="padding:10px;"><a href="${rawUrl}" target="_blank" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' }; 
+            return { html: `<p style="padding:10px;"><a href="${escapeHtml(rawUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-gold); text-decoration:none; font-size:12px; font-weight:800;">View Hosted Assets ↗</a></p>`, thumb: '' };
         } 
 
         function formatDate(dateStr) { 
@@ -1065,6 +1139,10 @@
 
         function renderSubmissions() { 
             const list = document.getElementById('submissions-list'); 
+            if (!dashboardLoaded) {
+                list.innerHTML = '<div class="card"><p>Your listings could not be loaded. Use Check job status to try again.</p></div>';
+                return;
+            }
             const validHistory = getListings().filter(item => item && (item.vehicle || item.name)).reverse(); 
             
             if(validHistory.length > 0) { 
@@ -1088,21 +1166,21 @@
                         stagedThumb = stagedData.thumb;  
                     } 
 
-                    let thumbSource = stagedThumb || origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'; 
+                    let thumbSource = safeAssetUrl(stagedThumb || origData.thumb || item.Thumbnail || item.thumbnail || item.THUMBNAIL) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
 
                     return ` 
                     <div class="listing-card"> 
                         <div class="listing-main-row"> 
                             <div class="listing-info-left"> 
-                                ${thumbSource ? `<img src="${thumbSource}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`} 
+                                ${thumbSource ? `<img src="${escapeHtml(thumbSource)}" class="listing-thumb">` : `<div class="listing-thumb-placeholder">PF</div>`}
                                 <div> 
                                     <p class="listing-title" id="name-text-${idx}">${escapeHtml(listingName)}</p> 
-                                    <span class="listing-date">Submitted: ${formatDate(item.date)}</span> 
+                                    <span class="listing-date">Submitted: ${escapeHtml(formatDate(item.date))}</span>
                                 </div> 
                             </div> 
                             <div class="listing-status-right"> 
                                 <span class="status-badge ${isComplete ? 'status-completed' : isFailed ? 'status-failed' : 'status-progress'}">${escapeHtml(rawStatus)}</span> 
-                                <button class="listing-menu-btn" onclick="editListingName(${idx}, '${item.rowId || item.id}')">⋮</button> 
+                                <button class="listing-menu-btn" data-rename-index="${idx}" data-rename-job="${escapeHtml(item.jobId || '')}" ${JOB_ID_PATTERN.test(item.jobId || '') ? '' : 'disabled'}>⋮</button>
                             </div> 
                         </div> 
                         ${jobDetails}
@@ -1120,25 +1198,29 @@
             } 
         } 
 
-        async function editListingName(index, rowId) { 
+        async function editListingName(index, jobId) {
             const nameEl = document.getElementById(`name-text-${index}`); 
             const currentName = nameEl.innerText; 
             const newName = await openCustomPrompt("Edit Vehicle Name or VIN", currentName, "e.g. 2024 Porsche 911"); 
 
             if (newName && newName.trim() !== "" && newName !== currentName) { 
-                nameEl.innerText = newName.toUpperCase(); 
                 try { 
-                    await fetch(dataFetchWebhook, { 
+                    const response = await fetch(dataFetchWebhook, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ 
                             action: 'rename_listing', 
-                            rowId: rowId, 
+                            jobId: jobId,
                             newName: newName, 
-                            email: localStorage.getItem('pf_email') 
                         }) 
                     }); 
-                } catch (err) { console.error("Rename failed", err); } 
+                    await confirmMutation(response);
+                    nameEl.innerText = newName.toUpperCase();
+                    await fetchDashboardData((currentUser?.email || ''));
+                } catch (err) {
+                    console.error('Rename failed', err);
+                    setEngineMessage('The listing name was not confirmed as saved. Refresh your account before trying again.');
+                }
             } 
         } 
 
@@ -1182,16 +1264,15 @@
             btn.innerText = 'SAVING...'; 
             
             try { 
-                await fetch(dataFetchWebhook, { 
+                const response = await fetch(dataFetchWebhook, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ 
                         action: 'update_name', 
-                        email: localStorage.getItem('pf_email'), 
-                        accountId: userData.accountId || userData.accountID, 
                         newName: newName 
                     }) 
                 }); 
+                await confirmMutation(response);
                 
                 userData.name = newName; 
                 btn.innerText = 'SAVED'; 
@@ -1221,16 +1302,15 @@
                 displayEl.innerText = "UPDATING..."; 
 
                 try { 
-                    await fetch(dataFetchWebhook, { 
+                    const response = await fetch(dataFetchWebhook, {
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ 
                             action: 'update_name', 
-                            email: localStorage.getItem('pf_email'), 
-                            accountId: userData.accountId || userData.accountID, 
                             newName: newName.trim() 
                         }) 
                     }); 
+                    await confirmMutation(response);
 
                     userData.name = newName.trim(); 
                     refreshUI();  
@@ -1242,10 +1322,10 @@
             } 
         } 
 
-        function signOut() { 
-            localStorage.removeItem('pf_email'); 
-            localStorage.removeItem('pf_pass'); 
-            window.location.href = '/login/';  
+        async function signOut() {
+            clearTimeout(enginePollTimer);
+            try { await PF.signOut(); }
+            catch { setEngineMessage('Sign-out could not be confirmed. Please check your connection and try again.'); }
         } 
 
         function showTab(t) { 
@@ -1275,14 +1355,18 @@
             } 
         }); 
 
-        function openSubmit() { showTab('submit'); } 
+        function openSubmit() {
+            if (!dashboardAvailable) { setEngineMessage('Refresh your account to confirm your available credits before submitting.'); return; }
+            showTab('submit');
+        }
 
         document.getElementById('inventory-form').addEventListener('submit', async event => {
             event.preventDefault();
             const button = document.getElementById('submit-btn');
             if (button.disabled || engineActionInFlight) return;
+            if (!dashboardAvailable) { setEngineMessage('Refresh your account to confirm your available credits before submitting.'); return; }
             const payload = {
-                email: localStorage.getItem('pf_email'), accountId: userData.accountId || userData.accountID || '',
+                email: (currentUser?.email || ''), accountId: userData.accountId || userData.accountID || '',
                 vehicleName: document.getElementById('f-name').value.trim(), assetSource: document.getElementById('f-source').value.trim(),
                 showroomColor: document.getElementById('f-color').value || 'White (default)', logoPlacement: document.getElementById('f-logo').value,
                 thumbnail: document.getElementById('f-hero-thumb').value, uploadcareUrl: document.getElementById('ucare-uploader').value
@@ -1328,16 +1412,15 @@
             btn.classList.add('btn-loading'); 
             
             try { 
-                const res = await fetch('https://hook.us2.make.com/axjf83eeowlrxkqpho7f3mhn4r9xqo5h', {  
+                const res = await fetch('/api/account/logo', {
                     method: 'POST',  
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ 
-                        email: localStorage.getItem('pf_email'), 
-                        accountId: userData.accountId || userData.accountID, 
                         logoUrl: ucareUrl 
                     }) 
                 }); 
                 
+                await confirmMutation(res);
                 if (res.ok) { 
                     userData.logo = ucareUrl; 
                     refreshUI();  
@@ -1373,6 +1456,27 @@
                 }, 2000); 
             } 
         } 
+
+        let supportRequestId = null;
+        document.getElementById('support-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const button = document.getElementById('support-submit-btn');
+            if (button.disabled) return;
+            const body = {subject:document.getElementById('sup-subject').value.trim(), message:document.getElementById('sup-inquiry').value.trim()};
+            if (!body.subject || !body.message) return;
+            const fingerprint = JSON.stringify(body);
+            if (!supportRequestId || supportRequestId.fingerprint !== fingerprint) supportRequestId = {id:crypto.randomUUID(),fingerprint};
+            button.disabled = true;
+            document.getElementById('support-error').textContent = '';
+            try {
+                const result = await PF.request('/api/support', {...body, requestId:supportRequestId.id});
+                if (result?.success !== true || result?.delivery !== 'sent') throw new Error('Support delivery was not confirmed. Please try again.');
+                document.getElementById('support-form-container').style.display = 'none';
+                document.getElementById('support-confirmation').style.display = 'block';
+                supportRequestId = null;
+            } catch (error) { document.getElementById('support-error').textContent = error.message; }
+            finally { button.disabled = false; }
+        });
 
         function toggleContact(event) { event.stopPropagation(); document.getElementById("contactBubble").classList.toggle("show"); } 
         function copyEmail() { navigator.clipboard.writeText("info@premiereflow.com"); const btn = document.querySelector(".copy-btn"); btn.innerText = "DONE"; setTimeout(() => { btn.innerText = "COPY"; }, 2000); } 
