@@ -1,6 +1,7 @@
 import {getDatabase} from './database.mjs';
 import {applicationStore} from './application-store.mjs';
 import {createAuth,awaitResetDelivery} from './auth.mjs';
+import {authAudit} from './auth-audit.mjs';
 import {repository} from './repository.mjs';
 import {makeBridge} from './make.mjs';
 import {customerService} from './customers.mjs';
@@ -32,7 +33,7 @@ export function getPortal(env=process.env) {
   });
   const customers=customerService(database,bridge,dataOptions);
   const delivery=deliveryService(database,bridge,baseURL,dataOptions);
-  const auth=createAuth({database:getDatabase('auth'),baseURL,secret:env.BETTER_AUTH_SECRET,sendPasswordReset:delivery.reset});
+  const auth=createAuth({database:getDatabase('auth'),baseURL,secret:env.BETTER_AUTH_SECRET,sendPasswordReset:delivery.reset,audit:useApplicationData?authAudit(getDatabase('control')):undefined});
   const live=env.PF_STRIPE_MODE==='live';
   if (env.VERCEL_ENV==='preview' && live) throw new Error('Preview must use test payments');
   const catalog=offerCatalog(live?undefined:JSON.parse(env.PF_STRIPE_TEST_PRICES||'null'));

@@ -14,7 +14,7 @@ export async function awaitResetDelivery(operation,{required=false}={}) {
 
 // All account creation is server-side, after verified provisioning or migration.
 // Setting the first password uses the same expiring, atomic single-use flow as reset.
-export function authOptions({ database, baseURL, secret, sendPasswordReset }) {
+export function authOptions({ database, baseURL, secret, sendPasswordReset, audit = async () => {} }) {
   if (!secret || secret.length < 32) throw new Error('Authentication secret is not configured');
   const origin = new URL(baseURL).origin;
   return {
@@ -23,6 +23,12 @@ export function authOptions({ database, baseURL, secret, sendPasswordReset }) {
     basePath: '/api/auth',
     secret,
     database,
+    databaseHooks: {
+      session: {
+        create: { after: async session => audit({action:'auth.session_created',userId:session.userId}) },
+        delete: { after: async session => audit({action:'auth.session_revoked',userId:session.userId}) }
+      }
+    },
     trustedOrigins: [origin],
     user: { modelName: 'pf_user', changeEmail: { enabled: false } },
     account: { modelName: 'pf_credential' },
@@ -41,6 +47,7 @@ export function authOptions({ database, baseURL, secret, sendPasswordReset }) {
       maxPasswordLength: 128,
       resetPasswordTokenExpiresIn: 15 * 60,
       revokeSessionsOnPasswordReset: true,
+      onPasswordReset: async ({user}) => audit({action:'auth.password_changed',userId:user.id}),
       sendResetPassword: async ({ user, token }) => {
         // This callback must await a durable delivery acknowledgement. Never log tokens.
         const delivery=resetDelivery.getStore();
@@ -52,6 +59,7 @@ export function authOptions({ database, baseURL, secret, sendPasswordReset }) {
           url: `${origin}/setup/?token=${encodeURIComponent(token)}`
         });
         if (delivery) delivery.sent=true;
+        await audit({action:'auth.reset_email_sent',userId:user.id});
       }
     },
     rateLimit: {
