@@ -1,0 +1,42 @@
+-- Require every zero-based image position before completion consumes credit.
+-- Additive function repair; existing jobs, assets, balances and engine are untouched.
+BEGIN;
+CREATE OR REPLACE FUNCTION pf_finish_credit(p_account text,p_job uuid,p_attempt integer,p_success boolean)
+RETURNS boolean LANGUAGE plpgsql AS $$
+DECLARE r pf_credit_reservation; j pf_job; valid_assets integer;
+BEGIN
+  IF p_success IS NULL THEN RAISE EXCEPTION 'RESULT_INVALID'; END IF;
+  PERFORM 1 FROM pf_customer WHERE account_id=p_account FOR UPDATE;
+  SELECT * INTO j FROM pf_job WHERE job_id=p_job AND account_id=p_account FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'JOB_NOT_FOUND'; END IF;
+  SELECT * INTO r FROM pf_credit_reservation WHERE job_id=p_job AND account_id=p_account;
+  IF NOT FOUND OR r.attempt<>p_attempt THEN RAISE EXCEPTION 'ATTEMPT_CONFLICT'; END IF;
+  IF r.state='consumed' AND p_success OR r.state='released' AND NOT p_success THEN RETURN false; END IF;
+  IF r.state<>'reserved' THEN RAISE EXCEPTION 'CREDIT_STATE_CONFLICT'; END IF;
+  IF p_success THEN
+    SELECT count(*) INTO valid_assets FROM pf_asset WHERE job_id=p_job AND kind='generated'
+      AND attempt=p_attempt AND accessible_verified_at IS NOT NULL AND qa_status='PASS'
+      AND ordinal>=0 AND ordinal<j.expected_images
+      AND mime_type IN ('image/jpeg','image/png','image/webp') AND byte_size>0
+      AND url=j.output_url||'nth/'||ordinal||'/';
+    IF j.expected_images IS NULL OR valid_assets<>j.expected_images OR j.qa_status<>'PASS'
+       OR j.stored_images<>j.expected_images OR j.output_url='' THEN RAISE EXCEPTION 'DELIVERY_NOT_VERIFIED'; END IF;
+    UPDATE pf_credit_reservation SET state='consumed',updated_at=now() WHERE job_id=p_job;
+    INSERT INTO pf_credit_ledger(entry_key,account_id,job_id,attempt,kind,amount,reason)
+      VALUES('consume:'||p_job||':'||p_attempt,p_account,p_job,p_attempt,'consume',0,'Verified completed delivery');
+    UPDATE pf_job SET status='COMPLETED',completed_at=now(),updated_at=now(),next_retry_at=NULL WHERE job_id=p_job;
+    UPDATE pf_job_attempt SET state='COMPLETED',qa_status='PASS',finished_at=now() WHERE job_id=p_job AND attempt=p_attempt;
+  ELSE
+    UPDATE pf_credit_reservation SET state='released',updated_at=now() WHERE job_id=p_job;
+    INSERT INTO pf_credit_ledger(entry_key,account_id,job_id,attempt,kind,amount,reason)
+      VALUES('release:'||p_job||':'||p_attempt,p_account,p_job,p_attempt,'release',r.units,'Failed attempt; credit released');
+    UPDATE pf_job SET status=CASE WHEN status='RETRY_REQUIRED' THEN status ELSE 'FAILED' END,updated_at=now() WHERE job_id=p_job;
+    UPDATE pf_job_attempt SET state=CASE WHEN j.status='RETRY_REQUIRED' THEN j.status ELSE 'FAILED' END,
+      error_stage=j.error_stage,error_code=j.error_code,error_details=j.error_details,retry_at=j.next_retry_at,finished_at=now()
+      WHERE job_id=p_job AND attempt=p_attempt;
+  END IF;
+  RETURN true;
+END; $$;
+REVOKE ALL ON FUNCTION pf_finish_credit(text,uuid,integer,boolean) FROM PUBLIC;
+INSERT INTO pf_schema_migration(version) VALUES('006-complete-image-sequence') ON CONFLICT DO NOTHING;
+COMMIT;
