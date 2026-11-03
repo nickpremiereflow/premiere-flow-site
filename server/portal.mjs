@@ -23,9 +23,10 @@ export function validateDashboard(data, account) {
   return {success:true, accountId:account.accountId, email:account.email, name:data.name || '', tier:data.tier, credits:unlimited?'Unlimited':Number(data.credits), logo:data.logo || '', listings:data.listings};
 }
 
-export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, submissionsEnabled = false}) {
+export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, applicationData, submissionsEnabled = false}) {
   const origin = new URL(baseURL).origin;
   const dashboard = async account => {
+    if (applicationData) return validateDashboard(await applicationData.read(account),account);
     if (beforeAccountRead) await beforeAccountRead(account);
     return validateDashboard(await bridge('account',{action:'read',email:account.email,accountId:account.accountId}),account);
   };
@@ -115,13 +116,14 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
         if (body.action === 'update_name') {
           onlyKeys(body,['action','newName']);
           const name = shortText(body.newName,100,'Name');
-          const result = await bridge('account',{action:'update_name',accountId:account.accountId,email:account.email,newName:name});
+          const result = applicationData ? await applicationData.write(account,'update_name',{newName:name}) : await bridge('account',{action:'update_name',accountId:account.accountId,email:account.email,newName:name});
           return json({success:result.success === true});
         }
         if (body.action === 'rename_listing') {
           onlyKeys(body,['action','jobId','newName']);
           await ownedJob(account,body.jobId);
-          const result = await bridge('account',{action:'rename_listing',accountId:account.accountId,email:account.email,jobId:body.jobId,newName:shortText(body.newName,160,'Listing name')});
+          const newName=shortText(body.newName,160,'Listing name');
+          const result = applicationData ? await applicationData.write(account,'rename_listing',{jobId:body.jobId,newName}) : await bridge('account',{action:'rename_listing',accountId:account.accountId,email:account.email,jobId:body.jobId,newName});
           return json({success:result.success === true});
         }
         throw new HttpError(400,'Unknown account update.');
@@ -129,7 +131,7 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
       if (path === '/api/account/logo') {
         onlyKeys(body,['logoUrl']);
         const logoUrl = validateImageUrl(body.logoUrl);
-        const result = await bridge('logo',{email:account.email,accountId:account.accountId,logoUrl});
+        const result = applicationData ? await applicationData.write(account,'logo',{logoUrl}) : await bridge('logo',{email:account.email,accountId:account.accountId,logoUrl});
         return json({success:result.success === true});
       }
       if (path === '/api/jobs') {

@@ -9,10 +9,10 @@ export function canonical(value) {
   return '{' + Object.keys(value).sort().map(key => JSON.stringify(key)+':'+canonical(value[key])).join(',') + '}';
 }
 
-export function repository(database) {
+export function repository(database,{applicationData=false}={}) {
   return {
     async findByUserId(userId) {
-      const {rows} = await database.query('SELECT c.account_id AS "accountId", u.email, u.name, c.baseline_total AS "baselineTotal", c.baseline_tier AS "baselineTier", c.stripe_customer_id AS "stripeCustomerId" FROM pf_customer c JOIN pf_user u ON u.id=c.user_id WHERE c.user_id=$1', [userId]);
+      const {rows} = await database.query('SELECT c.user_id AS "userId", c.account_id AS "accountId", u.email, u.name, c.baseline_total AS "baselineTotal", c.baseline_tier AS "baselineTier", c.stripe_customer_id AS "stripeCustomerId" FROM pf_customer c JOIN pf_user u ON u.id=c.user_id WHERE c.user_id=$1'+(applicationData?" AND c.status='active' AND EXISTS(SELECT 1 FROM pf_membership m WHERE m.account_id=c.account_id AND m.user_id=c.user_id AND m.active AND m.role='owner')":''), [userId]);
       return rows[0] || null;
     },
     async findOwned(accountId, jobId) {

@@ -20,7 +20,7 @@ export function validateLegacyAccount(result,email) {
   return {accountId:result.accountId,email,name:String(result.name||'Customer').slice(0,100),baselineTotal:unlimited?0:total,baselineTier:unlimited?'Unlimited':result.tier};
 }
 
-export function customerService(database,bridge) {
+export function customerService(database,bridge,{applicationData=false}={}) {
   async function find(email,connection=database) {
     const {rows}=await connection.query('SELECT c.account_id AS "accountId",c.user_id AS "userId",u.email,u.name,c.baseline_total AS "baselineTotal",c.baseline_tier AS "baselineTier" FROM pf_customer c JOIN pf_user u ON u.id=c.user_id WHERE lower(u.email)=$1',[email]);
     return rows[0]||null;
@@ -32,12 +32,17 @@ export function customerService(database,bridge) {
     const userId=randomUUID();
     await connection.query('INSERT INTO pf_user(id,name,email,"emailVerified","createdAt","updatedAt") VALUES($1,$2,$3,false,now(),now())',[userId,account.name,account.email]);
     await connection.query('INSERT INTO pf_customer(account_id,user_id,baseline_total,baseline_tier) VALUES($1,$2,$3,$4)',[account.accountId,userId,account.baselineTotal,account.baselineTier]);
+    if (applicationData) {
+      await connection.query("INSERT INTO pf_membership(account_id,user_id,role) VALUES($1,$2,'owner')",[account.accountId,userId]);
+      await connection.query("INSERT INTO pf_audit_event(account_id,actor_user_id,action,details) VALUES($1,$2,'account.created',$3)",[account.accountId,userId,{source:'verified_provisioning'}]);
+    }
     return {...account,userId};
   }
   async function ensureExisting(value) {
     const email=normalizeEmail(value);
     const current=await find(email);
     if (current) return current;
+    if (applicationData) return null;
     const account=await legacy(email);
     if (!account) return null;
     return transaction(database,async connection=>{

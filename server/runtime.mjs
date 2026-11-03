@@ -1,4 +1,5 @@
 import {getDatabase} from './database.mjs';
+import {applicationStore} from './application-store.mjs';
 import {createAuth,awaitResetDelivery} from './auth.mjs';
 import {repository} from './repository.mjs';
 import {makeBridge} from './make.mjs';
@@ -14,18 +15,23 @@ export function getPortal(env=process.env) {
   if (portal) return portal;
   const baseURL=env.VERCEL_ENV==='preview'?'https://'+env.VERCEL_URL:env.PF_SITE_URL;
   if (!baseURL || !/^https:\/\//.test(baseURL)) throw new Error('Site origin is not configured');
+  const useApplicationData=env.PF_DATA_AUTHORITY==='neon';
+  if (env.PF_DATA_AUTHORITY && !['legacy','neon'].includes(env.PF_DATA_AUTHORITY)) throw new Error('Unknown application data authority');
+  // Fail closed until the new engine outbox/callback path passes acceptance.
+  if (useApplicationData && env.PF_SUBMISSIONS_ENABLED==='true') throw new Error('Neon engine write cutover is not verified yet');
+  const dataOptions={applicationData:useApplicationData};
   const database=getDatabase();
   // Keep callbacks and auth queries available while a ledger transaction waits
   // for a sequential Make workflow to finish.
-  const accounts=repository(getDatabase('control'));
+  const accounts=repository(getDatabase('control'),dataOptions);
   const bridge=makeBridge(accounts,{account:env.PF_MAKE_ACCOUNT_URL,engine:env.PF_MAKE_ENGINE_URL,logo:env.PF_MAKE_LOGO_URL,services:env.PF_MAKE_SERVICES_URL});
-  const customers=customerService(database,bridge);
-  const delivery=deliveryService(database,bridge,baseURL);
+  const customers=customerService(database,bridge,dataOptions);
+  const delivery=deliveryService(database,bridge,baseURL,dataOptions);
   const auth=createAuth({database:getDatabase('auth'),baseURL,secret:env.BETTER_AUTH_SECRET,sendPasswordReset:delivery.reset});
   const live=env.PF_STRIPE_MODE==='live';
   if (env.VERCEL_ENV==='preview' && live) throw new Error('Preview must use test payments');
   const catalog=offerCatalog(live?undefined:JSON.parse(env.PF_STRIPE_TEST_PRICES||'null'));
-  const ledger=paymentLedger(database,bridge,catalog);
+  const ledger=paymentLedger(database,bridge,catalog,dataOptions);
   let payments;
   if (env.PF_CHECKOUT_ENABLED==='true') {
     if (!live && !env.PF_STRIPE_TEST_PRICES) throw new Error('Test offers are required');
@@ -40,6 +46,6 @@ export function getPortal(env=process.env) {
         }
       })});
   }
-  portal=createPortal({auth,repository:accounts,bridge,baseURL,ensureExistingAccount:customers.ensureExisting,sendSupport:delivery.support,payments,beforeAccountRead:account=>ledger.projectAccount(account.accountId),submissionsEnabled:env.PF_SUBMISSIONS_ENABLED==='true'});
+  portal=createPortal({auth,repository:accounts,bridge,baseURL,ensureExistingAccount:customers.ensureExisting,sendSupport:delivery.support,payments,beforeAccountRead:account=>ledger.projectAccount(account.accountId),applicationData:useApplicationData?applicationStore(database,catalog):undefined,submissionsEnabled:env.PF_SUBMISSIONS_ENABLED==='true'});
   return portal;
 }

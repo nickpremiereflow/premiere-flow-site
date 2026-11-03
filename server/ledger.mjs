@@ -12,7 +12,7 @@ export function entitlement(customer,purchases,subscriptions,catalog,now=Date.no
   return {totalCredits:unlimited?'Unlimited':String(total),tier:unlimited?'Unlimited':latestOffer?.tier||customer.baseline_tier};
 }
 
-export function paymentLedger(database,bridge,catalog) {
+export function paymentLedger(database,bridge,catalog,{applicationData=false}={}) {
   async function saveSubscription(connection,accountId,subscription) {
     if (!subscription) return;
     await connection.query(`INSERT INTO pf_subscription(subscription_id,account_id,price_id,status,paid_through) VALUES($1,$2,$3,$4,$5)
@@ -22,11 +22,16 @@ export function paymentLedger(database,bridge,catalog) {
   async function recordPurchase({eventId,eventType,customer,purchase,subscription}) {
     return transaction(database,async connection=>{
       await connection.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',['purchase:'+purchase.sessionId]);
+      if (applicationData) await connection.query('SELECT account_id FROM pf_customer WHERE account_id=$1 FOR UPDATE',[customer.accountId]);
       const {rows}=await connection.query('SELECT account_id,price_id,credits FROM pf_purchase WHERE session_id=$1',[purchase.sessionId]);
       if (rows[0] && (rows[0].account_id!==customer.accountId || rows[0].price_id!==purchase.priceId || rows[0].credits!==purchase.credits)) throw new Error('Payment identity conflict');
       await connection.query(`INSERT INTO pf_purchase(session_id,account_id,price_id,credits,stripe_customer_id,payment_intent_id,subscription_id,paid_at)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(session_id) DO NOTHING`,[purchase.sessionId,customer.accountId,purchase.priceId,purchase.credits,purchase.customerId,purchase.paymentIntentId,purchase.subscriptionId,purchase.paidAt]);
       await connection.query('UPDATE pf_customer SET stripe_customer_id=COALESCE(stripe_customer_id,$2) WHERE account_id=$1',[customer.accountId,purchase.customerId]);
+      if (applicationData) {
+        await connection.query("INSERT INTO pf_credit_ledger(entry_key,account_id,kind,amount,source_id,reason) VALUES($1,$2,'grant',$3,$4,'Verified Stripe payment') ON CONFLICT(entry_key) DO NOTHING",['stripe-session:'+purchase.sessionId,customer.accountId,purchase.credits,purchase.sessionId]);
+        await connection.query("INSERT INTO pf_audit_event(event_key,account_id,action,details) VALUES($1,$2,'payment.verified',$3) ON CONFLICT(event_key) DO NOTHING",['stripe-session:'+purchase.sessionId,customer.accountId,{sessionId:purchase.sessionId,eventId,credits:purchase.credits}]);
+      }
       await saveSubscription(connection,customer.accountId,subscription);
       await connection.query("INSERT INTO pf_command(command_id,kind,account_id,payload) VALUES($1,'provision',$2,$3) ON CONFLICT DO NOTHING",['purchase:'+purchase.sessionId,customer.accountId,{sessionId:purchase.sessionId}]);
       await connection.query("INSERT INTO pf_stripe_event(event_id,event_type,resource_id,state,processed_at) VALUES($1,$2,$3,'processed',now()) ON CONFLICT(event_id) DO NOTHING",[eventId,eventType,purchase.sessionId]);
@@ -39,6 +44,7 @@ export function paymentLedger(database,bridge,catalog) {
     const {rows:purchases}=await connection.query('SELECT * FROM pf_purchase WHERE account_id=$1 ORDER BY paid_at DESC,session_id DESC',[accountId]);
     const {rows:subscriptions}=await connection.query('SELECT * FROM pf_subscription WHERE account_id=$1',[accountId]);
     const current=entitlement(customer,purchases,subscriptions,catalog);
+    if (applicationData) return {customer,current};
     const payload={action:'provision',accountId,email:customer.email,name:customer.name,...current,sessionId:purchases[0]?.session_id||''};
     const fingerprint=digest(canonical(payload));
     if (customer.projection_fingerprint!==fingerprint) {

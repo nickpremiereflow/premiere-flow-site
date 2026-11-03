@@ -5,7 +5,7 @@ import { HttpError } from './http.mjs';
 
 export const escapeHtml=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
-export function deliveryService(database,bridge,baseURL) {
+export function deliveryService(database,bridge,baseURL,{applicationData=false}={}) {
   const origin=new URL(baseURL).origin;
   async function reset({email,name,url}) {
     const link=new URL(url);
@@ -26,11 +26,13 @@ export function deliveryService(database,bridge,baseURL) {
       if (existing && (existing.account_id!==account.accountId || digest(canonical(existing.payload))!==digest(canonical(payload)))) throw new HttpError(409,'This message ID is already in use.');
       if (existing?.state==='done') return existing.result;
       await connection.query("INSERT INTO pf_command(command_id,kind,account_id,payload) VALUES($1,'support',$2,$3) ON CONFLICT DO NOTHING",[commandId,account.accountId,payload]);
+      if (applicationData) await connection.query('INSERT INTO pf_support_request(request_id,account_id,user_id,subject,message) VALUES($1,$2,$3,$4,$5) ON CONFLICT(request_id) DO NOTHING',[message.requestId,account.accountId,account.userId,message.subject,message.message]);
       const sent=await bridge('services',{
         action:'email',commandId,email:'info@premiereflow.com',subject:'PremiereFlow support: '+message.subject,
         html:`<p>Account: ${escapeHtml(account.accountId)}<br>Customer: ${escapeHtml(account.email)}</p><p>${escapeHtml(message.message).replace(/\n/g,'<br>')}</p>`
       });
       if (sent.delivery!=='sent') throw new Error('Support delivery was not confirmed');
+      if (applicationData) await connection.query("INSERT INTO pf_audit_event(event_key,account_id,actor_user_id,action,details) VALUES($1,$2,$3,'support.delivered',$4) ON CONFLICT(event_key) DO NOTHING",[commandId,account.accountId,account.userId,{requestId:message.requestId}]);
       const result={success:true,delivery:'sent',requestId:message.requestId};
       await connection.query("UPDATE pf_command SET state='done',result=$2,finished_at=now() WHERE command_id=$1",[commandId,result]);
       return result;
