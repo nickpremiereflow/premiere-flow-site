@@ -74,11 +74,11 @@
             <div id="ui-login">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="login-email" placeholder="Enter email address">
+                    <input type="email" id="login-email" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Enter email address">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="login-password" placeholder="Enter password">
+                    <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Enter password">
                 </div>
                 <button class="btn-main" id="login-btn" onclick="portalAuth()">Unlock Studio</button>
                 <button class="auth-switch-link" onclick="toggleAuthUI('forgot')">Forgot Password?</button>
