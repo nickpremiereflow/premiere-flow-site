@@ -9,7 +9,7 @@ import { fixture, origin } from './auth-fixture.mjs';
 const jobA='ee40b0c3-edb7-481a-8dae-003e51c40d33';
 const jobB='be40b0c3-edb7-481a-8dae-003e51c40d33';
 const freshJob='ce40b0c3-edb7-481a-8dae-003e51c40d33';
-async function portalFixture() {
+async function portalFixture({applicationMode=false}={}) {
   const f=await fixture();
   await f.setup(); await f.setup('account-b@example.test');
   const cookies={a:await f.signIn(),b:await f.signIn('account-b@example.test')};
@@ -41,7 +41,8 @@ async function portalFixture() {
     if (audience==='account' && payload.action==='read') return data[payload.accountId];
     return {success:true,status:audience==='engine'?'queued':undefined,jobId:payload.jobId};
   };
-  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},submissionsEnabled:true});
+  const applicationData=applicationMode?{read:async account=>data[account.accountId],write:async(account,action,payload)=>{calls.push({audience:'neon',payload:{...payload,action,accountId:account.accountId}});return {success:true};}}:undefined;
+  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},applicationData,submissionsEnabled:true});
   const call=(path,{body,cookie=cookies.a,method=body?'POST':'GET',requestOrigin=origin}={})=>handler(new Request(origin+path,{
     method,headers:{...(cookie?{cookie}:{}),...(body?{'content-type':'application/json',origin:requestOrigin}:{}),'x-real-ip':'192.0.2.14'},body:body?JSON.stringify(body):undefined
   }));
@@ -159,4 +160,25 @@ test('a lost Make acknowledgement can still confirm delivery through the durable
   const repo={issueTicket:async()=>({token:'controlled',hash:'controlled-hash',send:true}),ticketResult:async()=>({status:200,body:{success:true,delivery:'sent'}})};
   const bridge=makeBridge(repo,{services:'https://hook.us2.make.com/controlled'},async()=>{throw new Error('Connection lost after acceptance');});
   assert.equal((await bridge('services',{action:'email',commandId:'same-message'})).delivery,'sent');
+});
+
+
+test('Neon account path keeps session ownership, preserves empty accounts, and never calls the legacy bridge',async()=>{
+  const f=await portalFixture({applicationMode:true});
+  f.data['PF-B'].listings=[];
+  for (const key of ['a','b']) {
+    const response=await f.call('/api/account',{cookie:f.cookies[key]});
+    assert.equal(response.status,200);
+    const body=await response.json();
+    assert.equal(body.accountId,key==='a'?'PF-A':'PF-B');
+    assert.equal(body.listings.length,key==='a'?1:0);
+  }
+  assert.equal(f.calls.length,0);
+  assert.equal((await f.call('/api/account?accountId=PF-B')).status,403);
+  assert.equal((await f.call('/api/account',{body:{action:'rename_listing',newName:'Foreign',jobId:jobB}})).status,404);
+  assert.equal((await f.call('/api/account',{body:{action:'update_name',newName:'Verified owner'}})).status,200);
+  assert.deepEqual(f.calls,[{audience:'neon',payload:{newName:'Verified owner',action:'update_name',accountId:'PF-A'}}]);
+  f.data['PF-A']={success:false};
+  assert.equal((await f.call('/api/account')).status,503);
+  f.database.close();
 });
