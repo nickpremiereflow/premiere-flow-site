@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Private account check · PremiereFlow</title><script src="/portal.js"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#f6f5f2;color:#171717;font:16px/1.5 system-ui,sans-serif}main{max-width:600px;margin:40px auto;padding:24px}header{font-size:14px;letter-spacing:.04em}h1{font-size:28px;line-height:1.15}p{color:#555}label{display:block;margin-top:20px;font-size:14px;font-weight:600}select,input,button{font:inherit;width:100%;min-height:48px;border:1px solid #ccc;border-radius:8px;padding:12px;background:white;color:#171717}input[readonly]{font-size:14px;background:#eee}button{margin-top:24px;background:#181818;color:white;border-color:#181818;font-weight:600}button:disabled{opacity:.5}li{margin:8px 0;font-size:14px}.pass{color:#236b44}.fail{color:#a52222}#status{white-space:pre-line}small{display:block;margin-top:16px;color:#666}a{color:#624d20}@media(max-width:480px){main{margin:12px auto;padding:20px}}</style></head>
+<body><main><header>PREMIEREFLOW · PRIVATE PREVIEW</header><h1>Check your test account.</h1><p>Sign in normally. This page checks account isolation, credit visibility, logout, and support delivery. It does not submit a listing or make a purchase.</p>
+<form id="check-form"><label for="account">Controlled account</label><select id="account"><option value="a">Preview Acceptance A</option><option value="b">Preview Acceptance B</option></select><label for="email">Account email</label><input id="email" name="username" type="email" autocomplete="username" readonly value="nick+pf-auth-a@premiereflow.com"><label for="password">Saved password for this account</label><input id="password" name="password" type="password" autocomplete="current-password" required><button id="run">Sign in and run checks</button></form>
+<p id="status" role="status" aria-live="polite"></p><ol id="results"></ol><small>The report goes to PremiereFlow support. Your password is used only for sign-in and is cleared from this page when the check ends. No password is included in the report or saved in browser storage.</small><p><a href="/login/">Return to login</a></p>
+<script>
+const form=document.getElementById('check-form'), select=document.getElementById('account'), email=document.getElementById('email'), input=document.getElementById('password'), button=document.getElementById('run'), status=document.getElementById('status'), results=document.getElementById('results');
+const fixtures={a:{email:'nick+pf-auth-a@premiereflow.com',accountId:'PF-ACCEPTANCE-A-20261103',credits:3,job:'a0000000-0000-4000-8000-000000000003'},b:{email:'nick+pf-auth-b@premiereflow.com',accountId:'PF-ACCEPTANCE-B-20261103',credits:7,job:'b0000000-0000-4000-8000-000000000003'}};
+select.addEventListener('change',()=>{email.value=fixtures[select.value].email;input.value='';});
+async function raw(path,body,credentials='same-origin'){
+  const response=await fetch(path,{method:body===undefined?'GET':'POST',credentials,cache:'no-store',signal:AbortSignal.timeout(45000),...(body===undefined?{}:{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})});
+  let data;try{data=await response.json();}catch{data=null;}return {status:response.status,data};
+}
+form.addEventListener('submit',async event=>{
+  event.preventDefault();if(button.disabled)return;
+  const own=fixtures[select.value], foreign=fixtures[select.value==='a'?'b':'a'];
+  let password=input.value;input.value='';button.disabled=true;select.disabled=true;results.replaceChildren();status.textContent='Checking the controlled account…';
+  const checks=[];let signedIn=false, reportSent=false;
+  const check=(name,passed,code)=>{checks.push({name,passed,...(code===undefined?{}:{status:code})});const li=document.createElement('li');li.className=passed?'pass':'fail';li.textContent=(passed?'PASS · ':'FAIL · ')+name;results.append(li);if(!passed)throw new Error('Stopped at: '+name);};
+  async function report(){
+    const requestId=crypto.randomUUID();
+    const result=await PF.request('/api/support',{requestId,subject:'Controlled account acceptance '+select.value.toUpperCase(),message:JSON.stringify({suite:'preview-account-isolation-v1',origin:location.origin,accountId:own.accountId,checks,ranAt:new Date().toISOString()})});
+    if(result?.delivery!=='sent')throw new Error('The check report was not confirmed as delivered.');reportSent=true;
+  }
+  try{
+    const existing=await PF.getSession();
+    if(existing&&!Object.values(fixtures).some(f=>f.email===existing.email))throw new Error('A different customer is signed in. Use a separate browser for this controlled check.');
+    if(existing)await PF.request('/api/auth/sign-out',{});
+    await PF.signIn(own.email,password);signedIn=true;
+    const identity=await PF.getSession();check('Secure sign-in identifies the selected account',identity?.email===own.email);
+    const first=await raw('/api/account');check('Dashboard reads the correct Neon account and credits',first.status===200&&first.data?.accountId===own.accountId&&first.data?.credits===own.credits,first.status);
+    check('Only the controlled account’s listing is returned',first.data.listings.length===1&&first.data.listings[0].jobId===own.job);
+    for(const [field,value,expected] of [['accountId',foreign.accountId,403],['accountID',foreign.accountId,403],['email',foreign.email,403],['row','2',400],['rowId','2',400]]){
+      const r=await raw('/api/account?'+new URLSearchParams({[field]:value}));check('Changing '+field+' cannot access another account',r.status===expected,r.status);
+    }
+    for(const [field,value] of [['accountId',foreign.accountId],['email',foreign.email]]){
+      const r=await raw('/api/account',{action:'update_name',newName:'Controlled unauthorized write',[field]:value});check('Forged '+field+' cannot update a profile',r.status===403,r.status);
+    }
+    const otherJob=await raw('/api/account',{action:'rename_listing',jobId:foreign.job,newName:'Controlled unauthorized write'});check('A foreign Job ID cannot be changed',otherJob.status===404,otherJob.status);
+    const after=await raw('/api/account');check('Credits and listing data stay unchanged',after.status===200&&JSON.stringify(after.data)===JSON.stringify(first.data),after.status);
+    await PF.request('/api/auth/sign-out',{});signedIn=false;check('Logout invalidates the session',await PF.getSession()===null);
+    const afterLogout=await raw('/api/account');check('Account reads fail after logout',afterLogout.status===401&&afterLogout.data?.code==='AUTH_REQUIRED',afterLogout.status);
+    await PF.signIn(own.email,password);signedIn=true;check('The saved password signs back into the same account',(await PF.getSession())?.email===own.email);
+    await report();status.textContent='All checks passed. The report was delivered to PremiereFlow support. You are now signed out. Choose the other account to run its check.';
+  }catch(error){
+    if(signedIn&&checks.length&&!reportSent){try{await report();}catch{}}
+    status.textContent=error.message+(reportSent?'\nThe failure report was delivered.':'\nThe report was not delivered.');
+  }finally{
+    password='';input.value='';if(signedIn){try{await PF.request('/api/auth/sign-out',{});}catch{status.textContent+='\nLogout was not confirmed. Please use Logout from the dashboard.';}}
+    button.disabled=false;select.disabled=false;
+  }
+});
+</script></main></body></html>

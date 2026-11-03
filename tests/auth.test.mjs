@@ -3,11 +3,29 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes } from 'node:crypto';
 import { getMigrations } from 'better-auth/db/migration';
-import { createAuth, authOptions, isPublicAuthRoute, awaitResetDelivery } from '../server/auth.mjs';
+import { createAuth, authOptions, isPublicAuthRoute, awaitResetDelivery, setupIdentity } from '../server/auth.mjs';
 import { requireAccount, rejectForeignIdentity, requireOwnedJob } from '../server/access.mjs';
 import { requireSameOrigin } from '../server/http.mjs';
 
 import { fixture, origin, password } from './auth-fixture.mjs';
+
+test('setup display identity is bound to a live hashed token and disappears after use or expiry',async()=>{
+  const f=await fixture();
+  const tokens={};
+  for(const email of ['account-a@example.test','account-b@example.test']){
+    await f.call('/request-password-reset',{email});
+    const token=new URL(f.mail.at(-1).url).searchParams.get('token');tokens[email]=token;
+    assert.deepEqual(await setupIdentity(f.auth,token),{email});
+    assert.equal(f.database.prepare('SELECT count(*) AS count FROM pf_verification WHERE identifier=?').get('reset-password:'+token).count,0);
+  }
+  await assert.rejects(setupIdentity(f.auth,'invalid'),error=>error.status===410);
+  await assert.rejects(setupIdentity(f.auth,'x'.repeat(24)),error=>error.status===410);
+  assert.equal((await f.call('/reset-password',{token:tokens['account-a@example.test'],newPassword:password})).status,200);
+  await assert.rejects(setupIdentity(f.auth,tokens['account-a@example.test']),error=>error.status===410);
+  f.database.prepare('UPDATE pf_verification SET expiresAt=?').run(Date.now()-1000);
+  await assert.rejects(setupIdentity(f.auth,tokens['account-b@example.test']),error=>error.status===410);
+  f.database.close();
+});
 
 test('first password setup is single-use; cookie grants session and logout revokes it',async()=>{
   const f=await fixture();

@@ -66,6 +66,20 @@ test('real sessions return only their own dashboard and never expose a session t
   f.database.close();
 });
 
+test('setup context needs its secret link and same-origin request; supplied email cannot change identity',async()=>{
+  const f=await portalFixture();
+  await f.call('/api/auth/request-password-reset',{body:{email:'account-b@example.test'},cookie:''});
+  const token=new URL(f.mail.at(-1).url).searchParams.get('token');
+  const response=await f.call('/api/setup/context',{body:{token},cookie:''});
+  assert.equal(response.status,200);
+  assert.deepEqual(await response.json(),{email:'account-b@example.test'});
+  assert.equal(response.headers.get('cache-control'),'no-store');
+  assert.equal((await f.call('/api/setup/context',{body:{token,email:'account-a@example.test'},cookie:''})).status,400);
+  assert.equal((await f.call('/api/setup/context',{body:{token},cookie:'',requestOrigin:'https://attacker.test'})).status,403);
+  assert.equal((await f.call('/api/setup/context',{body:{token:'x'.repeat(24)},cookie:''})).status,410);
+  f.database.close();
+});
+
 test('cross-account identity and foreign job mutations are rejected before any write',async()=>{
   const f=await portalFixture();
   for(const query of ['email=account-b%40example.test','accountId=PF-B','accountID=PF-B','row=3','rowId=3']) assert.equal((await f.call('/api/account?'+query)).status,query.startsWith('row')?400:403);
