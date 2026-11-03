@@ -2,13 +2,16 @@
   "name": "premiereflow-site",
   "private": true,
   "type": "module",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "build": "node scripts/build-static.mjs",
     "test": "node --test tests/*.test.mjs",
     "db:migrate": "node scripts/migrate.mjs"
   },
   "dependencies": {
+    "@vercel/oidc": "4.0.6",
     "better-auth": "1.7.15",
     "pg": "8.23.1",
     "stripe": "23.1.0"
