@@ -98,7 +98,10 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
         if (!payments) throw new HttpError(503,'Checkout is not ready.');
         const body = await readJson(request);
         onlyKeys(body,['offer']);
-        return await payments.checkout(body.offer);
+        const session=await auth.api.getSession({headers:request.headers});
+        const account=session?await repository.findByUserId(session.user.id):null;
+        if (session && !account) throw new HttpError(403,'Your account is not ready for purchases. Please contact support.','ACCOUNT_NOT_READY');
+        return await payments.checkout(body.offer,account);
       }
       if (path === '/api/checkout/status' && request.method === 'GET') {
         if (!payments) throw new HttpError(503,'Payment verification is not ready.');

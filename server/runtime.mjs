@@ -9,6 +9,7 @@ import {paymentLedger} from './ledger.mjs';
 import {offerCatalog} from './offers.mjs';
 import {createPayments} from './payments.mjs';
 import {createPortal} from './portal.mjs';
+import {getVercelOidcToken} from '@vercel/oidc';
 
 let portal;
 export function getPortal(env=process.env) {
@@ -24,7 +25,11 @@ export function getPortal(env=process.env) {
   // Keep callbacks and auth queries available while a ledger transaction waits
   // for a sequential Make workflow to finish.
   const accounts=repository(getDatabase('control'),dataOptions);
-  const bridge=makeBridge(accounts,{account:env.PF_MAKE_ACCOUNT_URL,engine:env.PF_MAKE_ENGINE_URL,logo:env.PF_MAKE_LOGO_URL,services:env.PF_MAKE_SERVICES_URL});
+  const previewServiceAccess=env.PF_PREVIEW_SERVICE_ACCESS==='oidc';
+  if (previewServiceAccess && env.VERCEL_ENV!=='preview') throw new Error('Preview callback access cannot be used in production');
+  const bridge=makeBridge(accounts,{account:env.PF_MAKE_ACCOUNT_URL,engine:env.PF_MAKE_ENGINE_URL,logo:env.PF_MAKE_LOGO_URL,services:env.PF_MAKE_SERVICES_URL},fetch,{
+    callbackAuthorization:previewServiceAccess?getVercelOidcToken:undefined
+  });
   const customers=customerService(database,bridge,dataOptions);
   const delivery=deliveryService(database,bridge,baseURL,dataOptions);
   const auth=createAuth({database:getDatabase('auth'),baseURL,secret:env.BETTER_AUTH_SECRET,sendPasswordReset:delivery.reset});
@@ -35,7 +40,8 @@ export function getPortal(env=process.env) {
   let payments;
   if (env.PF_CHECKOUT_ENABLED==='true') {
     if (!live && !env.PF_STRIPE_TEST_PRICES) throw new Error('Test offers are required');
-    payments=createPayments({secretKey:env.STRIPE_SECRET_KEY,webhookSecret:env.STRIPE_WEBHOOK_SECRET,accountId:env.PF_STRIPE_ACCOUNT_ID,live,catalog,baseURL,store:ledger,customers,
+    if (live && !['verified','not_required_confirmed'].includes(env.PF_STRIPE_AUTOMATIC_TAX)) throw new Error('Live tax treatment has not been confirmed');
+    payments=createPayments({secretKey:env.STRIPE_SECRET_KEY,webhookSecret:env.STRIPE_WEBHOOK_SECRET,accountId:env.PF_STRIPE_ACCOUNT_ID,live,catalog,baseURL,store:ledger,customers,automaticTax:env.PF_STRIPE_AUTOMATIC_TAX==='verified',
       deliver:sessionId=>ledger.deliverPurchase(sessionId,async (customer,current,id)=>{
         const {rowCount}=await getDatabase('auth').query('SELECT id FROM pf_credential WHERE "userId"=$1 AND "providerId"=$2 AND password IS NOT NULL LIMIT 1',[customer.user_id,'credential']);
         if (!rowCount) {

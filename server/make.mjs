@@ -1,7 +1,7 @@
 import { HttpError } from './http.mjs';
 import { makePayload } from './contracts.mjs';
 
-export function makeBridge(repository, endpoints, fetcher = fetch) {
+export function makeBridge(repository, endpoints, fetcher = fetch, {callbackAuthorization} = {}) {
   return async function callMake(audience, payload, {acceptedOnly = false} = {}) {
     const deadline=Date.now()+35000;
     const endpoint = endpoints[audience];
@@ -9,10 +9,18 @@ export function makeBridge(repository, endpoints, fetcher = fetch) {
     payload = makePayload(audience,payload);
     const issued = await repository.issueTicket(audience, payload);
     const ticket = typeof issued==='string'?{token:issued,send:true}:issued;
+    // Transport-only identity for protected Preview callbacks. Never put this
+    // short-lived token in the ticket ledger, customer data, logs or responses.
+    const transport = {};
+    if (ticket.send && audience==='services' && callbackAuthorization) {
+      const token=await callbackAuthorization();
+      if (typeof token!=='string' || token.length<32 || token.length>16384) throw new HttpError(503,'The private service connection is unavailable.','WORKFLOW_UNAVAILABLE');
+      transport.callbackOidcToken=token;
+    }
     let response=null;
     try { response = ticket.send ? await fetcher(endpoint, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({...payload, authTicket:ticket.token}), signal:AbortSignal.timeout(25000)
+      body:JSON.stringify({...payload, authTicket:ticket.token,...transport}), signal:AbortSignal.timeout(25000)
     }) : null; }
     catch {
       // A lost HTTP acknowledgement does not prove that Make rejected the job.

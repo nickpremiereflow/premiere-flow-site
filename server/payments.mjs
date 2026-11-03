@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import {randomInt} from 'node:crypto';
 import { HttpError,json } from './http.mjs';
 import { normalizeEmail } from './customers.mjs';
 
@@ -18,7 +19,9 @@ export function validatePaidSession(session,lines,catalog,live) {
   if (item.quantity!==1 || session.currency!=='usd' || item.price.currency!=='usd' || item.price.unit_amount!==offer.amount || session.amount_subtotal!==offer.amount || item.amount_subtotal!==offer.amount || session.mode!==offer.mode) throw new Error('Payment does not match the purchased offer');
   if (!stripeObjectId(session.customer)?.startsWith('cus_')) throw new Error('Payment customer missing');
   const email=normalizeEmail(session.customer_details?.email);
-  return {sessionId:session.id,customerId:stripeObjectId(session.customer),email,name:session.customer_details?.name||'Customer',priceId:offer.priceId,credits:offer.credits,tier:offer.tier,subscriptionId:stripeObjectId(session.subscription)||null,paymentIntentId:stripeObjectId(session.payment_intent)||null,paidAt:new Date(session.created*1000).toISOString()};
+  const accountId=session.metadata?.integration===integrationId?session.metadata.accountId||null:null;
+  if (accountId && !/^PF-[A-Za-z0-9-]{3,100}$/.test(accountId)) throw new Error('Payment account reference is invalid');
+  return {sessionId:session.id,customerId:stripeObjectId(session.customer),accountId,email,name:session.customer_details?.name||'Customer',priceId:offer.priceId,credits:offer.credits,tier:offer.tier,subscriptionId:stripeObjectId(session.subscription)||null,paymentIntentId:stripeObjectId(session.payment_intent)||null,paidAt:new Date(session.created*1000).toISOString()};
 }
 
 export function subscriptionSnapshot(subscription,invoice,catalog,live) {
@@ -32,7 +35,7 @@ export function subscriptionSnapshot(subscription,invoice,catalog,live) {
   return {subscriptionId:subscription.id,customerId:stripeObjectId(subscription.customer),priceId:offer.priceId,status:subscription.status,paidThrough:paid&&line?new Date(line.period.end*1000).toISOString():null};
 }
 
-export function createPayments({secretKey,webhookSecret,accountId,live,catalog,baseURL,store,customers,deliver,client}) {
+export function createPayments({secretKey,webhookSecret,accountId,live,catalog,baseURL,store,customers,deliver,client,automaticTax=false}) {
   if (!secretKey || !webhookSecret || !accountId) throw new Error('Payment credentials are not configured');
   if (secretKey.includes(live?'_test_':'_live_')) throw new Error('Payment credentials use the wrong environment');
   const stripe=client||new Stripe(secretKey,{apiVersion:'2026-09-30.endive',maxNetworkRetries:2,timeout:12000,appInfo:{name:'PremiereFlow',version:'2.0.0',url:baseURL}});
@@ -54,10 +57,10 @@ export function createPayments({secretKey,webhookSecret,accountId,live,catalog,b
     const lines=await stripe.checkout.sessions.listLineItems(sessionId,{limit:2});
     const purchase=validatePaidSession(session,lines,catalog,live);
     if (!purchase) return false;
-    const customer=await customers.ensurePaid(purchase.email,purchase.name);
     const firstInvoice=purchase.subscriptionId&&stripeObjectId(session.invoice)?await stripe.invoices.retrieve(stripeObjectId(session.invoice)):null;
     const subscription=purchase.subscriptionId?await readSubscription(purchase.subscriptionId,firstInvoice):null;
     if (purchase.subscriptionId && (!subscription || !subscription.paidThrough)) throw new Error('Paid subscription period was not confirmed');
+    const customer=await customers.resolvePaidPurchase(purchase);
     await store.recordPurchase({eventId,eventType,customer,purchase,subscription});
     await deliver(purchase.sessionId);
     return true;
@@ -85,16 +88,20 @@ export function createPayments({secretKey,webhookSecret,accountId,live,catalog,b
     }
     return json({received:true});
   }
-  async function checkout(key) {
+  async function checkout(key,account=null) {
     const offer=Object.hasOwn(catalog,key)?catalog[key]:null;
     if (!offer) throw new HttpError(400,'Choose one of the listed plans.');
     await verifyAccount();
     const price=await stripe.prices.retrieve(offer.priceId);
     if (!price.active || price.livemode!==live || price.currency!=='usd' || price.unit_amount!==offer.amount || (offer.mode==='subscription' && (price.recurring?.interval!=='month' || price.recurring.interval_count!==1))) throw new Error('The offer is not available as configured');
+    const customerId=account?await customers.checkoutCustomer(account,(customer,idempotencyKey)=>stripe.customers.create({email:customer.email,name:customer.name,metadata:{integration:integrationId,accountId:customer.accountId}},{idempotencyKey})):null;
+    const metadata={integration:integrationId,offer:key,...(account?{accountId:account.accountId}:{})};
     const session=await stripe.checkout.sessions.create({
       mode:offer.mode,line_items:[{price:offer.priceId,quantity:1}],
-      ...(offer.mode==='payment'?{customer_creation:'always'}:{subscription_data:{metadata:{integration:integrationId,offer:key}}}),
-      metadata:{integration:integrationId,offer:key},automatic_tax:{enabled:true},
+      ...(customerId?{customer:customerId}:offer.mode==='payment'?{customer_creation:'always'}:{}),
+      ...(offer.mode==='subscription'?{subscription_data:{metadata}}:{}),
+      metadata,integration_identifier:'premiereflow_'+Array.from({length:8},()=>String.fromCharCode(97+randomInt(26))).join(''),
+      ...(automaticTax?{automatic_tax:{enabled:true},...(customerId?{customer_update:{address:'auto'}}:{})}:{}),
       success_url:baseURL+'/confirmation/?session_id={CHECKOUT_SESSION_ID}',
       cancel_url:baseURL+'/sign-up/?checkout=cancelled'
     });
