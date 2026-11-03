@@ -6,10 +6,10 @@ import { createAuth, authOptions, isPublicAuthRoute } from '../server/auth.mjs';
 
 export const origin = 'https://premiereflow.test';
 export const password = 'Controlled acceptance password 2026!';
-export async function fixture({failDelivery=false}={}) {
+export async function fixture({failDelivery=false,audit}={}) {
   const database = new DatabaseSync(':memory:');
   const mail = [];
-  const config = {database, baseURL:origin, secret:randomBytes(48).toString('base64url'), sendPasswordReset: async message => {if(failDelivery)throw new Error('Controlled email outage');mail.push(message);} };
+  const config = {database, baseURL:origin, secret:randomBytes(48).toString('base64url'), audit, sendPasswordReset: async message => {if(failDelivery)throw new Error('Controlled email outage');mail.push(message);} };
   await (await getMigrations(authOptions(config))).runMigrations();
   const auth = createAuth(config);
   for (const [id,email] of [['user-a','account-a@example.test'],['user-b','account-b@example.test']]) {
