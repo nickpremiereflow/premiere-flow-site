@@ -9,6 +9,6 @@ try {
   const migration=await getMigrations(options);
   await migration.runMigrations();
   await database.query(await readFile(new URL('../migrations/002-portal.sql',import.meta.url),'utf8'));
-  for (const file of ['003-application-data.sql','004-completion-asset-binding.sql','005-billing-customer-ownership.sql','006-complete-image-sequence.sql']) await database.query(await readFile(new URL('../migrations/'+file,import.meta.url),'utf8'));
+  for (const file of ['003-application-data.sql','004-completion-asset-binding.sql','005-billing-customer-ownership.sql','006-complete-image-sequence.sql','007-paid-unlimited-reservation.sql']) await database.query(await readFile(new URL('../migrations/'+file,import.meta.url),'utf8'));
   console.log('Portal schema migration completed.');
 } finally {await database.end();}
