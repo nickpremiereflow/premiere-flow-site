@@ -12,6 +12,9 @@
     <script> 
         UPLOADCARE_PUBLIC_KEY = '64387322e1e85c547e9c'; 
         UPLOADCARE_TABS = 'file gdrive dropbox onedrive'; 
+        UPLOADCARE_MANUAL_START = true;
+        let uploadOwnershipContext = null;
+        UPLOADCARE_METADATA_CALLBACK = () => uploadOwnershipContext?.metadata || {};
     </script> 
     <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script> 
     
@@ -517,7 +520,7 @@
 
         const submissionWebhook = '/api/jobs';
         const JOB_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        const ACTIVE_JOB_STATES = new Set(['PROCESSING', 'RETRYING']);
+        const ACTIVE_JOB_STATES = new Set(['ACCEPTED', 'QUEUED', 'PROCESSING', 'RETRYING']);
         const FAILED_JOB_STATES = new Set(['FAILED', 'RETRY_REQUIRED']);
         let dashboardRequest = null;
         let enginePollTimer = null;
@@ -625,7 +628,7 @@
             // Persist before sending, so a timeout or reload reuses the same identity.
             localStorage.setItem(pendingJobKey(), JSON.stringify(pending));
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 25000);
+            const timeout = setTimeout(() => controller.abort(), 60000);
             try {
                 const {email, accountId, accountID, ...jobFields} = payload;
                 const body = {...jobFields, jobId: pending.jobId, action: pending.action, ...(pending.action === 'retry' ? {expectedAttempt: pending.previousAttempt} : {})};
@@ -633,7 +636,7 @@
                 const text = await res.text();
                 let ack = null;
                 try { ack = JSON.parse(text); } catch {}
-                if (!res.ok || ack?.status === 'rejected') throw new Error(res.status === 429 ? 'The service is busy. Wait before resending this same job.' : 'The submission was not confirmed. Check status before retrying.');
+                if (!res.ok || ack?.status === 'rejected') throw new Error(res.status === 429 ? 'The service is busy. Wait before resending this same job.' : ack?.error || 'The submission was not confirmed. Check status before retrying.');
                 if (ack?.jobId && ack.jobId !== pending.jobId) throw new Error('The returned Job ID did not match. Check status before retrying.');
                 if (!ack && text.trim() !== 'Accepted') throw new Error('The service did not acknowledge this job. Check status before retrying.');
                 setEngineMessage('Submission queued. Confirming your existing Job ID…');
@@ -805,6 +808,12 @@
                 setTimeout(() => { document.getElementById('transition-overlay').style.display = 'none'; }, 800); 
             }, 500); 
 
+            try {
+                uploadOwnershipContext = await PF.request('/api/uploads/context', {});
+            } catch {
+                setEngineMessage('Your upload connection could not be verified. Refresh the page before uploading photos.');
+                return;
+            }
             mainUcareWidget = uploadcare.Widget('#ucare-uploader'); 
             mainUcareWidget.onChange(function(group) { 
                 const gallery = document.getElementById('staging-gallery'); 
