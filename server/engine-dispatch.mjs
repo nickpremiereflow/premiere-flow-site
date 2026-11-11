@@ -37,8 +37,8 @@ export function engineRequest(account,input) {
   });
 }
 
-// Intentionally not wired into runtime yet: the callback, recovery and saved
-// Make adapter must pass acceptance before the existing cutover guard is removed.
+// Preview acceptance wiring is restricted to one controlled account. Production
+// cutover remains guarded until the callback, recovery and saved adapter pass.
 export function engineDispatch(database) {
   return {
     async enqueue(account,input) {

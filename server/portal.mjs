@@ -1,6 +1,7 @@
 import { isPublicAuthRoute, awaitResetDelivery, setupIdentity } from './auth.mjs';
 import { requireAccount, rejectForeignIdentity, JOB_ID_PATTERN } from './access.mjs';
 import { HttpError, json, onlyKeys, readJson, requireSameOrigin, safeError, shortText } from './http.mjs';
+import {createHash,timingSafeEqual} from 'node:crypto';
 
 const colors = new Set(['White (default)','Black','Gold','Red','Blue','Green']);
 const placements = new Set(['No Logo','Bottom Left','Bottom Right','Top Right','Top Left']);
@@ -23,7 +24,7 @@ export function validateDashboard(data, account) {
   return {success:true, accountId:account.accountId, email:account.email, name:data.name || '', tier:data.tier, credits:unlimited?'Unlimited':Number(data.credits), logo:data.logo || '', listings:data.listings};
 }
 
-export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, applicationData, submissionsEnabled = false}) {
+export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, applicationData, uploads, engine, maintenanceSecret, submissionsEnabled = false}) {
   const origin = new URL(baseURL).origin;
   const dashboard = async account => {
     if (applicationData) return validateDashboard(await applicationData.read(account),account);
@@ -41,6 +42,32 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
     try {
       const url = new URL(request.url);
       const path = url.pathname.replace(/\/$/,'');
+      if(path==='/api/internal/engine/maintenance'&&request.method==='GET') {
+        const credential=request.headers.get('authorization')||'';
+        const hash=value=>createHash('sha256').update(value).digest();
+        if(!engine||!maintenanceSecret||!timingSafeEqual(hash(credential),hash('Bearer '+maintenanceSecret))) throw new HttpError(403,'Request authorization failed.');
+        return json(await engine.maintenance());
+      }
+      if(path.startsWith('/api/internal/engine/')&&request.method==='POST') {
+        if(!engine) throw new HttpError(503,'The engine connection is not enabled.');
+        const body=await readJson(request,65536);
+        if(path==='/api/internal/engine/claim') {
+          onlyKeys(body,['ticket','payload']);
+          const result=await engine.claim(body.ticket,body.payload);
+          if(!result) throw new HttpError(403,'Request authorization failed.','INVALID_TICKET');
+          return json(result);
+        }
+        if(path==='/api/internal/engine/result') {
+          onlyKeys(body,['ticket','result']);
+          return json(await engine.finish(body.ticket,body.result));
+        }
+        if(path==='/api/internal/engine/notify') {
+          onlyKeys(body,['ticket','jobId','attempt']);
+          if(!JOB_ID_PATTERN.test(body.jobId||'')||!Number.isInteger(body.attempt)||body.attempt<1||body.attempt>3) throw new HttpError(400,'The attempt is invalid.');
+          return json(await engine.notifyResult(body.ticket,body.jobId,body.attempt));
+        }
+        throw new HttpError(404,'Not found.');
+      }
       if (path === '/api/setup/context' && request.method === 'POST') {
         requireSameOrigin(request,origin);
         await repository.rateLimit('setup-context:'+request.headers.get('x-real-ip'),20,60);
@@ -122,6 +149,10 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
       const body = await readJson(request);
       rejectForeignIdentity(body,account);
       await repository.rateLimit('account:'+session.user.id,30,60);
+      if (path === '/api/uploads/context') {
+        onlyKeys(body,[]);
+        return json(uploads ? uploads.issue(account) : {metadata:{}});
+      }
       if (path === '/api/account') {
         if (body.action === 'update_name') {
           onlyKeys(body,['action','newName']);
@@ -140,12 +171,13 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
       }
       if (path === '/api/account/logo') {
         onlyKeys(body,['logoUrl']);
-        const logoUrl = validateImageUrl(body.logoUrl);
+        const logoUrl = uploads ? await uploads.file(account,body.logoUrl) : validateImageUrl(body.logoUrl);
         const result = applicationData ? await applicationData.write(account,'logo',{logoUrl}) : await bridge('logo',{email:account.email,accountId:account.accountId,logoUrl});
         return json({success:result.success === true});
       }
       if (path === '/api/jobs') {
         if (!submissionsEnabled) throw new HttpError(503,'Submissions are temporarily paused. Your credits are safe.','SUBMISSIONS_PAUSED');
+        if (engine) return json(await engine.submit(account,body),202);
         if (!JOB_ID_PATTERN.test(body.jobId || '')) throw new HttpError(400,'The Job ID is invalid.');
         if (body.action === 'retry') {
           onlyKeys(body,['action','jobId','expectedAttempt']);
@@ -169,6 +201,7 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
         if (!existing) {
           const data = await dashboard(account);
           if (data.credits !== 'Unlimited' && data.credits < 1) throw new HttpError(409,'There are no available listing credits.');
+          if (uploads) await uploads.group(account,payload.uploadcareUrl,payload.thumbnail);
         }
         await repository.registerJob(account.accountId,body.jobId,payload);
         return json(await bridge('engine',payload,{acceptedOnly:true}),202);

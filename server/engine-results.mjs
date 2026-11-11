@@ -38,8 +38,8 @@ export function engineResult(input) {
   return result;
 }
 
-// No public route is wired yet. This service is enabled only after the isolated
-// Make adapter, recovery worker and source-ownership acceptance all pass.
+// The callback is enabled only for isolated Preview acceptance. A claimed,
+// attempt-bound ticket is required before any result may change job or credit state.
 export function engineResults(database,{read=readPublicResource}={}) {
   return async function finish(token,input) {
     if(typeof token!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(token)) throw denied();

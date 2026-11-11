@@ -1,11 +1,12 @@
 // Server-only, bounded recovery. The scheduler and Make adapter must be accepted
 // before enabling this service. No generation or email is sent by this worker.
-export function engineRecovery(database) {
+export function engineRecovery(database,{accountId}={}) {
   return async function recover() {
     const {rows}=await database.query(`SELECT account_id,job_id,attempt FROM pf_engine_dispatch
-      WHERE (state='pending' AND created_at<=now()-interval '30 minutes')
-         OR (state='claimed' AND claimed_at<=now()-interval '2 hours')
-      ORDER BY account_id,job_id,attempt LIMIT 10`);
+      WHERE ((state='pending' AND created_at<=now()-interval '30 minutes')
+         OR (state='claimed' AND claimed_at<=now()-interval '2 hours'))
+      ${accountId?'AND account_id=$1':''}
+      ORDER BY account_id,job_id,attempt LIMIT 10`,accountId?[accountId]:undefined);
     let recovered=0;
     for(const row of rows) {
       // Recheck under the account/job/attempt locks: completion or another
