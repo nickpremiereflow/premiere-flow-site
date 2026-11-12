@@ -12,6 +12,7 @@ import {createPayments} from './payments.mjs';
 import {createPortal} from './portal.mjs';
 import {uploadOwnership} from './upload-ownership.mjs';
 import {enginePipeline} from './engine-pipeline.mjs';
+import {engineConfiguration} from './engine-configuration.mjs';
 import {getVercelOidcToken} from '@vercel/oidc';
 
 let portal;
@@ -21,10 +22,7 @@ export function getPortal(env=process.env) {
   if (!baseURL || !/^https:\/\//.test(baseURL)) throw new Error('Site origin is not configured');
   const useApplicationData=env.PF_DATA_AUTHORITY==='neon';
   if (env.PF_DATA_AUTHORITY && !['legacy','neon'].includes(env.PF_DATA_AUTHORITY)) throw new Error('Unknown application data authority');
-  const engineAcceptance=env.PF_ENGINE_MODE==='neon_preview';
-  if(engineAcceptance && (env.VERCEL_ENV!=='preview'||!useApplicationData||!env.PF_ENGINE_ACCEPTANCE_ACCOUNT)) throw new Error('Engine acceptance requires an isolated Neon Preview account');
-  // Production remains closed until the isolated purchase-to-download test passes.
-  if (useApplicationData && env.PF_SUBMISSIONS_ENABLED==='true' && !engineAcceptance) throw new Error('Neon engine write cutover is not verified yet');
+  const engineConfig=engineConfiguration(env,useApplicationData);
   const dataOptions={applicationData:useApplicationData};
   const database=getDatabase();
   // Keep callbacks and auth queries available while a ledger transaction waits
@@ -34,7 +32,7 @@ export function getPortal(env=process.env) {
   if (previewServiceAccess && env.VERCEL_ENV!=='preview') throw new Error('Preview callback access cannot be used in production');
   const bridge=makeBridge(accounts,{account:env.PF_MAKE_ACCOUNT_URL,engine:env.PF_MAKE_ENGINE_URL,logo:env.PF_MAKE_LOGO_URL,services:env.PF_MAKE_SERVICES_URL},fetch,{
     callbackAuthorization:previewServiceAccess?getVercelOidcToken:undefined,
-    engineCallbackAuthorization:engineAcceptance?getVercelOidcToken:undefined
+    engineCallbackAuthorization:engineConfig.previewIdentity?getVercelOidcToken:undefined
   });
   const customers=customerService(database,bridge,dataOptions);
   const delivery=deliveryService(database,bridge,baseURL,dataOptions);
@@ -59,7 +57,7 @@ export function getPortal(env=process.env) {
       })});
   }
   const uploads=useApplicationData?uploadOwnership(env.BETTER_AUTH_SECRET):undefined;
-  const engine=engineAcceptance?enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount:env.PF_ENGINE_ACCEPTANCE_ACCOUNT}):undefined;
+  const engine=engineConfig.enabled?enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount:engineConfig.acceptanceAccount}):undefined;
   portal=createPortal({auth,repository:accounts,bridge,baseURL,ensureExistingAccount:customers.ensureExisting,sendSupport:delivery.support,payments,beforeAccountRead:account=>ledger.projectAccount(account.accountId),applicationData:useApplicationData?applicationStore(database,catalog):undefined,uploads,engine,maintenanceSecret:env.CRON_SECRET,submissionsEnabled:env.PF_SUBMISSIONS_ENABLED==='true'});
   return portal;
 }
