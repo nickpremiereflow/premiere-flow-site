@@ -9,7 +9,7 @@ import { fixture, origin } from './auth-fixture.mjs';
 const jobA='ee40b0c3-edb7-481a-8dae-003e51c40d33';
 const jobB='be40b0c3-edb7-481a-8dae-003e51c40d33';
 const freshJob='ce40b0c3-edb7-481a-8dae-003e51c40d33';
-async function portalFixture({applicationMode=false,payments}={}) {
+async function portalFixture({applicationMode=false,payments,media}={}) {
   const f=await fixture();
   await f.setup(); await f.setup('account-b@example.test');
   const cookies={a:await f.signIn(),b:await f.signIn('account-b@example.test')};
@@ -42,7 +42,7 @@ async function portalFixture({applicationMode=false,payments}={}) {
     return {success:true,status:audience==='engine'?'queued':undefined,jobId:payload.jobId};
   };
   const applicationData=applicationMode?{read:async account=>data[account.accountId],write:async(account,action,payload)=>{calls.push({audience:'neon',payload:{...payload,action,accountId:account.accountId}});return {success:true};}}:undefined;
-  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},applicationData,payments,submissionsEnabled:true});
+  const handler=createPortal({auth:f.auth,repository,bridge,baseURL:origin,ensureExistingAccount:async()=>{},applicationData,payments,media,submissionsEnabled:true});
   const call=(path,{body,cookie=cookies.a,method=body?'POST':'GET',requestOrigin=origin}={})=>handler(new Request(origin+path,{
     method,headers:{...(cookie?{cookie}:{}),...(body?{'content-type':'application/json',origin:requestOrigin}:{}),'x-real-ip':'192.0.2.14'},body:body?JSON.stringify(body):undefined
   }));
@@ -232,4 +232,30 @@ test('Checkout owner comes from the session and rejects a caller-supplied accoun
   assert.equal((await f.call('/api/checkout',{cookie:'',body:{offer:'upgrade'}})).status,200);
   assert.equal(received[1].account,null);
   f.database.close();
+});
+
+
+test('private upload and download routes require real sessions and preserve account/CSRF checks',async()=>{
+ const calls=[];
+ const media={
+  prepareUpload:async(account,body)=>{calls.push({account,body});return {groupId:freshJob};},
+  verifyUpload:async(account,id)=>{calls.push({account,id});return {verified:true};},
+  sealUpload:async(account,id)=>{calls.push({account,id});return {sealed:true};},
+  assetAccess:async(account,value,options)=>{calls.push({account,value,options});if(account.accountId!=='PF-A')throw new HttpError(404,'Not found');return {url:'https://private.example.test/file?temporary=true'};}
+ };
+ const f=await portalFixture({media});
+ assert.equal((await f.call('/api/uploads/prepare',{body:{requestId:freshJob},cookie:''})).status,401);
+ assert.equal((await f.call('/api/uploads/prepare',{body:{requestId:freshJob},requestOrigin:'https://attacker.example'})).status,403);
+ assert.equal((await f.call('/api/uploads/prepare',{body:{requestId:freshJob,accountId:'PF-B'}})).status,403);
+ assert.equal(calls.length,0);
+ assert.equal((await f.call('/api/uploads/prepare',{body:{requestId:freshJob}})).status,200);assert.equal(calls[0].account.accountId,'PF-A');
+ assert.equal((await f.call('/api/uploads/verify',{body:{objectId:freshJob,role:'generated'}})).status,400);
+ const path='/api/media/groups/'+freshJob+'~1/nth/0/';
+ assert.equal((await f.call(path,{cookie:''})).status,401);
+ assert.equal((await f.call(path+'?accountId=PF-B')).status,403);
+ assert.equal((await f.call(path+'?download=2')).status,400);
+ assert.equal((await f.call(path,{cookie:f.cookies.b})).status,404);
+ const download=await f.call(path+'?download=1&original=1');
+ assert.equal(download.status,302);assert.equal(download.headers.get('cache-control'),'private, no-store');assert.equal(download.headers.get('referrer-policy'),'no-referrer');
+ assert.deepEqual(calls.at(-1).options,{attachment:true,original:true});f.database.close();
 });
