@@ -16,7 +16,7 @@
         let uploadOwnershipContext = null;
         UPLOADCARE_METADATA_CALLBACK = () => uploadOwnershipContext?.metadata || {};
     </script> 
-    <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js" charset="utf-8"></script> 
+ 
     
     <style> 
         :root { 
@@ -646,8 +646,11 @@
         }
         function resetAcceptedSubmissionForm() {
             document.getElementById('inventory-form').reset();
-            const widget = uploadcare.Widget('#ucare-uploader');
+            const widget = mainUcareWidget;
             if (widget) widget.value(null);
+            document.getElementById('ucare-uploader').value = '';
+            document.getElementById('f-hero-thumb').value = '';
+            if (document.getElementById('private-photo-input')) document.getElementById('private-photo-input').value = '';
             document.getElementById('staging-gallery').innerHTML = '';
             fColorInput.value = 'White (default)'; selectedColorText.innerText = 'White (default)';
             selectedColorSwatch.style.backgroundColor = '#ffffff'; selectedColorSwatch.style.backgroundImage = 'none';
@@ -686,7 +689,9 @@
 
         // UPLOADCARE REACTIVE GROUP MANAGEMENT 
         let currentFileUUIDs = []; 
-        let mainUcareWidget = null; 
+        let mainUcareWidget = null;
+        let privateMediaClient = null;
+        let photoUploadInFlight = false; 
 
         function removeUploadedImage(event, index) { 
             event.stopPropagation(); 
@@ -814,6 +819,10 @@
                 setEngineMessage('Your upload connection could not be verified. Refresh the page before uploading photos.');
                 return;
             }
+            if (uploadOwnershipContext.provider === 'r2') {
+                await initializePrivateUploads();
+            } else {
+            await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js';script.onload=resolve;script.onerror=reject;document.head.appendChild(script);});
             mainUcareWidget = uploadcare.Widget('#ucare-uploader'); 
             mainUcareWidget.onChange(function(group) { 
                 const gallery = document.getElementById('staging-gallery'); 
@@ -859,8 +868,58 @@
                 } 
             }); 
             
-            setCustomWidgetLabels(); 
+            setCustomWidgetLabels();
+            }
         }; 
+
+        async function initializePrivateUploads() {
+            privateMediaClient = await import('/dashboard/media-client.mjs');
+            const addPicker = (id,kind,label) => {
+                const hidden=document.getElementById(id),input=document.createElement('input'),status=document.createElement('p');
+                input.type='file';input.id=kind==='source'?'private-photo-input':'private-logo-input';input.multiple=kind==='source';
+                input.accept=kind==='source'?'image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif':'image/png,image/jpeg,image/webp';
+                input.setAttribute('aria-label',label);input.style.cssText='width:100%;padding:16px;border:1px dashed #555;border-radius:10px;color:#fff;box-sizing:border-box';
+                status.setAttribute('role','status');status.style.cssText='font-size:13px;color:#c5a059;line-height:1.5';hidden.after(input,status);
+                input.addEventListener('change',async()=>{
+                    if(!input.files.length)return;
+                    hidden.value='';
+                    if(kind==='source'){photoUploadInFlight=true;document.getElementById('f-hero-thumb').value='';document.getElementById('staging-gallery').replaceChildren();}
+                    else document.getElementById('save-logo-btn').style.display='none';
+                    input.disabled=true;
+                    try {
+                        const result=await privateMediaClient.uploadFiles(input.files,{kind,request:PF.request,progress:text=>status.textContent=text});
+                        hidden.value=kind==='source'?result.groupUrl:result.thumbnail;
+                        if(kind==='source'){
+                            document.getElementById('f-hero-thumb').value=result.thumbnail;
+                            const gallery=document.getElementById('staging-gallery');
+                            for(let i=0;i<result.files;i++){
+                                const wrapper=document.createElement('div'),img=document.createElement('img'),badge=document.createElement('div');
+                                const src=result.groupUrl+'nth/'+i+'/';wrapper.className='thumb-wrapper'+(i===0?' selected-hero':'');wrapper.title='Set as cover';
+                                badge.className='hero-badge';badge.textContent='COVER';img.src=src;img.alt='Selected photo '+(i+1);
+                                wrapper.append(badge,img);wrapper.addEventListener('click',()=>selectHeroThumb(wrapper,src));gallery.append(wrapper);
+                            }
+                        }else{
+                            const image=document.getElementById('actual-logo-img');image.src=result.thumbnail;image.style.display='block';document.getElementById('no-logo-text').style.display='none';document.getElementById('save-logo-btn').style.display='block';
+                        }
+                        status.textContent=kind==='source'?result.files+' photo'+(result.files===1?'':'s')+' ready. Choose photos again to replace this selection.':'Logo ready. Save to use it for your account.';
+                    }catch(error){status.textContent=error.message||'Upload could not finish. No listing credit was used.';}
+                    finally{input.disabled=false;if(kind==='source')photoUploadInFlight=false;}
+                });
+            };
+            addPicker('ucare-uploader','source','Choose vehicle photos');addPicker('ucare-logo-uploader','logo','Choose dealership logo');
+        }
+        document.getElementById('submissions-list').addEventListener('click',async event=>{
+            const button=event.target.closest('[data-media-zip]');if(!button||button.disabled)return;
+            button.disabled=true;const label=button.textContent;
+            try{
+                privateMediaClient ||= await import('/dashboard/media-client.mjs');
+                const result=await privateMediaClient.downloadPackage(button.dataset.mediaZip,button.dataset.mediaName,{progress:text=>button.textContent=text});
+                const url=URL.createObjectURL(result.blob),link=document.createElement('a');link.href=url;link.download=result.filename;document.body.append(link);link.click();link.remove();
+                setTimeout(()=>URL.revokeObjectURL(url),60000);
+                button.textContent='Download ready';
+            }catch(error){setEngineMessage(error.message||'Download could not finish. Try again.');}
+            finally{button.disabled=false;setTimeout(()=>button.textContent=label,3000);}
+        });
 
         async function fetchDashboardData(email) {
             if (!currentUser) return false;
@@ -1075,6 +1134,15 @@
             let rawUrl = safeAssetUrl(urlsRaw);
             if (!rawUrl) return {html: '<p>Asset link unavailable</p>', thumb: ''};
             const parsedUrl = new URL(rawUrl);
+
+            if (parsedUrl.origin===location.origin && /^\/api\/media\/groups\/[0-9a-f-]{36}~(?:[1-9]|10)\/$/.test(parsedUrl.pathname)) {
+                const count=Number(parsedUrl.pathname.match(/~(\d+)\/$/)[1]);
+                for(let i=0;i<count;i++){
+                    const file=rawUrl+'nth/'+i+'/';
+                    html+=`<div class="gallery-item"><a href="${escapeHtml(file)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(file)}" alt="Vehicle photo ${i+1}" loading="lazy" style="width:100%;height:100%;object-fit:cover"></a><a href="${escapeHtml(file)}?download=1&original=1" style="position:absolute;bottom:0;left:0;right:0;display:block;text-align:center;color:var(--accent-gold);background:#000c;padding:10px">Download image</a></div>`;
+                }
+                return {thumb:rawUrl+'nth/0/',html:`<div class="listing-gallery">${html}</div><button type="button" class="btn-split" data-media-zip="${escapeHtml(rawUrl)}" data-media-name="${escapeHtml(listingName)}" style="width:100%;margin-top:20px;background:var(--accent-gold);color:#000">Download All Assets (.zip)</button>`};
+            }
 
             if (/(^|\.)ucarecdn\.com$|(^|\.)ucarecd\.net$/.test(parsedUrl.hostname)) {
                 const groupMatch = parsedUrl.pathname.match(/^\/([0-9a-f-]{36})~(\d+)\/$/i);
@@ -1373,6 +1441,7 @@
             event.preventDefault();
             const button = document.getElementById('submit-btn');
             if (button.disabled || engineActionInFlight) return;
+            if (photoUploadInFlight) { setEngineMessage('Wait for your photos to finish uploading before submitting.'); return; }
             if (!dashboardAvailable) { setEngineMessage('Refresh your account to confirm your available credits before submitting.'); return; }
             const payload = {
                 email: (currentUser?.email || ''), accountId: userData.accountId || userData.accountID || '',
@@ -1394,8 +1463,11 @@
                 await sendEngineJob(payload, pending);
                 if (!getPendingJob()) {
                     document.getElementById('inventory-form').reset();
-                    const widget = uploadcare.Widget('#ucare-uploader');
+                    const widget = mainUcareWidget;
                     if (widget) widget.value(null);
+            document.getElementById('ucare-uploader').value = '';
+            document.getElementById('f-hero-thumb').value = '';
+            if (document.getElementById('private-photo-input')) document.getElementById('private-photo-input').value = '';
                     document.getElementById('staging-gallery').innerHTML = '';
                     fColorInput.value = 'White (default)'; selectedColorText.innerText = 'White (default)';
                     selectedColorSwatch.style.backgroundColor = '#ffffff'; selectedColorSwatch.style.backgroundImage = 'none';
@@ -1445,7 +1517,8 @@
                         btn.innerText = originalText; 
                         btn.style.backgroundColor = ''; 
                         btn.style.color = ''; 
-                        uploadcare.Widget('#ucare-logo-uploader').value(null); 
+                        if (window.uploadcare) uploadcare.Widget('#ucare-logo-uploader').value(null);
+                        document.getElementById('ucare-logo-uploader').value = ''; 
                         setCustomWidgetLabels(); 
                     }, 2000); 
                 } else { 
