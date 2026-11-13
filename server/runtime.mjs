@@ -14,6 +14,8 @@ import {uploadOwnership} from './upload-ownership.mjs';
 import {enginePipeline} from './engine-pipeline.mjs';
 import {engineConfiguration} from './engine-configuration.mjs';
 import {getVercelOidcToken} from '@vercel/oidc';
+import {r2Store} from './r2-store.mjs';
+import {mediaService} from './media-service.mjs';
 
 let portal;
 export function getPortal(env=process.env) {
@@ -56,8 +58,11 @@ export function getPortal(env=process.env) {
         }
       })});
   }
-  const uploads=useApplicationData?uploadOwnership(env.BETTER_AUTH_SECRET):undefined;
-  const engine=engineConfig.enabled?enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount:engineConfig.acceptanceAccount}):undefined;
-  portal=createPortal({auth,repository:accounts,bridge,baseURL,ensureExistingAccount:customers.ensureExisting,sendSupport:delivery.support,payments,beforeAccountRead:account=>ledger.projectAccount(account.accountId),applicationData:useApplicationData?applicationStore(database,catalog):undefined,uploads,engine,maintenanceSecret:env.CRON_SECRET,submissionsEnabled:env.PF_SUBMISSIONS_ENABLED==='true'});
+  if(!['','uploadcare','r2'].includes(env.PF_STORAGE_PROVIDER||''))throw new Error('Unknown photo storage provider');
+  if(env.PF_STORAGE_PROVIDER==='r2'&&!useApplicationData)throw new Error('Private storage requires Neon ownership');
+  const media=env.PF_STORAGE_PROVIDER==='r2'?mediaService(database,r2Store(env),baseURL):undefined;
+  const uploads=media||(useApplicationData?uploadOwnership(env.BETTER_AUTH_SECRET):undefined);
+  const engine=engineConfig.enabled?enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount:engineConfig.acceptanceAccount,media}):undefined;
+  portal=createPortal({auth,repository:accounts,bridge,baseURL,ensureExistingAccount:customers.ensureExisting,sendSupport:delivery.support,payments,beforeAccountRead:account=>ledger.projectAccount(account.accountId),applicationData:useApplicationData?applicationStore(database,catalog):undefined,uploads,media,engine,maintenanceSecret:env.CRON_SECRET,submissionsEnabled:env.PF_SUBMISSIONS_ENABLED==='true'});
   return portal;
 }

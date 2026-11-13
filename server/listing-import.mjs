@@ -90,7 +90,7 @@ export function robotsAllows(body,target) {
   return true;
 }
 
-export function imagePreflight(bytes,mime) {
+export function imagePreflight(bytes,mime,{minLongEdge=800,minShortEdge=500,maxAspect=3}={}) {
   let width,height,format;
   if(bytes.length<24)return {accepted:false,reason:'This photo is incomplete.'};
   if(bytes.length>=45&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&bytes.readUInt32BE(8)===13&&bytes.toString('ascii',12,16)==='IHDR'&&bytes.toString('ascii',bytes.length-8,bytes.length-4)==='IEND') {
@@ -113,8 +113,8 @@ export function imagePreflight(bytes,mime) {
     else if(chunk==='VP8 '&&bytes.length>=30&&bytes[23]===0x9d&&bytes[24]===1&&bytes[25]===0x2a){width=bytes.readUInt16LE(26)&0x3fff;height=bytes.readUInt16LE(28)&0x3fff;}
   }
   if(!format||mime.split(';')[0].trim().toLowerCase()!==format||!width||!height)return {accepted:false,reason:'This is not a supported JPEG, PNG, or WebP photo.'};
-  if(Math.max(width,height)<800||Math.min(width,height)<500)return {accepted:false,reason:'This photo is too small. Use the original full-size photo.'};
-  if(width*height>50_000_000||Math.max(width,height)/Math.min(width,height)>3)return {accepted:false,reason:'This photo needs manual review. Upload the original vehicle photo.'};
+  if(Math.max(width,height)<minLongEdge||Math.min(width,height)<minShortEdge)return {accepted:false,reason:'This photo is too small. Use the original full-size photo.'};
+  if(width*height>50_000_000||Math.max(width,height)/Math.min(width,height)>maxAspect)return {accepted:false,reason:'This photo needs manual review. Upload the original vehicle photo.'};
   return {accepted:true,width,height,mime:format,sha256:createHash('sha256').update(bytes).digest('hex')};
 }
 

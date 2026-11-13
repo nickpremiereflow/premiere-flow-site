@@ -3,6 +3,7 @@ import {makePayload} from './contracts.mjs';
 import {HttpError,onlyKeys,shortText} from './http.mjs';
 import {JOB_ID_PATTERN} from './access.mjs';
 import {validateImageUrl} from './portal.mjs';
+import {parseMediaUrl} from './media-contract.mjs';
 
 const colors=new Set(['White (default)','Black','Gold','Red','Blue','Green']);
 const placements=new Set(['No Logo','Bottom Left','Bottom Right','Top Right','Top Left']);
@@ -18,7 +19,7 @@ const errors={
   PAYLOAD_INVALID:[400,'The listing request is invalid.']
 };
 
-export function engineRequest(account,input) {
+export function engineRequest(account,input,{mediaBaseURL}={}) {
   if (!account?.userId || !account?.accountId || !account?.email) throw new HttpError(403,'This account is not accessible.');
   if (!JOB_ID_PATTERN.test(input.jobId||'')) throw new HttpError(400,'The Job ID is invalid.');
   const identity={accountId:account.accountId,email:account.email,jobId:input.jobId.toLowerCase()};
@@ -33,16 +34,17 @@ export function engineRequest(account,input) {
     ...identity,action:'submit',vehicleName:shortText(input.vehicleName,160,'Vehicle name'),
     assetSource:typeof input.assetSource==='string'?input.assetSource.slice(0,2000):'',
     showroomColor:input.showroomColor,logoPlacement:input.logoPlacement,
-    thumbnail:validateImageUrl(input.thumbnail,{optional:true}),uploadcareUrl:validateImageUrl(input.uploadcareUrl,{group:true})
+    thumbnail:mediaBaseURL?(input.thumbnail?parseMediaUrl(mediaBaseURL,input.thumbnail).url:''):validateImageUrl(input.thumbnail,{optional:true}),
+    uploadcareUrl:mediaBaseURL?parseMediaUrl(mediaBaseURL,input.uploadcareUrl,{group:true}).url:validateImageUrl(input.uploadcareUrl,{group:true})
   });
 }
 
 // Preview acceptance wiring is restricted to one controlled account. Production
 // cutover remains guarded until the callback, recovery and saved adapter pass.
-export function engineDispatch(database) {
+export function engineDispatch(database,{mediaBaseURL}={}) {
   return {
     async enqueue(account,input) {
-      const payload=engineRequest(account,input);
+      const payload=engineRequest(account,input,{mediaBaseURL});
       try {
         const {rows:[row]}=await database.query('SELECT pf_enqueue_engine($1,$2,$3,$4,$5::jsonb) AS result',
           [account.accountId,account.userId,payload.jobId,digest(canonical(payload)),JSON.stringify(payload)]);

@@ -6,8 +6,9 @@ import {digest} from './repository.mjs';
 import {HttpError} from './http.mjs';
 import {escapeHtml} from './delivery.mjs';
 
-export function enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount}) {
-  const dispatch=engineDispatch(database),finish=engineResults(database),recover=engineRecovery(database,{accountId:acceptanceAccount});
+export function enginePipeline({database,accounts,bridge,uploads,baseURL,acceptanceAccount,media}) {
+  const mediaBaseURL=media?baseURL:undefined;
+  const dispatch=engineDispatch(database,{mediaBaseURL}),finish=engineResults(database,{media,mediaBaseURL}),recover=engineRecovery(database,{accountId:acceptanceAccount});
   const allowed=account=>{
     if(acceptanceAccount&&account.accountId!==acceptanceAccount) throw new HttpError(503,'Submissions are temporarily paused. Your credits are safe.','SUBMISSIONS_PAUSED');
   };
@@ -24,7 +25,7 @@ export function enginePipeline({database,accounts,bridge,uploads,baseURL,accepta
   }
   async function submit(account,input) {
     allowed(account);
-    const payload=engineRequest(account,input);
+    const payload=engineRequest(account,input,{mediaBaseURL});
     if(input.action==='submit'&&!await accounts.findOwned(account.accountId,payload.jobId)) {
       await uploads.group(account,payload.uploadcareUrl,payload.thumbnail);
     }

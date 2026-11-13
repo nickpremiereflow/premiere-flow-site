@@ -24,7 +24,7 @@ export function validateDashboard(data, account) {
   return {success:true, accountId:account.accountId, email:account.email, name:data.name || '', tier:data.tier, credits:unlimited?'Unlimited':Number(data.credits), logo:data.logo || '', listings:data.listings};
 }
 
-export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, applicationData, uploads, engine, maintenanceSecret, submissionsEnabled = false}) {
+export function createPortal({auth, repository, bridge, baseURL, ensureExistingAccount, sendSupport, payments, beforeAccountRead, applicationData, uploads, media, engine, maintenanceSecret, submissionsEnabled = false}) {
   const origin = new URL(baseURL).origin;
   const dashboard = async account => {
     if (applicationData) return validateDashboard(await applicationData.read(account),account);
@@ -51,6 +51,10 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
       if(path.startsWith('/api/internal/engine/')&&request.method==='POST') {
         if(!engine) throw new HttpError(503,'The engine connection is not enabled.');
         const body=await readJson(request,65536);
+        if(path==='/api/internal/engine/media') {
+          if(!media)throw new HttpError(503,'Photo storage is not enabled.');
+          return json(await media.engineMedia(body));
+        }
         if(path==='/api/internal/engine/claim') {
           onlyKeys(body,['ticket','payload']);
           const result=await engine.claim(body.ticket,body.payload);
@@ -144,10 +148,27 @@ export function createPortal({auth, repository, bridge, baseURL, ensureExistingA
       const {account,session} = await requireAccount(auth,repository,request.headers);
       rejectForeignIdentity(Object.fromEntries(url.searchParams),account);
       if (path === '/api/account' && request.method === 'GET') return json(await dashboard(account));
+      if(media&&path.startsWith('/api/media/groups/')&&request.method==='GET') {
+        onlyKeys(Object.fromEntries(url.searchParams),['download','original']);
+        if([...url.searchParams.values()].some(value=>value!=='1'))throw new HttpError(400,'Invalid download option.');
+        await repository.rateLimit('media-read:'+session.user.id,120,60);
+        if(/^\/api\/media\/groups\/[0-9a-f-]{36}~(?:[1-9]|10)$/.test(path))return json(await media.downloadManifest(account,origin+path+'/'));
+        const access=await media.assetAccess(account,origin+path+'/',{attachment:url.searchParams.get('download')==='1',original:url.searchParams.get('original')==='1'});
+        return new Response(null,{status:302,headers:{Location:access.url,'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer'}});
+      }
       if (request.method !== 'POST') throw new HttpError(404,'Not found.');
       requireSameOrigin(request,origin);
       const body = await readJson(request);
       rejectForeignIdentity(body,account);
+      if(media&&['/api/uploads/prepare','/api/uploads/verify','/api/uploads/seal'].includes(path)) {
+        await repository.rateLimit('media-upload:'+session.user.id,120,60);
+        if(path==='/api/uploads/prepare'){
+          await repository.rateLimit('media-prepare:'+session.user.id,6,300);
+          return json(await media.prepareUpload(account,body));
+        }
+        if(path==='/api/uploads/verify'){onlyKeys(body,['objectId']);return json(await media.verifyUpload(account,body.objectId));}
+        onlyKeys(body,['groupId']);return json(await media.sealUpload(account,body.groupId));
+      }
       await repository.rateLimit('account:'+session.user.id,30,60);
       if (path === '/api/uploads/context') {
         onlyKeys(body,[]);
