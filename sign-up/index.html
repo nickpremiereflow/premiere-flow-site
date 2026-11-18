@@ -156,7 +156,7 @@
         <div class="pkg-card">
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
-                    <span class="pkg-title shimmer">$49 - The Upgrade</span>
+                    <span class="pkg-title shimmer">$39 - Single Listing</span>
                     <span class="fee-label">ONE TIME FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('upgrade')">Select</button>
@@ -165,19 +165,14 @@
                 <li><span><span class="bullet-highlight">1</span> Single Listing Upgrade</span></li>
                 <li><span>10 Upgraded Listing Photos</span></li>
                 <li><span>Background Replacement & Improved Lighting</span></li>
+                <li><span>Optional Dealer Branding Included</span></li>
             </ul>
-            <div class="addon-section">
-                <label class="addon-label">
-                    <input type="checkbox" id="branding-check"> 
-                    <span>ADD DEALER BRANDING & SHOWROOM CUSTOMIZATION (+$20)</span>
-                </label>
-            </div>
         </div>
 
         <div class="pkg-card">
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
-                    <span class="pkg-title">$349 - The Partner Pack</span>
+                    <span class="pkg-title">$299 - The Partner Pack</span>
                     <span class="fee-label">ONE TIME FEE</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('partner')">Select</button>
@@ -193,8 +188,8 @@
         <div class="pkg-card">
             <div class="pkg-header-row">
                 <div class="pkg-title-area">
-                    <span class="pkg-title">$999<span class="pkg-period">/mo</span> - The Unlimited Pack</span>
-                    <span class="fee-label">RECURRING MONTHLY FEE</span>
+                    <span class="pkg-title">$499<span class="pkg-period">/mo</span> - Unlimited Flow</span>
+                    <span class="fee-label">MONTHLY SUBSCRIPTION · AUTO-RENEWS UNTIL CANCELED</span>
                 </div>
                 <button class="select-btn" onclick="handleSelection('unlimited')">Select</button>
             </div>
@@ -204,6 +199,7 @@
                 <li><span>Background Replacement & Improved Lighting</span></li>
                 <li><span>Dealer Branding & Showroom Customization</span></li>
                 <li><span>Priority Queue-Jump Processing</span></li>
+                <li><span>Renews monthly until canceled; cancellation takes effect after the paid period</span></li>
             </ul>
         </div>
     </div>
@@ -214,11 +210,16 @@
 
     <script>
         function handleSelection(plan) {
-            const brandingCheck = document.getElementById('branding-check');
-            const brandingChecked = brandingCheck ? brandingCheck.checked : false;
-            let tier = plan === 'upgrade' && brandingChecked ? "UPGRADE PLUS (W/ CUSTOMIZATION)" : (plan === 'unlimited' ? "THE UNLIMITED PACK" : plan.toUpperCase());
-            let price = plan === 'upgrade' ? (brandingChecked ? "$69" : "$49") : (plan === 'partner' ? "$349" : "$999");
-            alert("Redirecting to Secure Checkout...\nTotal: " + price + "\nPlan: " + tier);
+            const offers = {
+                upgrade: { name: 'Single Listing', price: '$39 one-time' },
+                partner: { name: 'Partner Pack', price: '$299 one-time' },
+                unlimited: { name: 'Unlimited Flow', price: '$499 per month, auto-renews until canceled' }
+            };
+            const offer = offers[plan];
+            if (!offer) return;
+            // The existing source has no actual checkout redirect. Keep this honest
+            // until the Stripe/Make purchase and entitlement path passes acceptance.
+            alert(offer.name + ' — ' + offer.price + '\n\nSecure checkout is being updated. Contact info@premiereflow.com to purchase.');
         }
     </script>
 </body>

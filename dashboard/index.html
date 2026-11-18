@@ -315,9 +315,10 @@
                     <a href="/#pricing" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: bold; cursor: pointer;" onclick="window.location.href='/#pricing'">Upgrade or buy more listings to continue</a> 
                 </div> 
                 
-                <div id="low-credit-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;"> 
-                    <p style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p> 
-                    <p style="color: #aaa; font-size: 11px; margin: 0;">You are running low on your Partner Pack. Top up soon to avoid delays.</p> 
+                <div id="low-credit-prompt" role="status" aria-live="polite" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.08); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;">
+                    <p id="low-credit-title" style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p>
+                    <p id="low-credit-message" style="color: #ddd; font-size: 12px; margin: 0 0 10px;">Add another Partner Pack whenever you're ready.</p>
+                    <a href="/sign-up/" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: 700;">Buy another 10-pack (one-time)</a>
                 </div> 
             </div> 
             
@@ -370,6 +371,13 @@
                     <span style="font-size: 11px; color: #666; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Listings Remaining</span> 
                     <span id="profile-credits-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span> 
                 </div> 
+
+                <div id="billing-management" style="display: none; text-align: left; border: 1px solid #332c1f; background: #0c0b09; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 8px; color: var(--accent-gold); font-size: 14px;">Unlimited Flow billing</h3>
+                    <p style="color: #ccc; font-size: 12px; line-height: 1.6; margin: 0 0 14px;">Your $499 monthly subscription renews automatically until canceled. You can update your payment method, view invoices, or cancel future renewals in Stripe's secure billing portal. Cancellation takes effect at the end of your current paid billing period.</p>
+                    <a href="https://billing.stripe.com/p/login/8x2cN6dnR9gdcLcaAJbV600" target="_blank" rel="noopener noreferrer" class="btn-main btn-gold" style="display: inline-block; text-decoration: none; text-align: center; font-size: 11px;">MANAGE SUBSCRIPTION</a>
+                    <p style="color: #888; font-size: 11px; margin: 12px 0 0;">Use the same email address you used at checkout. Stripe verifies access before showing billing information.</p>
+                </div>
 
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button> 
             </div> 
@@ -901,7 +909,9 @@
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED'; 
             const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER')); 
-            const creditsNum = Math.round(userData.credits || 0); 
+            const creditsNum = Math.round(userData.credits || 0);
+            const billingManagement = document.getElementById('billing-management');
+            if (billingManagement) billingManagement.style.display = isUnlimited ? 'block' : 'none'; 
 
             const profileCreditsDisplay = document.getElementById('profile-credits-display'); 
             if (profileCreditsDisplay) { 
@@ -941,10 +951,23 @@
                     actionBtn.style.cursor = 'pointer'; 
                     if (upgradePrompt) upgradePrompt.style.display = 'none'; 
                     
-                    if (isPartner && creditsNum <= 2) { 
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'block'; 
-                    } else { 
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'none'; 
+                    if (isPartner && creditsNum >= 1 && creditsNum <= 3 && lowCreditPrompt) {
+                        const title = document.getElementById('low-credit-title');
+                        const message = document.getElementById('low-credit-message');
+                        const notices = {
+                            3: { title: '3 listings remaining', text: 'Your Partner Pack is running low. You can add another 10-pack anytime.', color: 'var(--accent-gold)', background: 'rgba(197, 160, 89, 0.06)' },
+                            2: { title: 'Only 2 listings left', text: 'Consider topping up now so new inventory does not have to wait.', color: '#efb466', background: 'rgba(239, 180, 102, 0.12)' },
+                            1: { title: 'LAST LISTING — 1 REMAINING', text: 'This is your final available listing. Buy another 10-pack to keep staging inventory.', color: '#ff6868', background: 'rgba(255, 77, 77, 0.16)' }
+                        };
+                        const notice = notices[creditsNum];
+                        title.textContent = notice.title;
+                        title.style.color = notice.color;
+                        message.textContent = notice.text;
+                        lowCreditPrompt.style.borderColor = notice.color;
+                        lowCreditPrompt.style.background = notice.background;
+                        lowCreditPrompt.style.display = 'block';
+                    } else if (lowCreditPrompt) {
+                        lowCreditPrompt.style.display = 'none';
                     } 
                 } 
             } 
