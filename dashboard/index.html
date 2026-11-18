@@ -315,9 +315,10 @@
                     <a href="/#pricing" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: bold; cursor: pointer;" onclick="window.location.href='/#pricing'">Upgrade or buy more listings to continue</a> 
                 </div> 
                 
-                <div id="low-credit-prompt" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;"> 
-                    <p style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p> 
-                    <p style="color: #aaa; font-size: 11px; margin: 0;">You are running low on your Partner Pack. Top up soon to avoid delays.</p> 
+                <div id="low-credit-prompt" role="status" aria-live="polite" style="display: none; margin-top: 15px; padding: 15px; background: rgba(197, 160, 89, 0.08); border: 1px solid var(--accent-gold); border-radius: 8px; text-align: center;">
+                    <p id="low-credit-title" style="color: var(--accent-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 0 0 5px 0; letter-spacing: 1px;">Low Credits Remaining</p>
+                    <p id="low-credit-message" style="color: #ddd; font-size: 12px; margin: 0 0 10px;">Add another Partner Pack whenever you're ready.</p>
+                    <a href="/sign-up/" style="color: #fff; font-size: 11px; text-decoration: underline; font-weight: 700;">Buy another 10-pack (one-time)</a>
                 </div> 
             </div> 
             
@@ -941,10 +942,23 @@
                     actionBtn.style.cursor = 'pointer'; 
                     if (upgradePrompt) upgradePrompt.style.display = 'none'; 
                     
-                    if (isPartner && creditsNum <= 2) { 
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'block'; 
-                    } else { 
-                        if (lowCreditPrompt) lowCreditPrompt.style.display = 'none'; 
+                    if (isPartner && creditsNum >= 1 && creditsNum <= 3 && lowCreditPrompt) {
+                        const title = document.getElementById('low-credit-title');
+                        const message = document.getElementById('low-credit-message');
+                        const notices = {
+                            3: { title: '3 listings remaining', text: 'Your Partner Pack is running low. You can add another 10-pack anytime.', color: 'var(--accent-gold)', background: 'rgba(197, 160, 89, 0.06)' },
+                            2: { title: 'Only 2 listings left', text: 'Consider topping up now so new inventory does not have to wait.', color: '#efb466', background: 'rgba(239, 180, 102, 0.12)' },
+                            1: { title: 'LAST LISTING — 1 REMAINING', text: 'This is your final available listing. Buy another 10-pack to keep staging inventory.', color: '#ff6868', background: 'rgba(255, 77, 77, 0.16)' }
+                        };
+                        const notice = notices[creditsNum];
+                        title.textContent = notice.title;
+                        title.style.color = notice.color;
+                        message.textContent = notice.text;
+                        lowCreditPrompt.style.borderColor = notice.color;
+                        lowCreditPrompt.style.background = notice.background;
+                        lowCreditPrompt.style.display = 'block';
+                    } else if (lowCreditPrompt) {
+                        lowCreditPrompt.style.display = 'none';
                     } 
                 } 
             } 
