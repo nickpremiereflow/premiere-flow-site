@@ -372,6 +372,13 @@
                     <span id="profile-credits-display" style="font-size: 16px; font-weight: 900; color: #fff;">---</span> 
                 </div> 
 
+                <div id="billing-management" style="display: none; text-align: left; border: 1px solid #332c1f; background: #0c0b09; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 8px; color: var(--accent-gold); font-size: 14px;">Unlimited Flow billing</h3>
+                    <p style="color: #ccc; font-size: 12px; line-height: 1.6; margin: 0 0 14px;">Your $499 monthly subscription renews automatically until canceled. You can update your payment method, view invoices, or cancel future renewals in Stripe's secure billing portal. Cancellation takes effect at the end of your current paid billing period.</p>
+                    <a href="https://billing.stripe.com/p/login/8x2cN6dnR9gdcLcaAJbV600" target="_blank" rel="noopener noreferrer" class="btn-main btn-gold" style="display: inline-block; text-decoration: none; text-align: center; font-size: 11px;">MANAGE SUBSCRIPTION</a>
+                    <p style="color: #888; font-size: 11px; margin: 12px 0 0;">Use the same email address you used at checkout. Stripe verifies access before showing billing information.</p>
+                </div>
+
                 <button class="btn-main" onclick="signOut()" style="background: transparent; border: 1px solid #222; color: #888; font-size: 11px;">Log Out</button> 
             </div> 
             
@@ -902,7 +909,9 @@
             
             const isUnlimited = (userData.tier && String(userData.tier).toUpperCase().includes('UNLIMITED')) || String(userData.credits).toUpperCase() === 'UNLIMITED'; 
             const isPartner = (userData.tier && String(userData.tier).toUpperCase().includes('PARTNER')); 
-            const creditsNum = Math.round(userData.credits || 0); 
+            const creditsNum = Math.round(userData.credits || 0);
+            const billingManagement = document.getElementById('billing-management');
+            if (billingManagement) billingManagement.style.display = isUnlimited ? 'block' : 'none'; 
 
             const profileCreditsDisplay = document.getElementById('profile-credits-display'); 
             if (profileCreditsDisplay) { 
